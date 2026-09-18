@@ -176,6 +176,38 @@ What the spike found about the *schema*:
   Plain SI floats with the unit in the docstring.
 - The index now lists inferred imports and all verdicts.
 
+## Ch. 7 full extraction (2026-09-18): findings worth knowing before Ch. 10
+
+- **Eq. 7.29 is missing a π.** Printed k_D = (6πn)^(1/3); the standard Debye cutoff is
+  (6π²n)^(1/3). The printed form reproduces the Fig. 7.3 caption and the quoted T_D = 1570 K;
+  the standard form gives ~2300 K for the same inputs, so the book's "1570 vs 2230 K measured"
+  discrepancy is entirely the missing π^(1/3) = 1.46. The working energy density ε ≈ 2e8 J/m³
+  used in §7.3.4–7.3.6 matches the *standard* cutoff (1.7e8), not the printed one (1.05e8), so
+  the worked examples seem to have used the right k_D. T' and d' in the transmission fit
+  (Eq. 7.40–7.41) are defined through k_D; whether the fit was calibrated with the printed or
+  the standard value is not determinable from the text. Spot check on `7.3.2/debye-model`.
+- **§7.1 defines the hedges.** "Typically", "frequently", "many systems" are declared to mean
+  "characteristic of the Part II designs". Every hedge in Ch. 7 is therefore a forward claim
+  about Ch. 10–14, which is exactly what the 7.4.2 spike found unevaluated.
+- **The chapter's own summary is circular by admission** (`7.7/all-mechanisms-small-vs-kt`):
+  each mechanism is small compared to kT "with reasonable choices of physical parameters (one
+  criterion for a reasonable choice, of course, is that it result in acceptable energy
+  dissipation)". The audit question for Part II is whether one parameter set is "reasonable"
+  for all mechanisms at once.
+- **Three of the load-bearing interface results rest on Soreff 1991, "Personal
+  communications"**: the transmission coefficient (Eq. 7.39–7.40), the shear-reflection drag
+  coefficient D_sr ≈ 1 ("a more thorough numerical investigation would be desirable"), and the
+  nonadiabatic-excitation estimate. None is reproducible from the text as printed; Eq. 7.40 is
+  derivable, D_sr is not.
+- **Ch. 7's worked drag numbers presuppose Ch. 10.** Δk_a/k_a ≈ 0.1 and A/d ≈ 1e-2 are cited
+  forward ("As discussed in Chapter 10"), so 7.3.5's ~200 and ~10 W/m² are not independent
+  evidence for the bearing designs.
+- `7.5.2/soft-surroundings-design` licenses a polymer-like local structure (M ≈ 3e9) to cut
+  compression losses 1400×, in tension with `9.2/stiff-housing-architecture`; any consumer of
+  the reduction must be checked for which it takes.
+- Bare fraction for Ch. 7 in full: see the index. 7.4 alone was 53%; the full chapter is lower
+  because §7.2–7.3 cite the dislocation literature heavily.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

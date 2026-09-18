@@ -1,9 +1,8 @@
 chapter: 7
 title: Energy Dissipation
 status: extracted
-coverage: partial
-sections: ["7.4"]
-source: source/ch07-s7.4.txt
+coverage: full
+source: source/ch07.txt
 history:
   - date: 2026-09-18
     note: >
@@ -15,8 +14,514 @@ history:
       source/ch07-s7.4.txt re-extracted from upstream Markdown; Eqs. 7.47-7.54 now present (the
       EPUB extraction had silently dropped them). Prose unchanged. Added a note to
       7.4.1/tau-therm-and-kt from the now-visible Eq. 7.51.
+  - date: 2026-09-18
+    note: >
+      Extended to full coverage (7.1-7.3, 7.5-7.7 added; 7.4 ids unchanged). Worked examples
+      reproduced in nsaudit/ch07.py (tests/test_ch07_full.py). The two same-chapter placeholder
+      imports (7/eq-7.49, 7.3/phonon-scattering) are removed; real ids exist now.
 
 exports:
+
+  # ---- 7.1 Overview ------------------------------------------------------------
+
+  - id: 7.1/dissipation-seldom-qualitative
+    type: proposition
+    section: "7.1"
+    statement: >
+      "energy dissipation seldom imposes qualitative limits ... as opposed to constraints on the
+      speed and efficiency"; "Moderate overestimates of dissipation yield conservative estimates
+      of performance, while seldom falsely implying that a design is infeasible."
+    hedge: "seldom ... seldom"
+    support: BARE
+    polarity: "-"
+    priority: high
+    notes: >
+      Frames the whole chapter: dissipation is to be bounded, not estimated precisely. The
+      claim that overestimates are harmless fails where a budget is tight (14.4.8 vs available
+      free energy; see DECISIONS.md Ch. 14 notes). Adjudicate at audit.
+
+  - id: 7.1/metals-and-plastic-deformation-excluded
+    type: scope-condition
+    section: "7.1"
+    statement: >
+      Mechanisms specific to metals are ignored (systems "chiefly dielectric"); mechanisms during
+      plastic deformation are ignored "since, under the rules adopted in Chapter 6, any degree of
+      plastic deformation is counted as catastrophic damage."
+    support: INT
+    refs: ["6", "9.3.1/metals-excluded"]
+    polarity: "+"
+
+  - id: 7.1/mechanism-inventory
+    type: scope-condition
+    section: "7.1"
+    statement: >
+      The chapter "surveys mechanisms of energy dissipation that appear significant": acoustic
+      radiation from forced oscillations; phonon scattering; thermoelastic effects and phonon
+      viscosity; compression of potential wells; transitions among time-dependent wells.
+    hedge: "appear significant"
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["10", "11", "12.3.4", "13", "14"]
+    notes: >
+      The chapter-level inventory that every Part II dissipation budget inherits. Not listed:
+      viscoelastic lag of assemblies of components (Prase 2026 "molecular relaxation"),
+      edge/perimeter friction at sliding contacts (Prase; Qu et al. 2020), electronic/dielectric
+      losses (excluded by scope). Adjudicate completeness at audit.
+
+  - id: 7.1/speed-scaling
+    type: proposition
+    section: "7.1"
+    statement: >
+      P ∝ v^2 for radiation from an oscillating force, phonon scattering, thermoelastic and
+      phonon-viscosity effects, and nonisothermal well compression; P ∝ v^4 for oscillating
+      torque; P ∝ v for transitions among time-dependent wells. "all but the last exhibit a
+      speed-dependent energy dissipation per operation ... which approaches zero as v -> 0."
+    support: INT
+    refs: ["7.2-7.6"]
+    polarity: "+"
+    consumed_by: ["12.3.8", "13", "14"]
+
+  - id: 7.1/qualifiers-mean-part-ii-designs
+    type: scope-condition
+    section: "7.1"
+    statement: >
+      "qualifiers such as typically, frequently, many systems, and the like are used throughout
+      this chapter to indicate situations and parameters characteristic of systems of practical
+      interest. This usage reflects the results of design and analysis from Part II."
+    support: INT
+    refs: ["Part II"]
+    polarity: "+"
+    priority: high
+    notes: >
+      Defines the hedges. "Typically ... save in" (7.4.2) therefore asserts that Part II designs
+      are not high-frequency or pure-shear systems — a forward claim about Ch. 10-14 that the
+      spike found unevaluated at 12.3.4. Every `hedge:` in this file should be read through this.
+
+  # ---- 7.2 Radiation from forced oscillations ------------------------------------
+
+  - id: 7.2.1/uniform-medium-model
+    type: construction
+    section: "7.2.1"
+    statement: >
+      Model the surrounding structure as a uniform elastic medium and vibrations as acoustic
+      waves; "good when the wavelength ... is long compared to the scale of inhomogeneities";
+      treat systems as uniform on a scale of tens of nm or more; diamondlike matrix ~1/10 of
+      total mass -> v_s ~5000 m/s; lambda = 100 nm -> omega ~3e11 rad/s. "At higher
+      frequencies, the acoustic radiation model should still yield results of the right order."
+    hedge: "should still yield results of the right order"
+    support: EXT
+    refs: ["Gray 1972", "Nabarro 1987", "Hudson 1980"]
+    vintage: "OK — classical elastodynamics"
+    polarity: "+"
+    hypotheses:
+      - "wavelength long compared to inhomogeneities (lambda >~ tens of nm)"
+      - "quantum effects small at the frequencies and energies of interest"
+      - "structural matrix >= ~1/10 of total mass"
+    consumed_by: ["7.3.4", "7.5.2", "10", "11"]
+
+  - id: 7.2.2/equal-speed-approximation
+    type: construction
+    section: "7.2.2"
+    statement: >
+      Assume v_s,l = v_s,t for radiated waves: "not unreasonable"; "in effect assumes anisotropic
+      elastic properties that simplify the mathematics." For diamond nu ~0.1 and v_s,l ~1.5
+      v_s,t. Also underlies the Debye model and "is used extensively in the phonon-drag models
+      of Section 7.3."
+    hedge: "not unreasonable"
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["7.2.3", "7.3", "10"]
+    notes: A factor-1.5 approximation in every radiation and phonon-drag formula that follows. Adjudicate direction at audit.
+
+  - id: 7.2.3/point-force-radiation
+    type: parameter
+    section: "7.2.3"
+    statement: >
+      Eq. 7.8: P_rad = F_max^2 omega^2 sqrt(rho) / (8 pi M^3/2). Embedded oscillator: decay time
+      Eq. 7.10, fractional loss per cycle f ≈ (1/2) sqrt(rho/m) (k_s/M)^3/2 (Eq. 7.11, f << 1).
+    support: INT
+    refs: ["7.2.2/equal-speed-approximation", "Eq. 7.4-7.7"]
+    polarity: "+"
+    hypotheses:
+      - 7.2.2/equal-speed-approximation
+      - 7.2.1/uniform-medium-model
+      - "source dimensions small compared to the radiated wavelength (Fig. 7.1)"
+    consumed_by: ["7.3.4", "7.5.2", "10", "11"]
+    notes: nsaudit.ch07.p_rad_point_force.
+
+  - id: 7.2.3/low-stiffness-use-accommodation
+    type: proposition
+    section: "7.2.3"
+    statement: >
+      Low-stiffness systems constrained by strongly anharmonic nonbonded interactions are
+      "better modeled using thermal accommodation coefficients (Section 7.5.1)" as a series of
+      wall collisions.
+    support: INT
+    refs: ["7.5.1"]
+    polarity: "+"
+
+  - id: 7.2.4/point-torque-radiation
+    type: parameter
+    section: "7.2.4"
+    statement: >
+      Eq. 7.15: P_rad = T_max^2 omega^4 rho^3/2 / (48 pi G^5/2), "steeply dependent on
+      frequency"; torsional oscillator Eqs. 7.16-7.17. Model: pure shear waves in a uniform
+      isotropic medium.
+    support: INT
+    refs: ["Eq. 7.12-7.14"]
+    polarity: "+"
+    hypotheses:
+      - 7.2.1/uniform-medium-model
+    consumed_by: ["10 (bearing torque ripple)"]
+
+  - id: 7.2.5/pressure-in-volume-radiation
+    type: parameter
+    section: "7.2.5"
+    statement: >
+      Eq. 7.21 for an oscillating pressure in a spherical cavity of radius r_0; assumes nu = 0
+      and M = E, "simplified and rendered somewhat more conservative"; the trailing factor
+      "strongly reduces the radiated power when the radius of the driven region is small
+      compared to the radiated wavelength."
+    support: INT
+    refs: ["Eq. 7.18-7.20"]
+    polarity: "+"
+    hypotheses:
+      - "nu = 0, M = E (stated conservative)"
+      - 7.2.1/uniform-medium-model
+    consumed_by: ["7.2.6", "10"]
+
+  - id: 7.2.6/subsonic-uniform-disturbance-silent
+    type: proposition
+    section: "7.2.6"
+    statement: >
+      "in a uniform environment, a uniform disturbance moving at a uniform, subsonic speed
+      radiates no acoustic power." Inhomogeneities and variations in speed and force "can be
+      considered separately."
+    support: EXT
+    refs: ["Nabarro 1987", "Alshits and Indenbom 1986 (dislocation analogy)"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    notes: >
+      True for the idealisation; the deferred "considered separately" terms are never
+      quantified in the chapter. Adjudicate at audit.
+
+  - id: 7.2.6/band-velocity-ratio
+    type: parameter
+    section: "7.2.6"
+    statement: >
+      Alignment bands move at R = v_bands/v = |k_1|/|k_2 - k_1| (Eq. 7.22; general case Eq. 7.23,
+      R <= |k_1|/|k_2 - k_1| + 1), "which can attain arbitrarily high values as |k_1 - k_2| -> 0."
+    support: BARE
+    polarity: "+"
+    consumed_by: ["7.3.5", "7.4.3", "10"]
+    aliases: ["R", "velocity ratio"]
+    notes: Geometric. R = 10 is the "not-atypical" value used in every worked example downstream.
+
+  - id: 7.2.6/subsonic-bands-design-constraint
+    type: scope-condition
+    section: "7.2.6"
+    statement: >
+      "The present work adopts the design constraint that the alignment-band speeds remain
+      subsonic, thereby avoiding this mode of energy dissipation."
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["7.3.5", "10"]
+    notes: A design rule stated in Ch. 7 that Ch. 10 bearings must satisfy (R v < v_s). Check at every bearing.
+
+  - id: 7.2.6/piston-limit-radiation
+    type: parameter
+    section: "7.2.6"
+    statement: >
+      Limiting case R = infinity: interface enters and leaves alignment as a whole, radiating like
+      a piston: Eq. 7.24, approximated by Eq. 7.25 ("always conservative"). Worked: M = 1e11,
+      rho = 2000, k = 2e10 rad/m, A = 0.05 nm -> ~4e6 W/m^2 at 1 m/s, ~4e2 W/m^2 at 1 cm/s.
+      "most sliding interfaces need not suffer losses by this mechanism."
+    hedge: "most ... need not"
+    support: INT
+    refs: ["7.2.5/pressure-in-volume-radiation"]
+    polarity: "-"
+    spot_check: "Eq. 7.25: 3.5e6 and 350 W/m^2. OK. (tests/test_ch07_full.py)"
+    hypotheses:
+      - 7.2.6/subsonic-bands-design-constraint
+
+  - id: 7.2.6/nonadiabatic-excitation-negligible
+    type: proposition
+    section: "7.2.6"
+    statement: >
+      Quantum nonadiabatic excitation of surface oscillators by passing atomic features has
+      probability ~ exp(-2 omega tau) with omega tau ≈ v_s/v; for v_s = 1e4 m/s and v = 1e2 m/s,
+      ~1e-85 per encounter; "a single excitation dissipates ~1 maJ."
+    support: EXT
+    refs: ["Soreff 1991 (personal communications)", "Kogan and Galitskiy 1963"]
+    vintage: "CHECK — Soreff 1991 is unpublished; the perturbation-theory scaling is textbook"
+    polarity: "-"
+    spot_check: "exp(-200) = 1.4e-87 vs '~1e-85'. Order-of-magnitude OK. (tests)"
+
+  # ---- 7.3 Phonons and phonon scattering -------------------------------------------
+
+  - id: 7.3.1/phonon-momentum-and-pressure
+    type: proposition
+    section: "7.3.1"
+    statement: >
+      For drag calculations phonons carry momentum equal to their quasi-momentum, |p| = hbar k =
+      E/v_s (Eq. 7.26); a phonon-reflecting surface feels pressure p = eps/3 (Eq. 7.27) — but only
+      a surface able to move relative to the medium, so phonon pressure "makes no contribution to
+      the thermal coefficient of expansion."
+    support: EXT
+    refs: ["Lothe 1962", "Ashcroft and Mermin 1976"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["7.3.3", "7.3.6"]
+
+  - id: 7.3.2/debye-model
+    type: construction
+    section: "7.3.2"
+    statement: >
+      Debye phonon energy density Eq. 7.28 with k_D = (6 pi n_v)^1/3 (Eq. 7.29), T_D = hbar k_D
+      v_s / k (Eq. 7.30), effective v_s from Eq. 7.31 (max 1.084 v_s,t). Diamond-like isotropic
+      solid: v_s = 1.38e4 m/s, T_D = 1570 K "vs. a value for diamond itself of 2230 K (Gray, 1972)."
+    support: EXT
+    refs: ["Ashcroft and Mermin 1976", "Gray 1972"]
+    vintage: "OK"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.2.2/equal-speed-approximation
+      - 7.3.2/debye-defects-small
+    consumed_by: ["7.3.3", "7.3.4", "7.3.5e", "7.3.6", "10"]
+    spot_check: >
+      Eq. 7.29 as printed is (6 pi n)^1/3; the standard Debye cutoff is (6 pi^2 n)^1/3
+      (Ashcroft & Mermin ch. 23). The printed form reproduces the Figure 7.3 caption
+      (1.24e10 rad/m at n = 100/nm^3) and the quoted 1570 K; the standard form with the same
+      inputs gives ~2300 K, i.e. the book's own 1570-vs-2230 discrepancy is exactly the missing
+      pi^1/3 = 1.46. Consequence: at 300 K the printed cutoff undercounts modes and gives
+      eps = 1.05e8 J/m^3 for (v_s = 1e4, n = 100/nm^3), whereas the working value used in
+      7.3.4-7.3.6, eps ≈ 2e8, matches the standard cutoff (1.7e8). So the worked examples appear
+      to use the correct k_D while the printed equation, figure caption and T_D do not. Also
+      T'/d' in Eq. 7.40-7.41 are defined via k_D. Not a verdict; adjudicate the propagation.
+      (nsaudit.ch07.k_debye_book/k_debye_standard, tests)
+
+  - id: 7.3.2/debye-defects-small
+    type: proposition
+    section: "7.3.2"
+    statement: >
+      Debye model neglects low-group-velocity modes near k_D and optical modes; "The effect of
+      these shortcomings can be significant, but typically is small for T << T_D."
+    hedge: "can be significant, but typically is small for T << T_D"
+    support: EXT
+    refs: ["Alshits and Indenbom 1986"]
+    vintage: "OK"
+    polarity: "-"
+    hypotheses:
+      - "T << T_D (300 K vs 1570-2230 K: T/T_D = 0.13-0.19, not obviously <<)"
+
+  - id: 7.3.3/phonon-scattering-drag
+    type: construction
+    section: "7.3.3"
+    statement: >
+      Moving scattering centre: F_drag ≈ -(4/3) eps sigma_therm v/v_s, P_drag ≈ (4/3) eps
+      sigma_therm v^2/v_s (Eq. 7.32), sigma_therm the Debye-weighted cross section (Eq. 7.33);
+      derived from Doppler and aberration to first order in v/v_s.
+    support: EXT
+    refs: ["Alshits and Indenbom 1986 (phonon wind)"]
+    vintage: "OK"
+    polarity: "+"
+    hypotheses:
+      - "isotropic cross section in the rest frame and isotropic emission in the scatterer frame"
+      - "v << v_s"
+      - 7.3.2/debye-model
+    consumed_by: ["7.3.4", "10", "12.3.4f"]
+
+  - id: 7.3.4/oscillator-cross-section
+    type: parameter
+    section: "7.3.4"
+    statement: >
+      A moving contact modelled as an embedded oscillator: off-resonance sigma ≈ (1/2 pi)
+      (k_s/M)^2 (k_s/m omega^2 + 1)^-2 (Eq. 7.34); resonant cross sections limited by radiation
+      damping; sigma_therm by numerical integration (Fig. 7.5). Worked: sliding contact k_s ~30
+      N/m -> sigma ≈ 1e-20 m^2 in a moderately stiff medium; v_s = 1e4, eps = 2e8 -> ~3e-16 W at
+      1 m/s, ~3e-20 W at 1 cm/s (3e-25 and 3e-27 J/nm).
+    support: INT
+    refs: ["7.2.3/point-force-radiation", "7.3.3/phonon-scattering-drag", "Fig. 7.5"]
+    polarity: "+"
+    hypotheses:
+      - 7.3.4/stiffness-floor-10-n-per-m
+      - "oscillator small compared to thermal phonon wavelengths"
+    spot_check: "(4/3) 2e8 1e-20 / 1e4 = 2.7e-16 W. OK. Fig. 7.5 (numerical) not reproduced. (tests)"
+    consumed_by: ["10", "12.3.4f"]
+    aliases: ["phonon-scattering centres", "scattering cross section"]
+    notes: >
+      12.3.4f gives ~1e-23 m^2 for logic-rod knobs, three OOM below the 1e-20 worked here for a
+      30 N/m contact; the knob value is uncited. Adjudicate at audit of 12.3.4/other-mechanisms-negligible.
+
+  - id: 7.3.4/stiffness-floor-10-n-per-m
+    type: proposition
+    section: "7.3.4"
+    statement: >
+      "regardless of how low the equilibrium stiffness may be, thermal excitation of small
+      scattering centers at 300 K frequently explores regions in which the stiffness is of the
+      order of 10 N/m. Thus, anharmonicity and thermal excitation place an effective lower bound
+      on the effective mean stiffness, and hence on the phonon scattering cross section."
+    hedge: "frequently"
+    support: INT
+    refs: ["Fig. 3.8"]
+    polarity: "+"
+    notes: A claim against interest (raises drag). Keep.
+
+  - id: 7.3.5/bands-differ-from-dislocations
+    type: proposition
+    section: "7.3.5"
+    statement: >
+      Alignment bands are "closely analogous to dislocations" but broad, with small stress
+      variation and "significant variations in the stiffness of the interface owing to the strong
+      anharmonicity of nonbonded interactions"; dislocation-drag approximations are invalid;
+      the models of 7.3.5b-e are "intended to provide only upper bounds."
+    support: EXT
+    refs: ["Alshits and Indenbom 1986", "Lothe 1962", "Nabarro 1987", "3.3.2e"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["10"]
+
+  - id: 7.3.5/shear-stresses-neglected
+    type: scope-condition
+    section: "7.3.5"
+    statement: >
+      "In many systems of engineering interest, the shear stresses transmitted across the
+      interface are small compared to the normal stresses, and the shear stiffnesses are likewise
+      small ... Shear stresses and stiffnesses are accordingly neglected in the following
+      discussion, although their treatment would be entirely analogous."
+    hedge: "many systems"
+    support: BARE
+    polarity: "-"
+    consumed_by: ["7.3.5c-e", "7.3.6", "10"]
+
+  - id: 7.3.5/band-stiffness-drag
+    type: parameter
+    section: "7.3.5"
+    statement: >
+      Band-stiffness scattering bound Eq. 7.35: P_drag < 0.85 eps T_trans (delta-k_a/k_a) R^2
+      v^2/v_s S. Isotropic scattering assumed for all k, "tending to overestimate the drag";
+      does not hold for k_a ≈ 0. Worked: T_trans < 1e-3, R = 10, delta-k_a/k_a ≈ 0.1, v_s = 1e4,
+      eps = 2e8 -> ~200 W/m^2 at 1 m/s, ~0.02 W/m^2 at 1 cm/s (2e-25, 2e-27 J/nm^2 per nm).
+    support: INT
+    refs: ["7.3.5/transmission-coefficient", "7.3.3/phonon-scattering-drag", "7.2.6/band-velocity-ratio"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.3.5/shear-stresses-neglected
+      - 7.2.6/subsonic-bands-design-constraint
+      - "k_a not ≈ 0"
+      - "delta-k_a/k_a small by design (Chapter 10)"
+      - 7.3.5/transmission-coefficient
+    spot_check: "Eq. 7.35: 170 and 0.017 W/m^2; 1.7e-25 J/nm^2 per nm. OK within rounding. (tests)"
+    consumed_by: ["10.4.6 (Eq. 10.23)", "12.3.4c"]
+    aliases: ["band-stiffness scattering", "Eq. 10.23 (with parameters)"]
+    notes: >
+      The mechanism 12.3.4c calls "dominant" and applies with delta-k_a/k_a = 0.4, R = 10.
+      Prase's edge-friction objection lands here and at 10.4.6.
+
+  - id: 7.3.5/band-flutter-drag
+    type: parameter
+    section: "7.3.5"
+    statement: >
+      Band-flutter bound Eq. 7.37: P_drag < eps T_trans (2 pi A/d)^2 R^2 v^2/v_s S, using
+      k_bands R = 2 pi/d; A/d "can be made small in properly designed bearings of certain
+      classes; a reasonable value is 1e-2" -> ~10 W/m^2 at 1 m/s.
+    hedge: "can be made small ... certain classes"
+    support: INT
+    refs: ["7.3.5/transmission-coefficient", "7.2.6/band-velocity-ratio"]
+    polarity: "+"
+    hypotheses:
+      - 7.3.5/shear-stresses-neglected
+      - "A/d ~ 1e-2 achievable by design (Chapter 10)"
+    spot_check: "Eq. 7.37: 7.9 W/m^2. OK. (tests)"
+    consumed_by: ["10"]
+
+  - id: 7.3.5/transmission-coefficient
+    type: construction
+    section: "7.3.5"
+    statement: >
+      Planar compliant interface, equal speeds: T_trans,perp = [1 + (M k_z / 2 k_a)^2]^-1
+      (Eq. 7.39, Soreff 1991); Debye-averaged T_trans by Eq. 7.40 (Fig. 7.6) in terms of
+      T' = T/T_D and d' = k_D M/k_a; engineering fit Eq. 7.41-7.42 in d_n = n^-1/3 M/k_a, which
+      "consistently overestimate[s] transmission (and hence drag)". "values of T_trans ... can
+      easily be less than 1e-3."
+    support: EXT
+    refs: ["Soreff 1991 (personal communications)"]
+    vintage: "CHECK — unpublished derivation; Eq. 7.40 is reproducible from Eq. 7.39 + Debye weighting"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.2.2/equal-speed-approximation
+      - 7.3.2/debye-model
+      - "planar interface between identical half-spaces (7.3.5f: real interfaces transmit less)"
+      - "one of three polarizations transmits (factor 1/3 included)"
+    consumed_by: ["7.3.5c", "7.3.5d", "7.3.6", "10"]
+    notes: >
+      T' and d' are defined through k_D; see the spot check on 7.3.2/debye-model. Fig. 7.6 and
+      the fit's calibration are not reproduced here (open item for nsaudit).
+
+  - id: 7.3.5/planar-model-is-upper-bound
+    type: proposition
+    section: "7.3.5"
+    statement: >
+      Short or curved interfaces and dissimilar media reduce T_trans (grazing-incidence resonance
+      disrupted; total internal reflection); "models based on Eq. (7.40) provide an upper bound
+      on transmission-dependent drag processes. This suffices for present purposes." Acoustic
+      mismatch can be engineered even between chemically identical parts by isotopes (12C/13C).
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["10"]
+    notes: >
+      Physical argument, no calculation; 7.7 lists it as an open problem. The isotope idea is a
+      design-license with no analysis. Adjudicate at audit.
+
+  - id: 7.3.6/shear-reflection-drag
+    type: parameter
+    section: "7.3.6"
+    statement: >
+      Velocity-dependent transmission Eq. 7.43-7.44 (Soreff 1991); drag coefficient D_sr defined
+      by Eq. 7.45; "A numerical investigation suggests that D_sr is of order unity and does
+      indeed vary only moderately across a range of parameters in which the drag varies by more
+      than seven orders of magnitude. Use of the approximation D_sr = 1 appears conservative ...
+      frequently overestimating drag by a factor of 10 or more (a more thorough numerical
+      investigation would be desirable)." Eq. 7.46: P ≈ (eps/2) T_trans D_sr v^2/v_s S; ~10
+      W/m^2 at 1 m/s with 7.3.5c assumptions. "For bearings in which alignment-band drag has
+      been minimized, it can be dominant."
+    hedge: "suggests ... appears conservative ... would be desirable"
+    support: EXT
+    refs: ["Soreff 1991 (personal communications)"]
+    vintage: "CHECK — unpublished; numerical investigation not reproducible from the text"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.3.5/transmission-coefficient
+      - "D_sr ≈ 1 (numerical, unpublished)"
+      - "low Mach number"
+    spot_check: "Eq. 7.46: 10 W/m^2. OK. (tests)"
+    consumed_by: ["10"]
+
+  - id: 7.3.7/interfacial-phonon-phonon-small
+    type: proposition
+    section: "7.3.7"
+    statement: >
+      Phonons in one medium scatter from phonon-induced corrugations of the other; sliding gives
+      the corrugations a drift velocity, causing drag. "A preliminary evaluation suggests that
+      this effect is small, but a more thorough investigation would be desirable."
+    hedge: "A preliminary evaluation suggests ... small"
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["10"]
+    notes: >
+      Unquantified dismissal; Prase (2026) fn. 30 cites this sentence alongside 7.4.2 as the
+      book's treatment of intrinsic anharmonic losses at interfaces. 7.7 lists it as an open
+      problem. Adjudicate at audit.
 
   # ---- 7.4.1 Thermoelastic damping ------------------------------------------
 
@@ -247,15 +752,307 @@ exports:
     polarity: "-"
     notes: Design-license claim resting on a two-point comparison in one material system.
 
+  # ---- 7.5 Compression of potential wells ------------------------------------------
+
+  - id: 7.5.1/accommodation-coefficient-range
+    type: parameter
+    section: "7.5.1"
+    statement: >
+      Thermal accommodation coefficient alpha (Eq. 7.55): "Save for light gases (helium, neon)
+      impinging on a clean surface with massive atoms (tungsten), most tabulated values of alpha
+      range from 0.25 to ~1.0. Surface contamination tends to increase accommodation; stable
+      structures with similar effects could be provided in many systems."
+    hedge: "could be provided in many systems"
+    support: EXT
+    refs: ["Goodman 1980", "Goodman and Wachman 1976", "Saxena and Joshi 1989"]
+    vintage: "CHECK — gas-surface data; applicability to nm components is the question (7.5.1d)"
+    polarity: "+"
+    consumed_by: ["7.5.1c", "12.4.3", "13"]
+
+  - id: 7.5.1/single-molecule-gas-model
+    type: construction
+    section: "7.5.1"
+    statement: >
+      A component moving over a flat potential in a bounded region is a one-molecule 1-D gas
+      between two moving pistons with adiabatic walls, "A conservative model"; temperature ratio
+      Eq. 7.58, approximation Eq. 7.59.
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "f << 1 (piston speed small vs thermal speed) and moderate-to-large alpha"
+      - "pistons interact only with particles moving toward them (overtaken molecules neglected)"
+      - "component velocity statistics are Maxwellian at some T_g"
+    consumed_by: ["7.5.1c", "12.4.3", "13.3"]
+
+  - id: 7.5.1/nonisothermal-compression
+    type: parameter
+    section: "7.5.1"
+    statement: >
+      Eq. 7.62: delta-W ≈ sqrt(2 m k T_s / pi) (2/alpha - 1) ln(l_1/l_2) v_total. Worked:
+      m = 2e-25 kg, compression ratio 10, alpha = 0.5, 300 K -> ~1.6e-22 J at 1 m/s, ~1.6e-24 J
+      at 1 cm/s. Equally applicable to expansion while f is small.
+    support: INT
+    refs: ["7.5.1/single-molecule-gas-model", "Eq. 7.60-7.61"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.5.1/single-molecule-gas-model
+      - 7.5.1/accommodation-coefficient-range
+    spot_check: "Eq. 7.62: 1.59e-22 and 1.59e-24 J. OK. (tests)"
+    consumed_by: ["12.4.3b", "13.3"]
+    aliases: ["Eq. 7.62", "square-well compression loss"]
+
+  - id: 7.5.1/large-molecules-adsorb
+    type: proposition
+    section: "7.5.1"
+    statement: >
+      For massive components "the literature values of alpha for ordinary gas molecules offer
+      only a poor guide"; increased vdW attraction leads to adsorption, "complete thermal
+      accommodation, and (in the present context) elimination of further nonisothermal-
+      compression losses until the pistons begin to press the molecule from both sides."
+    support: EXT
+    refs: ["Goodman 1980"]
+    vintage: "CHECK"
+    polarity: "-"
+    notes: Concedes alpha is unknown for the relevant objects, then argues the loss vanishes anyway. Adjudicate at audit.
+
+  - id: 7.5.2/harmonic-well-compression
+    type: parameter
+    section: "7.5.2"
+    statement: >
+      Harmonic well of rising stiffness: W = kT ln sqrt(k_s2/k_s1) (Eq. 7.63); delta-T_comp from
+      radiative coupling Eq. 7.64; delta-W Eq. 7.65 (linear stiffness ramp); k_s ≈ 3.5e10 F_load
+      (Eq. 3.18); onset stiffness k_s1 ≈ 3e19 (m/rho_c)^2/3 from graphite interlayer stiffness
+      30 N/m per nm^2 (Kelly 1973). Eq. 7.68 worked: T = 300, m = 1e-24, M = 5e11, rho = 2000,
+      k_ext = 10, k_s1 = 19 -> ~2e-21 J at 1 m/s, ~2e-23 J at 1 cm/s; "large relative to those
+      identified thus far."
+    support: EXT
+    refs: ["Kelly 1973", "Eq. 3.18", "7.2.3/point-force-radiation"]
+    vintage: "CHECK — graphite c-axis modulus 1.0e10 (Kelly 1973); modern C33 ~3.6e10 Pa"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "compression slow compared to the vibrational period; delta-T << T"
+      - "thermal exchange only by acoustic radiation from the single mode (7.5.3 relaxes this)"
+      - "k_s,ext substantially less than k_s1; substantial compression ratio"
+      - 7.2.3/point-force-radiation
+    spot_check: "k_s1 = 18.9 N/m; Eq. 7.68 = 1.75e-21 J. OK. (tests)"
+    consumed_by: ["10", "12.4.3", "13"]
+
+  - id: 7.5.2/soft-surroundings-design
+    type: design-license
+    section: "7.5.2"
+    statement: >
+      "Of the parameters subject to design control, the most significant is M ... In the
+      immediate neighborhood of a component undergoing fast compression, a better choice is a
+      structure with properties like those of an engineering polymer, M ≈ 3e9, rho ≈ 1000",
+      reducing delta-W by ~7e-4 -> ~1e-24 J at 1 m/s.
+    support: BARE
+    polarity: "-"
+    priority: high
+    spot_check: "(3e9/5e11)^1.5 sqrt(2) = 6.6e-4. OK. (tests)"
+    notes: >
+      Design license in tension with 9.2/stiff-housing-architecture and with the stiffness
+      needs of 12.3.7 (error rates) and 10 (bearings). Any consumer that takes the 7e-4
+      reduction must also take the soft local structure. Adjudicate at audit.
+
+  - id: 7.5.2/md-validation-open
+    type: scope-condition
+    section: "7.5.2"
+    statement: >
+      "It would be of interest to test the predictions of Eqs. (7.62) and (7.68) against direct
+      molecular dynamics simulations ... reduce uncertainties regarding accommodation
+      coefficients and velocity distributions in the square-well regime."
+    support: BARE
+    polarity: "+"
+    notes: Author-declared open validation; still open as far as the register knows.
+
+  - id: 7.5.3/multidimensional-lowers-dissipation
+    type: proposition
+    section: "7.5.3"
+    statement: >
+      Additional translational, torsional and internal degrees of freedom equilibrate with the
+      excited mode and "open new channels for equilibration with the environment ...
+      Consequently, energy dissipation is lower than that implied by a one-dimensional model."
+      Transverse modes can be made stiff and high-frequency, which "can greatly reduce
+      delta-T_comp."
+    hedge: "Usually ... commonly ... can greatly"
+    support: BARE
+    polarity: "-"
+    consumed_by: ["12.4.3", "13"]
+
+  # ---- 7.6 Transitions among time-dependent wells ----------------------------------
+
+  - id: 7.6.1/well-merging-speed-independent
+    type: proposition
+    section: "7.6.1"
+    statement: >
+      "The merging of potential wells, in contrast, can dissipate energy no matter how slowly it
+      is performed. Since well merging can dissipate on the order of kT or more per cycle, it can
+      impose a significant energy cost on systems operation."
+    support: INT
+    refs: ["7.6.3"]
+    polarity: "+"
+    consumed_by: ["12.4.3", "13", "14"]
+
+  - id: 7.6.2/merging-wells-free-energy-model
+    type: construction
+    section: "7.6.2"
+    statement: >
+      Two wells linked by one col; free energy Eq. 7.70-7.71; dissipation = free-energy decrease
+      at fixed PES, Eq. 7.72-7.76 with TST rates; switched-coupling approximation Eq. 7.77 with a
+      single coupling time t_cpl.
+    support: INT
+    refs: ["6.2", "6.3", "Eq. 4.5"]
+    polarity: "+"
+    hypotheses:
+      - "transition rates low compared to vibration times; internal equilibrium within each well"
+      - "Eq. 7.69: delta-T_comp/T << kT/delta-V-double-dagger, so compression heating does not perturb rates"
+      - "harmonic approximations of Section 6.2"
+    consumed_by: ["7.6.3", "7.6.4", "7.6.5", "12.4.3", "13"]
+
+  - id: 7.6.3/well-merging-ln2kt
+    type: parameter
+    section: "7.6.3"
+    statement: >
+      Symmetrical merging of two identical wells with P_1 = 1: delta-F_diss = -kT ln 2 (Eq. 7.78),
+      the free expansion of a one-molecule gas to double volume; "information erasure is the only
+      abstract computational process that of necessity results in an increase in entropy."
+    support: EXT
+    refs: ["Bennett 1982", "Landauer 1988", "4.3.5"]
+    vintage: "OK"
+    polarity: "+"
+    priority: high
+    consumed_by: ["12.4.3c", "12.3.8", "14"]
+    aliases: ["ln(2) kT", "bit erasure cost", "2.87 maJ at 300 K"]
+    spot_check: "kT ln 2 at 300 K = 2.87e-21 J. OK."
+
+  - id: 7.6.4/asymmetrical-merging
+    type: parameter
+    section: "7.6.4"
+    statement: >
+      For (F_1 - F_2) >> kT: starting in the upper well, delta-F_diss ≈ F_2 - F_1 (Eq. 7.79),
+      "can be large compared to kT" (exothermic steps; an elastic component slipping past an
+      obstacle); starting in the lower well, delta-F_diss ≈ -kT exp[-(F_1 - F_2)/kT] << kT
+      (Eq. 7.80).
+    support: INT
+    refs: ["7.6.2/merging-wells-free-energy-model"]
+    polarity: "+"
+    consumed_by: ["8", "13", "14.2.1c"]
+    notes: The "fall into a deeper well" case is where mechanosynthesis exothermicity and 9.7.3 bonding-energy release live.
+
+  - id: 7.6.5/optimal-merging-near-zero
+    type: design-license
+    section: "7.6.5"
+    statement: >
+      If well depths are under design control and P_1 is known, "the energy dissipation resulting
+      from well merging can be kept near zero by ensuring that delta-F_12 nearly satisfies
+      Eq. (7.74) at t = t_cpl"; where P_1 is uncertain, some other step has already paid the
+      entropy.
+    support: INT
+    refs: ["7.6.2/merging-wells-free-energy-model"]
+    polarity: "-"
+    hypotheses:
+      - "well depths modulable by design; P_1 known at merge time"
+
+  # ---- 7.7 Conclusions ----------------------------------------------------------------
+
+  - id: 7.7/all-mechanisms-small-vs-kt
+    type: proposition
+    section: "7.7"
+    statement: >
+      "With the exception of the last [well merging], each of these mechanisms causes an energy
+      dissipation small compared to kT for nanoscale systems with reasonable choices of physical
+      parameters (one criterion for a reasonable choice, of course, is that it result in
+      acceptable energy dissipation)."
+    hedge: "with reasonable choices ... (one criterion for a reasonable choice ... is that it result in acceptable energy dissipation)"
+    support: INT
+    refs: ["7.2-7.6"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 7.1/mechanism-inventory
+      - "parameters chosen so that dissipation is acceptable (self-declared circularity)"
+    consumed_by: ["10", "11", "12", "13", "14"]
+    notes: >
+      The chapter's summary claim, with the circularity stated in the author's own parenthesis.
+      The audit question is whether Part II's actual parameter choices are in the "reasonable"
+      set for every mechanism at once. Adjudicate per consumer.
+
+  - id: 7.7/open-problems
+    type: scope-condition
+    section: "7.7"
+    statement: >
+      Author-declared open problems: phonon transmission through sliding interfaces ("challenging
+      and in need of further work"); the model "becomes unrealistic" where mean interfacial
+      stiffness goes to zero; interfaces that are curved, dissimilar, or couple small to large;
+      interfacial phonon-phonon scattering "deserves a thorough treatment"; for many Ch. 10-14
+      situations the models "provide only rough estimates."
+    support: BARE
+    polarity: "+"
+    notes: "-> 7.3.5/transmission-coefficient, 7.3.5/planar-model-is-upper-bound, 7.3.7/interfacial-phonon-phonon-small, 7.3.5/band-stiffness-drag (k_a ≈ 0 regime)."
+
 imports:
 
-  - from: "7.3/phonon-scattering"
-    used_for: context for tau_relax and mean free paths
-    at: ["7.4.2"]
-    hypotheses_discharged: unknown
-    notes: Same chapter; will resolve when 7.3 is extracted.
+  - from: "6/plastic-deformation-is-damage"
+    used_for: excluding plastic-deformation dissipation mechanisms by scope
+    at: ["7.1"]
+    cited: yes
+    hypotheses_discharged: n/a
 
-  - from: "7/eq-7.49"
-    used_for: worst-case cycle loss coefficient
-    at: ["7.4.1"]
+  - from: "3.3.2e/nonbonded-anharmonicity"
+    used_for: stiffness variation across alignment bands despite small stress variation
+    at: ["7.3.5a"]
+    cited: yes
     hypotheses_discharged: unknown
+
+  - from: "3/fig-3.8-nonbonded-stiffness-vs-excitation"
+    used_for: effective stiffness floor ~10 N/m for thermally excited scattering centres
+    at: ["7.3.4"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3/eq-3.18-nonbonded-stiffness-vs-load"
+    used_for: k_s ≈ 3.5e10 F_load in harmonic-well compression
+    at: ["7.5.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.2.2/effective-volume"
+    used_for: volume of a harmonic well as a function of stiffness
+    at: ["7.5.2", "7.6.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.2/transition-state-theory"
+    used_for: unidirectional rates k_12, k_21 in Eq. 7.75
+    at: ["7.6.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.3/switched-rate-approximation"
+    used_for: switched-coupling model of well merging
+    at: ["7.6.2c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "4/eq-4.5-free-energy-partition-function"
+    used_for: F = -kT ln q in Eq. 7.71
+    at: ["7.6.2a"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "4.3.5/information-erasure"
+    used_for: cross-reference for the entropy cost of erasure
+    at: ["7.6.3"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "10/delta-ka-over-ka-small-by-design"
+    used_for: >
+      "As discussed in Chapter 10, delta-k_a/k_a can be made small in properly designed
+      bearings of certain classes"; likewise A/d ~ 1e-2
+    at: ["7.3.5c", "7.3.5d"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: Forward dependency; Ch. 7's worked drag numbers presuppose Ch. 10's design results.

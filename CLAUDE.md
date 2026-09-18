@@ -87,13 +87,14 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 
 ## Current state (2026-09-18, evening)
 
-- Ch. 9 full (41 exports). Ch. 7 §7.4 (13). Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28).
-- `nsaudit/` exists: ch07 (§7.4), ch12 (exemplar rod, registers, CPU power), one edge audit.
-  27 tests pass, 1 xfail documenting a text/equation contradiction in §7.4.3.
+- Ch. 7 full (58 exports). Ch. 9 full (41). Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28).
+- `nsaudit/` exists: ch07 (all worked examples of §7.2–7.6), ch12 (exemplar rod, registers,
+  CPU power), one edge audit. 46 tests pass, 1 xfail documenting a text/equation
+  contradiction in §7.4.3. Eq. 7.29 is missing a π (see DECISIONS.md).
 - One provisional verdict: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated,
   impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
-- Next: Ch. 7 in full (§7.3 and §7.5–7.6 are pending imports of Ch. 12); Ch. 10 §10.4.6 and
-  §10.8 (pending imports; Prase's friction target); then reconcile 7/9/12 and firm up the
-  spike verdict; then Ch. 8 and 16 (Moriarty).
+- Next: Ch. 10 (§10.4.6 and §10.8 are pending imports of Ch. 12; Ch. 7's worked drag numbers
+  cite Ch. 10 forward for Δk_a/k_a and A/d; Prase's friction target); then reconcile 7/9/12
+  and firm up the spike verdict; then Ch. 8 and 16 (Moriarty).

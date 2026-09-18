@@ -560,7 +560,7 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "7.3/phonon-scattering"
+  - from: "7.3.4/oscillator-cross-section"
     used_for: knobs as phonon-scattering centres (cross section ~1e-23 m^2)
     at: ["12.3.4f"]
     cited: no
