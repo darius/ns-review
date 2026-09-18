@@ -239,6 +239,45 @@ Ch. 7 → Ch. 10 → Ch. 12 drag chain is now executable end to end.
 - Two atomic-detail bearings with stated numbers (10.4.7c, 10.4.7e; the latter on self-flagged
   sp³ nitrogen chains and ad hoc MM2 parameters) are the best reproduction targets so far.
 
+## Ch. 3 full extraction (2026-09-18): where the chains bottom out
+
+Every Part II import chain now resolves to a Ch. 3 export with zero dangling imports across
+Ch. 3, 7, 9, 10, 12. Findings from reproducing what the later chapters read off Ch. 3:
+
+- **9.4.2's δ_surf ≈ 0.07 nm is derivable.** Eq. 3.20 at the 0.1 nN convention gives a summable
+  radius of 0.150 nm for sp³ carbon; minus the 0.077 nm covalent radius is 0.073 nm. The
+  surface correction is not a free parameter; it is the loaded-contact radius minus the
+  covalent radius, and its value depends on the 0.1 nN choice.
+- **9.7.1 read Fig. 3.12's dense-surface curve, not curve (a).** Reconstructing Eqs. 3.33–3.38
+  (continuum surface d_g behind each explicit plane), curve (a) gives 0.45 GPa tensile strength
+  and 22 N/m·nm²; curves (c) and (e) give 0.8–1.1 GPa and 41–50 N/m·nm², matching 9.7.1's
+  "~1 GPa, > 30 N/m·nm², compliance of a ~30 nm slab". Which curve a design earns depends on
+  its surface atom density. The figure was not checked against the print edition.
+- **MM2's stiffness defect is in bending, not stretching.** Table 3.7: MM3/MM2 = 1.02 for C–C
+  stretch, 1.5–1.7 for angle bending. 9.4.3 attributes the sub-nm rod modulus deficit to "defects
+  in the MM2 model"; whether bending dominates those rods enough to explain a substantial
+  longitudinal deficit is now a concrete question for the 9.4.3 audit.
+- **The exception 3.3.2g states is the strained-shell regime.** MM2's low bending stiffness
+  "may then result in a false-positive assessment of the stability of a stretched bond" where
+  bending relieves stretching: that is 9.6.1's strained shells and 10.4.7c's 0.166 nm bonds.
+- **All nonbonded stiffnesses carry a stated "tens of percent" softness uncertainty** vs MM3
+  (`3.3.2/mm3-softer-nonbonded`), conditional on "a substantial margin of safety" in every stiff
+  interface design. The validation of the repulsive wall is against noble-gas beam data
+  (`3.3.3/mm2-repulsion-validated-to-100maj`), stated as "within tens of percent" to 0.5 r_vdw0.
+- **0.323 r_vdw0** (the stated breakdown of the exp-6) is where MM2's stiffness crosses zero;
+  the force reverses at ~0.275 and the energy at ~0.22 r_vdw0.
+- The MM2 pairwise Hamaker constant for diamond (Eq. 3.29) is ~2× the Lifshitz value in
+  Table 3.9; which convention 9.7 and 10.4.8 use is a 2× question.
+- The LEPS potential (3.4.3) is the modelling basis for 8.5.4's abstraction analysis that
+  Moriarty attacks; it is a 1955–66 three-body semiempirical surface.
+
+Statuses: the build now checks forward claims by section. The first run found 61 unconfirmed
+claims into extracted sections; each real dependency became an inferred import in the
+consuming chapter (27 added, e.g. Ch. 12's error model on `3.3.2/mm3-softer-nonbonded`, Ch. 10's
+strained shell on `3.3.2/mm2-known-defects`) and 26 speculative `consumed_by` guesses were
+trimmed. Ch. 3, 7, 9, 10, 12 now report reconcilable and are marked `reconciled`. Their remaining imports (Ch. 4, 5, 6, 8, 13,
+14) are pending; that keeps the one verdict provisional, per SCHEMA.md.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

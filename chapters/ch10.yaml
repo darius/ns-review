@@ -1,6 +1,6 @@
 chapter: 10
 title: Mobile Interfaces and Moving Parts
-status: extracted
+status: reconciled
 coverage: partial
 sections: ["10.3.4", "10.3.5", "10.3.6", "10.4", "10.8", "10.11", "10.12"]
 source: source/ch10.txt
@@ -90,7 +90,7 @@ exports:
       - "barrier-height vectors of candidate structures are essentially randomly distributed (10.3.1-10.3.2 Monte Carlo model, not extracted)"
       - "linking stiffness large compared to ~0.5 N/m"
     spot_check: "0.47 N/m; rod 105 N/m. OK."
-    consumed_by: ["10.8", "12.3.3b"]
+    consumed_by: ["10.8"]
 
   # ---- 10.4.1 - 10.4.5 Sleeve bearing models ----------------------------------------
 
@@ -194,7 +194,7 @@ exports:
       - "surfaces smooth, regular, nonpolar, nonreactive and out of register"
       - "r_eff >> s_gap"
       - "k_a > 0 (shaft centred)"
-    consumed_by: ["10.4.6", "11", "12.3.3"]
+    consumed_by: ["10.4.6", "11"]
 
   # ---- 10.4.6 Mechanisms of energy dissipation ---------------------------------------
 
@@ -257,7 +257,7 @@ exports:
       here is the measured 2230 K, not the 1570 K that the printed Eq. 7.29 yields — with 1570 K
       the constant would be 1.5e-37. Consistent with 7.3.2's working values being right and its
       printed equation wrong. (nsaudit.ch10.t_trans_coefficient, tests)
-    consumed_by: ["10.4.6b-e", "11", "12.3.4c"]
+    consumed_by: ["10.4.6b-e", "11"]
 
   - id: 10.4.6/shear-reflection-drag
     type: parameter
@@ -275,7 +275,7 @@ exports:
       - "D_sr ≈ 1"
       - 10.4.6/t-trans-diamond
     spot_check: "1.8e-33 = (eps/2)(2.4e-37)/v_s with eps = 2e8, v_s = 1.38e4; 1.6e-33 = 1.8e-33 × 2 pi pi^-1.7; 3.0e-16 W. OK. (tests)"
-    consumed_by: ["10.4.6f", "11", "12.3.4c"]
+    consumed_by: ["10.4.6f", "11"]
 
   - id: 10.4.6/band-stiffness-drag
     type: parameter
@@ -396,7 +396,7 @@ exports:
       = 3.4e-22 J = 0.082 kT, not 0.06 (25% low vs its own inputs). Power density over the
       interface cylinder is 1.1e12 W/m^3; ~1e11 needs an outer radius ~6 nm (volume undefined
       in the text). (tests)
-    consumed_by: ["11", "13", "14", "12.3.4c"]
+    consumed_by: ["11", "13", "14"]
     aliases: ["bearing drag bound", "Eq. 10.27"]
 
   - id: 10.4.6/drag-consistent-with-efficiency
@@ -769,31 +769,31 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3.5.2/transverse-continuum-surface-model"
+  - from: "3.5.2/transverse-continuum-model"
     used_for: k_a vs separation for smooth diamondoid surfaces (Fig. 3.12)
     at: ["10.4.5"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3/eq-3.18-nonbonded-stiffness-vs-load"
+  - from: "3.3.3/stiffness-and-energy-vs-load"
     used_for: delta-p <= 3e-11 delta-k_a
     at: ["10.4.6d"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3/eq-3.19-force-amplitude-vs-barrier"
+  - from: "3.3.3/stiffness-and-energy-vs-load"
     used_for: F_max ≈ 1.7e10 delta-V_barrier (Eq. 10.6)
     at: ["10.3.4b"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3.3/mm2-exp-6-potential"
+  - from: "3.3.2/mm2-exp-6-potential"
     used_for: coplanar-ring barrier calculations (Eq. 3.8, Table 3.1, H|H)
     at: ["10.4.3", "10.4.4"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3.3.3a/morse-potential"
+  - from: "3.3.3/morse-potential"
     used_for: 0.187 nm positive-stiffness bond-length limit
     at: ["10.4.7c"]
     cited: yes
@@ -883,3 +883,65 @@ imports:
       7.4.2 itself puts nanomechanical mean free paths at ~nm, above 0.4 nm. Eq. 10.26 sidesteps
       K_T by asserting tau_therm = 1e-12 s, so the practical effect is absorbed into a
       conservative tau; record as not discharged, impact likely nil. Adjudicate at audit.
+
+  # --- added at reconciliation 2026-09-18
+  - from: "3.3.1/mm2-adopted"
+    used_for: MM2 exp-6 ring calculations (10.4.3-10.4.4) and MM2/CSC bearing models (10.4.7)
+    at: ["10.4.3", "10.4.4", "10.4.7"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.1/mm-scope-limits"
+    used_for: MM2 applied to a strained shell at 0.166 nm bonds and to sp3 nitrogen chains
+    at: ["10.4.7c", "10.4.7e"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm2-angle-bend"
+    used_for: N-N-N angle bending set to the MM2 N-N-C value; stiffnesses "sensitive to the choice of theta_0"
+    at: ["10.4.7e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm2-torsion"
+    used_for: supplemental torsional parameters "chosen to match analogous MM2 values"
+    at: ["10.4.7e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm2-known-defects"
+    used_for: strained-shell bond stability is the case 3.3.2g flags as a possible MM2 false positive (bending relieving stretch)
+    at: ["10.4.7c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm3-softer-nonbonded"
+    used_for: every interfacial stiffness k_a and contact stiffness here is an MM2 nonbonded value, stated in 3.3.2g to be tens of percent stiffer than MM3
+    at: ["10.4.5", "10.4.6", "10.4.7"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: 3.3.2g conditions this on "a substantial margin of safety"; no margin is stated for the 1000 N/m sample bearing or the 10.4.7 designs.
+
+  - from: "3.5.1/hamaker-constant"
+    used_for: asymmetric Hamaker-constant regions to carry transverse load
+    at: ["10.4.8a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.5.2/fig-3.12-interface-curves"
+    used_for: k_a vs separation, including the negative-k_a region and ~1 GPa tension at k_a ≈ 0
+    at: ["10.4.5"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.5.3/linear-elastic-diamondoid"
+    used_for: the continuum-properties half of the bounded-continuum license
+    at: ["10.11"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.3.3/bounded-continuum"
+    used_for: the bounded continuum models of Ch. 9, restated for Part II design
+    at: ["10.11"]
+    cited: yes
+    hypotheses_discharged: unknown

@@ -1,6 +1,6 @@
 chapter: 7
 title: Energy Dissipation
-status: extracted
+status: reconciled
 coverage: full
 source: source/ch07.txt
 history:
@@ -334,7 +334,7 @@ exports:
       - "isotropic cross section in the rest frame and isotropic emission in the scatterer frame"
       - "v << v_s"
       - 7.3.2/debye-model
-    consumed_by: ["7.3.4", "10", "12.3.4f"]
+    consumed_by: ["7.3.4", "10"]
 
   - id: 7.3.4/oscillator-cross-section
     type: parameter
@@ -418,7 +418,7 @@ exports:
       - "delta-k_a/k_a small by design (Chapter 10)"
       - 7.3.5/transmission-coefficient
     spot_check: "Eq. 7.35: 170 and 0.017 W/m^2; 1.7e-25 J/nm^2 per nm. OK within rounding. (tests)"
-    consumed_by: ["10.4.6 (Eq. 10.23)", "12.3.4c"]
+    consumed_by: ["10.4.6 (Eq. 10.23)"]
     aliases: ["band-stiffness scattering", "Eq. 10.23 (with parameters)"]
     notes: >
       The mechanism 12.3.4c calls "dominant" and applies with delta-k_a/k_a = 0.4, R = 10.
@@ -767,7 +767,7 @@ exports:
     refs: ["Goodman 1980", "Goodman and Wachman 1976", "Saxena and Joshi 1989"]
     vintage: "CHECK — gas-surface data; applicability to nm components is the question (7.5.1d)"
     polarity: "+"
-    consumed_by: ["7.5.1c", "12.4.3", "13"]
+    consumed_by: ["7.5.1c", "13"]
 
   - id: 7.5.1/single-molecule-gas-model
     type: construction
@@ -782,7 +782,7 @@ exports:
       - "f << 1 (piston speed small vs thermal speed) and moderate-to-large alpha"
       - "pistons interact only with particles moving toward them (overtaken molecules neglected)"
       - "component velocity statistics are Maxwellian at some T_g"
-    consumed_by: ["7.5.1c", "12.4.3", "13.3"]
+    consumed_by: ["7.5.1c", "13.3"]
 
   - id: 7.5.1/nonisothermal-compression
     type: parameter
@@ -837,7 +837,7 @@ exports:
       - "k_s,ext substantially less than k_s1; substantial compression ratio"
       - 7.2.3/point-force-radiation
     spot_check: "k_s1 = 18.9 N/m; Eq. 7.68 = 1.75e-21 J. OK. (tests)"
-    consumed_by: ["10", "12.4.3", "13"]
+    consumed_by: ["10", "13"]
 
   - id: 7.5.2/soft-surroundings-design
     type: design-license
@@ -879,7 +879,7 @@ exports:
     hedge: "Usually ... commonly ... can greatly"
     support: BARE
     polarity: "-"
-    consumed_by: ["12.4.3", "13"]
+    consumed_by: ["13"]
 
   # ---- 7.6 Transitions among time-dependent wells ----------------------------------
 
@@ -893,7 +893,7 @@ exports:
     support: INT
     refs: ["7.6.3"]
     polarity: "+"
-    consumed_by: ["12.4.3", "13", "14"]
+    consumed_by: ["13", "14"]
 
   - id: 7.6.2/merging-wells-free-energy-model
     type: construction
@@ -909,7 +909,7 @@ exports:
       - "transition rates low compared to vibration times; internal equilibrium within each well"
       - "Eq. 7.69: delta-T_comp/T << kT/delta-V-double-dagger, so compression heating does not perturb rates"
       - "harmonic approximations of Section 6.2"
-    consumed_by: ["7.6.3", "7.6.4", "7.6.5", "12.4.3", "13"]
+    consumed_by: ["7.6.3", "7.6.4", "7.6.5", "13"]
 
   - id: 7.6.3/well-merging-ln2kt
     type: parameter
@@ -1000,19 +1000,19 @@ imports:
     cited: yes
     hypotheses_discharged: n/a
 
-  - from: "3.3.2e/nonbonded-anharmonicity"
+  - from: "3.3.2/mm2-exp-6-potential"
     used_for: stiffness variation across alignment bands despite small stress variation
     at: ["7.3.5a"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3/fig-3.8-nonbonded-stiffness-vs-excitation"
+  - from: "3.3.3/stiffness-and-energy-vs-load"
     used_for: effective stiffness floor ~10 N/m for thermally excited scattering centres
     at: ["7.3.4"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "3/eq-3.18-nonbonded-stiffness-vs-load"
+  - from: "3.3.3/stiffness-and-energy-vs-load"
     used_for: k_s ≈ 3.5e10 F_load in harmonic-well compression
     at: ["7.5.2"]
     cited: yes
@@ -1056,3 +1056,10 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
     notes: Forward dependency; Ch. 7's worked drag numbers presuppose Ch. 10's design results.
+
+  - from: "10.4.6/r-le-10-by-design"
+    used_for: the R = 10 ("A not-atypical value") used in the 7.3.5c-d worked drag values
+    at: ["7.3.5c", "7.3.5d"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: Reconciliation 2026-09-18. R = 10 is asserted here and justified only in 10.4.6c.

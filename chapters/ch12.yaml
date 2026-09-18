@@ -1,6 +1,6 @@
 chapter: 12
 title: Nanomechanical Computational Systems
-status: extracted
+status: reconciled
 coverage: partial
 sections: ["12.3.3", "12.3.4", "12.3.5", "12.3.6", "12.3.7", "12.3.8", "12.4.3", "12.7.4"]
 source: source/ch12.txt
@@ -616,3 +616,73 @@ imports:
       individual components"); Prase's >= 2 OOM claim attaches instead to
       12.3.4/nonthermal-vibrations-by-design and 12.3.3/bounded-continuum-applies (the
       assembly as a soft molecular solid), which this edge does not adjudicate.
+
+  # --- added at reconciliation 2026-09-18
+  - from: "3.1/well-to-well-design-principle"
+    used_for: the digital-abstraction premise behind "no need to dissipate energy to ensure reliability"
+    at: ["12.3.8"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "3.3.3/stiffness-and-energy-vs-load"
+    used_for: knob and stop stiffnesses (k_s,p = 10 N/m, hard-surface limit stops) as nonbonded contacts under load
+    at: ["12.3.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm3-softer-nonbonded"
+    used_for: the nonbonded stiffnesses in the error model are MM2 values; softer contacts widen sigma_el
+    at: ["12.3.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: sigma_el scales as k^-1/2, and P_err-disp is exponential in sigma_el^2; a tens-of-percent softening is not negligible in the exponent. Audit item.
+
+  - from: "3.3.3/loaded-contact-radii"
+    used_for: sliding-contact radii "~0.14 to 0.17 nm" and delta_surf = 0.1 nm
+    at: ["12.3.3a", "12.3.3c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.11/bounded-continuum-license"
+    used_for: the Part II form of the bounded continuum model applied to the exemplar rod
+    at: ["12.3.3"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.11/stiffness-factor-0.5"
+    used_for: E = 5e11 "about 1/2 the modulus of diamond"
+    at: ["12.3.3c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "7.1/mechanism-inventory"
+    used_for: the rod dissipation inventory is a selection from the chapter-7 inventory
+    at: ["12.3.4"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "7.1/speed-scaling"
+    used_for: "in the limit of slow motion all of the identified energy dissipation mechanisms ... approach zero"
+    at: ["12.3.8"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.3.4/contact-phonon-scattering"
+    used_for: knobs as phonon-scattering centres
+    at: ["12.3.4f"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: 10.3.4a gives sigma ≈ 1e-20 m^2 for a 30 N/m contact; 12.3.4f asserts ~1e-23 m^2 for knobs. Three-OOM gap, uncited. Audit item.
+
+  - from: "10.4.6/r-le-10-by-design"
+    used_for: R = 10 in the Eq. 10.23 drag estimate
+    at: ["12.3.4c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/delta-ka-over-ka-values"
+    used_for: delta-k_a/k_a = 0.4 in the Eq. 10.23 drag estimate (the high-drag value)
+    at: ["12.3.4c"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: Rod-housing interfaces here are the d_a ≈ 0.25 nm class; consistent with 10.4.7's catalogue.

@@ -130,16 +130,31 @@ def main():
     for n, f, u in dangling:
         err(f"DANGLING import in ch{n}: '{f}' (ch{chapter_of(f)} is extracted but has no such id) — {u}")
 
-    # --- consumed_by confirmation
-    unconfirmed = []
+    # --- consumed_by confirmation (section-aware: a claim into a partially extracted chapter is
+    #     checkable only if the named section lies inside the extracted coverage)
+    unconfirmed, unconfirmed_by_chapter = [], defaultdict(int)
+    def checkable(tgt: str):
+        m = re.match(r"^(\d+(?:\.\d+)*)", str(tgt).strip())
+        if not m: return None
+        sec = m.group(1); c = int(sec.split(".")[0])
+        if c not in chapters: return None
+        d = chapters[c]
+        if d.get("coverage", "full") != "partial": return c
+        return c if any(sec == s or sec.startswith(s + ".") for s in d["sections"]) else None
     for i, (n, ex) in exports.items():
         for tgt in ex.get("consumed_by") or []:
-            m = re.match(r"^(\d+)", str(tgt))
-            if not m: continue
-            c = int(m.group(1))
-            if c in extracted and c != n and chapters[c].get("coverage","full") == "full" \
-                    and not any(k == c for k, *_ in importers.get(i, [])):
-                unconfirmed.append((i, tgt))
+            c = checkable(tgt)
+            if c is not None and c != n and not any(k == c for k, *_ in importers.get(i, [])):
+                unconfirmed.append((i, tgt)); unconfirmed_by_chapter[n] += 1
+
+    # --- reconciliation readiness: no dangling imports, no unconfirmed checkable forward claims
+    dangling_by_chapter = defaultdict(int)
+    for n, f, u in dangling: dangling_by_chapter[n] += 1
+    reconcilable = {n: (dangling_by_chapter[n] == 0 and unconfirmed_by_chapter[n] == 0) for n in chapters}
+    for n, d in chapters.items():
+        if d["status"] in ("reconciled", "audited") and not reconcilable[n]:
+            err(f"ch{n} is marked {d['status']} but has {dangling_by_chapter[n]} dangling imports "
+                f"and {unconfirmed_by_chapter[n]} unconfirmed forward claims")
 
     # --- criticism
     attackers = defaultdict(list)
@@ -165,9 +180,11 @@ def main():
         cov = d.get("coverage", "full")
         secs = f" ({', '.join(d['sections'])})" if cov == "partial" else ""
         s = stats[n]
+        rec = "" if d["status"] != "extracted" else (" — reconcilable" if reconcilable[n] else
+              f" — NOT reconcilable ({dangling_by_chapter[n]} dangling, {unconfirmed_by_chapter[n]} unconfirmed forward claims)")
         out.append(f"- **Ch. {n}** {d.get('title','')} — {d['status']}, {cov}{secs}: "
                    f"{s['total']} exports, INT {s['INT']} / EXT {s['EXT']} / BARE {s['BARE']} "
-                   f"({100*s['BARE']//max(s['total'],1)}% bare); negative {s['neg']} (bare-negative {s['neg_bare']})")
+                   f"({100*s['BARE']//max(s['total'],1)}% bare); negative {s['neg']} (bare-negative {s['neg_bare']}){rec}")
     out.append("\n## Priority audit set — negative & bare\n")
     for i, (n, ex) in sorted(exports.items()):
         if ex["polarity"] == "-" and ex["support"] == "BARE":
@@ -218,7 +235,8 @@ def main():
     (ROOT / "generated" / "INDEX.md").write_text("\n".join(out) + "\n")
 
     print(f"exports: {len(exports)}  imports pending: {len(pending)}  dangling: {len(dangling)}  "
-          f"criticism entries: {len(crit)}  warnings: {len(warnings)}  errors: {len(errors)}")
+          f"unconfirmed forward claims: {len(unconfirmed)}  criticism entries: {len(crit)}  "
+          f"warnings: {len(warnings)}  errors: {len(errors)}")
     for w in warnings: print("  warn:", w)
     for e in errors: print("  ERROR:", e)
     sys.exit(1 if errors else 0)

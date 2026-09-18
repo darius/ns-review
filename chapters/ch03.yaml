@@ -1,0 +1,609 @@
+chapter: 3
+title: Potential Energy Surfaces
+status: reconciled
+coverage: full
+source: source/ch03.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Full extraction. This is the modelling chapter every Part II import chain bottoms out in
+      (MM2 adoption and its known defects, the exp-6 nonbonded potential and the stiffness/energy
+      vs load rules, Morse bonds, Hamaker constants, the transverse-continuum surface model of
+      Fig. 3.12). Worked numbers and the figures Ch. 7/9/10 read off are reproduced in
+      nsaudit/ch03.py (tests/test_ch03.py). 3.2 (quantum background) and 3.7 (reading) are
+      recorded lightly.
+
+exports:
+
+  # ---- 3.1 Overview -----------------------------------------------------------------
+
+  - id: 3.1/well-to-well-design-principle
+    type: proposition
+    section: "3.1"
+    statement: >
+      A stiff, stable structure "resides in a well with steep walls ... and no low, accessible
+      cols"; a mobile component "moves in a well with a long, level floor". "Molecular systems in
+      which all transitions occur between distinct potential wells resemble transistor systems
+      in which all transitions occur between distinct logic states: in both instances, the
+      application of correct design principles can yield reliable behavior even though other
+      systems subject to the same physical principles behave erratically."
+    support: BARE
+    polarity: "-"
+    consumed_by: ["6", "12.3.8"]
+    notes: The digital-abstraction analogy that 12.3.8 leans on. Adjudicate whether "reliable" survives the fluctuation-dissipation objection registered against 12.3.7.
+
+  # ---- 3.2 Quantum theory and approximations ------------------------------------------
+
+  - id: 3.2.2/born-oppenheimer-assumed
+    type: scope-condition
+    section: "3.2.2"
+    statement: >
+      All models assume the ground-state Born-Oppenheimer PES; it "breaks down when nuclear
+      motions are fast enough (e.g., in high-energy collisions), when excited states occur at
+      very low energies ..., and when small changes in nuclear coordinates cause large changes
+      in the electron wave function (... Jahn-Teller ...)". "In most nanomechanical systems, as
+      in most chemical reactions, electron wave functions change smoothly with changes in
+      molecular geometry."
+    hedge: "usually gives an excellent account ... In most nanomechanical systems"
+    support: EXT
+    refs: ["standard quantum chemistry (uncited)"]
+    vintage: "OK"
+    polarity: "-"
+    consumed_by: ["all"]
+
+  - id: 3.2.3/mo-methods-cost-and-accuracy
+    type: proposition
+    section: "3.2.3"
+    statement: >
+      Ab initio cost "varies roughly as the fourth power of the number of basis functions";
+      semiempirical (MNDO, AM1, PM3) cheaper by 50-500x for propane (Clark 1985) but "vary in
+      their accuracy in a complex manner"; chemistry needs errors < 1e-4 to 1e-5 of total energy;
+      "This accuracy can be achieved using molecular orbital methods (for small structures), and
+      such calculations can be used to design chemically-active groups for use in reactive
+      devices."
+    support: EXT
+    refs: ["Clark 1985", "Stewart 1990"]
+    vintage: "SUPERSEDED — 1992 view of QM cost; DFT with modern functionals and ML potentials change the trade-off entirely. Low impact on claims, high impact on what a reproduction should use."
+    polarity: "+"
+    consumed_by: ["8", "16"]
+
+  # ---- 3.3.1 The molecular mechanics approach -----------------------------------------
+
+  - id: 3.3.1/mm2-accuracy
+    type: parameter
+    section: "3.3.1"
+    statement: >
+      For hydrocarbons (Burkert and Allinger 1982): bond lengths "within a few times 1e-13 m
+      (~0.1%)", angles "within about 0.01 rad", energies "within a few times 1e-21 J" —
+      "comparable in accuracy to the experimental data itself. Accuracies are lower among
+      nonhydrocarbon structures, but are often good by nanomechanical standards (Section
+      4.4.3)."
+    hedge: "typically ... often good"
+    support: EXT
+    refs: ["Burkert and Allinger 1982"]
+    vintage: "CHECK — 1982 assessment of MM2 on small molecules; nothing here about strained shells, sub-nm rods or surfaces"
+    polarity: "+"
+    priority: high
+    consumed_by: ["3.3.1/mm2-adopted", "9.3.1", "9.4.3"]
+    notes: >
+      The accuracy claim is for equilibrium geometries and energies of ordinary molecules.
+      3.3.2g concedes stiffnesses (the nanomechanically relevant quantity) are the weak point.
+
+  - id: 3.3.1/mm-scope-limits
+    type: scope-condition
+    section: "3.3.1"
+    statement: >
+      Molecular mechanics "have, however, been successfully applied to only a narrow range of
+      molecular structures in configurations not too far from equilibrium"; "cannot model
+      chemical transformations or systems on the verge of such transformations. Computational
+      results must be examined with an eye for such invalidating conditions."
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["9.4.3", "9.6.1", "10.4.7", "8"]
+    notes: Strained shells at 0.166 nm bonds (10.4.7c) and N-chain ridges (10.4.7e) are "on the verge" candidates. Adjudicate at audit.
+
+  - id: 3.3.1/mm2-adopted
+    type: design-license
+    section: "3.3.1"
+    statement: >
+      MM2 (Allinger 1977) "is a standard model in the chemical literature. After evaluation and
+      with some caveats, the MM2 model is used as an engineering approximation in much of the
+      present work", "although in the process of being superseded by the similar, but more
+      complex and accurate MM3". Used for minimum-energy configurations, stiffness, bearing
+      properties, and as a basis for analytical models. AMBER/CHARMM "give poor descriptions of
+      structures with large strain energies".
+    hedge: "After evaluation and with some caveats"
+    support: EXT
+    refs: ["Allinger 1977", "Allinger et al. 1989, 1990", "Lii and Allinger 1989a,b, 1991", "Burkert and Allinger 1982"]
+    vintage: "SUPERSEDED — MM3 (1989-91), MM4, and today DFT/ML potentials; the book itself flags MM3"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 3.3.1/mm2-accuracy
+      - 3.3.1/mm-scope-limits
+      - 3.3.2/mm2-known-defects
+      - 3.3.3/mm2-repulsion-validated-to-100maj
+    consumed_by: ["9.3.1/mm2-adequate", "9.4.3", "10.4.3", "10.4.4", "10.4.7", "11", "13"]
+    aliases: ["MM2", "MM2/CSC", "molecular mechanics models (9.3.1)"]
+
+  - id: 3.3.1/mm2-cost-scaling
+    type: parameter
+    section: "3.3.1"
+    statement: >
+      Cost favours MM over ab initio by 1e3 for propylamine (13 atoms); MM scales as N^2 to N^3;
+      "As of 1992, molecular mechanics calculations on 1e5 atom systems have become routine."
+    support: EXT
+    refs: ["Burkert and Allinger 1982"]
+    vintage: "SUPERSEDED"
+    polarity: "+"
+    priority: low
+
+  - id: 3.3.1/energy-decomposition
+    type: construction
+    section: "3.3.1"
+    statement: >
+      Total potential energy as a sum of bond stretching, bending, torsion, and nonbonded van
+      der Waals, overlap and electrostatic terms; the relationships "enable pocket-calculator
+      estimates of the stiffness, force, and energy associated with molecular deformations."
+    support: EXT
+    refs: ["Burkert and Allinger 1982"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["3.3.2", "3.3.3"]
+
+  # ---- 3.3.2 The MM2 model ---------------------------------------------------------------
+
+  - id: 3.3.2/mm2-bond-stretch
+    type: parameter
+    section: "3.3.2"
+    statement: >
+      Eq. 3.4 with cubic correction k_cubic = 2e10 /m; Table 3.2 (Allinger 1986): C-C 440 N/m,
+      1.523 Å; C-H 460; C=C 960; C≡C 1560; C-N 510; N-N 560; C-Si 297; Si-Si 185; etc.
+    support: EXT
+    refs: ["Allinger 1986"]
+    vintage: "OK as a record of MM2; MM3 C-C ratio 1.02 (Table 3.7)"
+    polarity: "+"
+    consumed_by: ["3.3.3", "6.4.4", "9.4.3"]
+
+  - id: 3.3.2/mm2-angle-bend
+    type: parameter
+    section: "3.3.2"
+    statement: >
+      Eq. 3.5 with sextic term 0.754 /rad^4; Table 3.3 (C-C-C 0.450 aJ/rad^2, 109.47 deg; ...);
+      out-of-plane Table 3.4. Spatial equivalent k_s,perp = k_theta/r0^2 (Eq. 3.6): C-C-C
+      19.4 N/m, "about 1/20 the stretching stiffness of a C-C bond"; tetrahedral one-vs-three
+      bending 1.5x that. "describes amines poorly".
+    support: EXT
+    refs: ["Allinger 1986", "Allinger and Pathiaseril 1987", "Burkert and Allinger 1982"]
+    vintage: "CHECK — MM3 bending stiffnesses 1.5-1.7x higher (Table 3.7)"
+    polarity: "+"
+    spot_check: "0.450e-18 / (1.523e-10)^2 = 19.4 N/m. OK. (tests/test_ch03.py)"
+    consumed_by: ["9.4.3", "10.4.7"]
+
+  - id: 3.3.2/mm2-torsion
+    type: parameter
+    section: "3.3.2"
+    statement: >
+      Eq. 3.7 threefold Fourier form, Table 3.5. Maximum single-term tangential stiffness for
+      four sp3 carbons ~0.36 N/m: "about 1/50 the magnitude of bond angle-bending stiffness
+      terms, or about 1/1000 the magnitude of bond-stretching stiffnesses. In nanomechanical
+      structures designed for rigidity, torsional contributions to stiffness are seldom
+      crucial"; double bonds excepted. "MM2/CSC adds additional torsional parameters, and the
+      present work has supplemented this set as needed."
+    hedge: "seldom crucial"
+    support: EXT
+    refs: ["Allinger 1986", "Mislow 1989"]
+    vintage: "OK"
+    polarity: "-"
+    spot_check: "(1/2)(V1 + 4V2 + 9V3)/(r0 sin theta0)^2 = 0.358 N/m for C-C-C-C at the anti minimum. OK. (tests)"
+    consumed_by: ["10.4.7e (supplemented parameters)"]
+    notes: The "supplemented as needed" clause is where 10.4.7e's ad hoc N-N-N parameters enter.
+
+  - id: 3.3.2/electrostatics-uniform-dielectric
+    type: scope-condition
+    section: "3.3.2"
+    statement: >
+      MM2 sums dipole-dipole interactions with "a uniform value of the dielectric constant ...
+      Since the surrounding structures are inhomogeneous on the same scale as the interacting
+      entities, the assumption of a uniform dielectric constant is a relatively crude
+      approximation." C-F dipole ~4.7e-30 C·m -> ~-0.2 e on F.
+    support: EXT
+    refs: ["Allinger 1986"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "4.7e-30 / 1.392e-10 / e = 0.21. OK."
+    consumed_by: ["11"]
+
+  - id: 3.3.2/mm2-exp-6-potential
+    type: parameter
+    section: "3.3.2"
+    statement: >
+      Buckingham exp-6, Eq. 3.8: V = eps [2.48e5 exp(-12.5 r/r_vdw0) - 1.924 (r/r_vdw0)^-6],
+      minimum -eps at r_vdw0; eps = arithmetic mean, r_vdw0 = sum of Table 3.1 values (C sp3
+      0.357 maJ, 1.90 Å; H 0.382, 1.50; N 0.447, 1.82; O 0.406, 1.74; F 0.634, 1.65; Si 1.137,
+      2.25; S 1.641, 2.11; lone pair 0.130, 1.20). 1-3 pairs excluded; H effective position at
+      0.915 of bond length; H|C(sp3) corrections 0.982 (r) and 1.011 (eps). Equilibrium
+      separations between bodies are smaller than pairwise r_vdw0 because attraction is
+      long-range.
+    support: EXT
+    refs: ["Allinger 1986"]
+    vintage: "CHECK — MM3 uses 12.0 in the exponent, radii x1.07, eps x0.55 (3.3.2g): 'tens of percent' softer"
+    polarity: "+"
+    priority: high
+    consumed_by: ["3.3.3", "3.5", "7.3.5a (anharmonicity)", "9.3.3", "10.2", "10.4.3", "10.4.7"]
+    aliases: ["MM2 exp-6", "Eq. 3.8", "nonbonded potential", "Section 3.3.2e"]
+    spot_check: "Minimum -0.9997 eps at r_vdw0; Eq. 3.16/3.17 constants 3.1e6, 11.54, 3.88e7, 80.81 reproduce. (tests)"
+
+  - id: 3.3.2/mm2-corrections
+    type: parameter
+    section: "3.3.2"
+    statement: >
+      Stretch-bend term Eq. 3.9 (Table 3.6; 0.1 rad closure lengthens bonds by 0.00014 nm);
+      electronegativity correction (F shortens adjacent C-C by 0.0022 nm, ~1.4%); special
+      three- and four-membered ring parameters; conjugated systems by a minimal pi-electron
+      calculation. "(Further complications in the MM2 model are omitted from this discussion.)"
+    support: EXT
+    refs: ["Allinger 1986"]
+    vintage: "OK"
+    polarity: "+"
+    priority: low
+
+  - id: 3.3.2/mm2-known-defects
+    type: proposition
+    section: "3.3.2"
+    statement: >
+      Per the MM3 papers, "the greatest shortcoming of MM2 is its inaccurate prediction of
+      molecular vibrational frequencies ... Since frequencies depend on molecular stiffnesses,
+      this failure is of significance to the design of molecular machines." MM3/MM2 stiffness
+      ratios (Table 3.7): C-C stretch 1.02, C-H 1.03; C-C-C bend 1.49, C-C-H 1.64, H-C-H 1.72.
+      "it is clear that MM2 stiffness values are substantially lower than those of real
+      molecules. Greater stiffness is usually an asset in molecular machinery, hence this defect
+      in MM2 usually provides a conservative bias ... An exception to this rule is in structures
+      where angle-bending strain relieves bond stretching: the low angle-bending stiffness of
+      the MM2 model may then result in a false-positive assessment of the stability of a
+      stretched bond."
+    hedge: "usually ... usually"
+    support: EXT
+    refs: ["Allinger et al. 1989", "Lii and Allinger 1989a", "Lii and Allinger 1989b"]
+    vintage: "OK as of 1992; MM3 itself since revised"
+    polarity: "-"
+    priority: high
+    consumed_by: ["9.4.3/deficit-is-mm2-artifact", "9.6.1", "10.4.7"]
+    aliases: ["MM2 defects (Section 3.3.2)", "3.3.2g"]
+    notes: >
+      What 9.4.3 cites for "the modulus deficit results from defects in the MM2 model". Note the
+      defect is in angle bending (x1.5-1.7), not stretching (x1.02): the audit of 9.4.3 must
+      check whether sub-nm rod moduli are bending-dominated enough for this to explain a
+      substantial longitudinal deficit. The false-positive exception (strain relief by bending)
+      is exactly the strained-shell regime of 9.6.1/10.4.7c.
+
+  - id: 3.3.2/mm3-softer-nonbonded
+    type: proposition
+    section: "3.3.2"
+    statement: >
+      MM3's nonbonded interactions are softer (exponent 12.0, radii ~1.07x, energy ~0.55x):
+      "typical differences are on the order of tens of percent"; this "decrease[s] the
+      calculated stiffness of bearings and other devices using nonbonded contacts, but the
+      stiffness of these interactions is sensitive to load and hence is subject to design
+      control. Softer, longer-range interactions both decrease phonon transmission and make
+      surfaces smoother, thereby decreasing several drag mechanisms ... So long as a substantial
+      margin of safety is provided in the design of stiff, nonbonded interfaces, this
+      shortcoming of MM2 should only rarely result in false-positive assessments."
+    hedge: "should only rarely ... So long as a substantial margin of safety"
+    support: EXT
+    refs: ["Allinger et al. 1989", "Lii and Allinger 1989a,b"]
+    vintage: "CHECK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "a substantial margin of safety in every stiff nonbonded interface design"
+    consumed_by: ["10.4.5", "10.4.6", "10.4.7", "12.3.7"]
+    notes: >
+      Every nonbonded stiffness in Part II (bearing k_a, 12.3.7's k_s,p = 10 N/m, 10.4.7's 360/470
+      N/m) inherits a stated tens-of-percent MM2-vs-MM3 uncertainty in the soft direction.
+      The "margin of safety" hypothesis must be checked per design.
+
+  # ---- 3.3.3 Energy, force, and stiffness under large loads ---------------------------
+
+  - id: 3.3.3/large-load-suitability
+    type: scope-condition
+    section: "3.3.3"
+    statement: >
+      "many nanomechanical systems apply large forces to bonds and to nonbonded interfaces ...
+      potential functions developed for chemistry must be examined for suitability before
+      applying them to problems of nanomechanical design involving large loads."
+    support: BARE
+    polarity: "+"
+    consumed_by: ["3.3.3a", "3.3.3b"]
+
+  - id: 3.3.3/morse-potential
+    type: parameter
+    section: "3.3.3"
+    statement: >
+      For bonds under large tensile load MM2's cubic form "is clearly inadequate"; use Morse,
+      Eqs. 3.10-3.13, beta = sqrt(k_s/2D_e), D_e ≈ D_0 + hbar omega/2 (Eq. 3.14; C-C: D_e ≈ 1.02
+      D_0); Table 3.8 (C-C D_0 0.545 aJ, D_e 0.556, beta 1.989e10 /m; C-H 0.642/0.671; N-N
+      0.405/0.417; ...). "These values can be substantially modified by the surrounding
+      molecular structure." Inflection at r0 + ln2/beta ("for C-C, at ~0.187 nm"): a Morse bond
+      stretched beyond it by a position-independent force "becomes mechanically unstable";
+      most-negative stiffness -0.125 k_s. "the Morse function grows increasingly inaccurate far
+      from the equilibrium separation"; the Lippincott function (Eq. 3.15) fits spectroscopy and
+      ab initio better at large r and "commonly predicts a greater magnitude for both the bond
+      breaking force and the most-negative stiffness". Ch. 6 uses Morse ("underestimate
+      strength"), Ch. 8 Lippincott ("more adverse estimates of stiffness").
+    support: EXT
+    refs: ["Kerr 1990", "McMillen and Golden 1982", "Huheey 1978", "Eggers et al. 1964", "Brown and Truhlar 1985"]
+    vintage: "CHECK — bond dissociation energies from 1978-1990 compilations; modern values differ by a few percent at most"
+    polarity: "+"
+    priority: high
+    spot_check: "beta_CC = 1.989e10; D_e - D_0 = 0.011 aJ; inflection 0.1871 nm; k(r0 + ln4/beta) = -0.125 k_s. OK. (tests)"
+    consumed_by: ["3.4", "6.4.4a", "8", "9.6.1/permissible-bond-strain", "10.4.7c"]
+    aliases: ["Morse", "Section 3.3.3a", "0.187 nm limit"]
+
+  - id: 3.3.3/mm2-repulsion-validated-to-100maj
+    type: proposition
+    section: "3.3.3"
+    statement: >
+      "Modeling interactions ... in terms of atom-by-atom pairwise potentials of any kind has no
+      basic theoretical justification and guarantees some inaccuracy." Well depths ~1 maJ but
+      nanomechanical repulsive energies "range upward to > 100 maJ"; MM2 is nonphysical below
+      0.323 r_vdw0. Comparing the MM2 exp-6 (with Rigby et al. 1986 parameters) to noble-gas
+      beam scattering (Amdur and Jordan 1966) "indicates that the MM2 potential approximates the
+      experimentally measured potential reasonably well (within tens of percent) at radii as
+      small as 0.5 r_vdw0, and thus at energies > 100 maJ. This is an ample range and accuracy
+      for most nanomechanical design work." Lennard-Jones 6-12 and Maitland-Smith are "too
+      steep in the deep repulsive regime".
+    hedge: "reasonably well (within tens of percent) ... for most"
+    support: EXT
+    refs: ["Amdur and Jordan 1966", "Rigby et al. 1986", "Maitland et al. 1981"]
+    vintage: "CHECK — noble-gas validation transferred to covalently bonded atoms in solids; the comparison itself is not shown"
+    polarity: "-"
+    priority: high
+    spot_check: "0.323 r_vdw0 is where Eq. 3.17's stiffness crosses zero (force peaks); the force reverses at ~0.275 and the energy at ~0.22 r_vdw0. (tests)"
+    consumed_by: ["3.3.3/stiffness-and-energy-vs-load", "5", "10"]
+    notes: >
+      The single validation claim behind every nonbonded stiffness in the book, made against
+      noble-gas data and stated as "tens of percent". Adjudicate at audit with a modern
+      reference (DFT-D or beam data for C-H/H-H contacts).
+
+  - id: 3.3.3/stiffness-and-energy-vs-load
+    type: parameter
+    section: "3.3.3"
+    statement: >
+      Eqs. 3.16-3.17 for force and stiffness; in strong repulsion k ≈ (12.5/r_vdw0) F ≈ 3.5e10 F
+      (Eq. 3.18) and V ≈ 0.08 r_vdw0 F ≈ 2.9e-11 F (Eq. 3.19) [printed "0.0δ" is 0.08], plotted
+      as Fig. 3.8. "the wide range of eps_vdw values (a factor of ~10) is of no significance.
+      Only the smaller range of r_vdw0 values (a factor of ~1.5 ...) affects the stiffness and
+      stored energy resulting from a given compressive load." Load may be concentrated or
+      spread "so long as each single-atom load is large enough for the approximation to apply."
+      "the achievable compressive force commonly limits the achievable stiffness."
+    support: INT
+    refs: ["3.3.2/mm2-exp-6-potential"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 3.3.2/mm2-exp-6-potential
+      - 3.3.3/mm2-repulsion-validated-to-100maj
+      - "strongly repulsive regime (exponential term dominant; ~1 nN per atom and above)"
+    spot_check: "12.5/0.36 nm = 3.47e10; 0.36 nm/12.5 = 2.9e-11; at 1 nN on C|C, k/F is within 15% of 12.5/r_vdw0. OK. (tests)"
+    consumed_by: ["5", "7.3.4 (Fig. 3.8 stiffness floor)", "7.5.2 (Eq. 3.18)", "10.3.4 (Eq. 3.19)", "10.4.6d (Eq. 3.18)", "12.3.7"]
+    aliases: ["Eq. 3.18", "Eq. 3.19", "Fig. 3.8"]
+
+  - id: 3.3.3/loaded-contact-radii
+    type: parameter
+    section: "3.3.3"
+    statement: >
+      Summable loaded nonbonded radii, Eq. 3.20: r_loaded(F) ≈ (r_vdw/13.6) ln(2.5e6
+      eps_vdw/(r_vdw F)); "In the range F = 0.1 to 5 nN, this approximation yields separations
+      within 4% of the values implied by the MM2 nonbonded interaction model for all pairs of
+      atoms drawn from the list in Table 3.1 save for those including iodine or the lone-pair
+      pseudoatom" (Fig. 3.9).
+    support: INT
+    refs: ["3.3.2/mm2-exp-6-potential"]
+    polarity: "+"
+    spot_check: >
+      Within 4% of the exact MM2 separation for C|C, C|H, H|H, N|N at 0.1, 1, 5 nN. For sp3 C at
+      0.1 nN, r_loaded = 0.150 nm, and 0.150 - 0.077 (covalent radius) = 0.073 nm, which is
+      9.4.2's delta_surf ≈ 0.07 nm: the 9.4.2 surface correction is this radius at the 0.1 nN
+      convention. (tests)
+    consumed_by: ["9.4.2/radius-convention-0.1nn", "9.4.2/delta-surf", "9.5.2", "12.3.3"]
+    aliases: ["Section 3.3.3b", "0.1 nN radius", "Fig. 3.9"]
+
+  # ---- 3.4 Potentials for chemical reactions --------------------------------------------
+
+  - id: 3.4.1/mm-cannot-describe-reactions
+    type: scope-condition
+    section: "3.4.1"
+    statement: >
+      Molecular mechanics "cannot describe transformations that make or break bonds, and cannot
+      predict chemical instabilities (discussed in Chapter 6)"; reaction PESs come from
+      functions fitted to QM points or to rate data; "Only the simplest reactions and PES
+      approximations are described here."
+    support: EXT
+    refs: ["Truhlar and Steckler 1987", "Singh and Kollman 1986"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["6", "8"]
+
+  - id: 3.4.2/homolysis-morse-anti-morse
+    type: construction
+    section: "3.4.2"
+    statement: >
+      Homolytic cleavage/radical coupling on a Morse potential (singlet); triplet pairs on the
+      repulsive anti-Morse Eq. 3.21 "and form no bond"; the important region for reactive
+      nanomechanisms lies between r0 and r0 + ln4/beta, "Toward the outer end of this range,
+      however, the Lippincott potential appears to give a more accurate description";
+      intersystem crossing "can be slow relative to the picosecond time scale" (8.4.4b).
+    hedge: "appears to give"
+    support: INT
+    refs: ["3.3.3/morse-potential", "8.4.4b"]
+    polarity: "+"
+    consumed_by: ["6.4.4", "8.4", "8.5"]
+
+  - id: 3.4.3/leps-potential
+    type: construction
+    section: "3.4.3"
+    statement: >
+      Abstraction reactions modelled with the (extended) LEPS potential, Eqs. 3.23-3.27 (Sato
+      1955; Kuntz et al. 1966), Morse/anti-Morse pairwise terms and Sato parameters; "Despite
+      (and because of) their limited flexibility, LEPS and extended LEPS potentials have been a
+      basis for work in molecular reaction dynamics ... They are used in Section 8.5.4a to
+      examine the effects of mechanical forces on abstraction reactions." "improved fits are
+      usually purchased at the expense of substantially greater mathematical complexity."
+    hedge: "Despite (and because of) their limited flexibility"
+    support: EXT
+    refs: ["Sato 1955", "Kuntz et al. 1966", "Levine and Bernstein 1987", "Bérces and Márta 1988"]
+    vintage: "SUPERSEDED — three-body semiempirical surfaces; a modern reproduction of 8.5.4 would use DFT/CCSD(T) on the actual tip-workpiece system (cf. Moriarty-Phoenix on Fig. 8.14)"
+    polarity: "+"
+    priority: high
+    consumed_by: ["8.5.4a"]
+    notes: The modelling basis for the mechanosynthesis abstraction analysis Moriarty attacks; register its vintage before auditing 8.5.4.
+
+  # ---- 3.5 Continuum representations of surfaces ------------------------------------------
+
+  - id: 3.5.1/hamaker-constant
+    type: parameter
+    section: "3.5.1"
+    statement: >
+      Long-range pairwise C = 1.924 eps r_vdw0^6 (Eq. 3.28); nonretarded vacuum Hamaker constant
+      A_12 = pi^2 C n_v1 n_v2 (Eq. 3.29); "Values of the Hamaker constant for condensed media
+      are typically in the range of 30 to 500 maJ"; geometric-mean combination Eq. 3.30 ("MM2
+      uses the arithmetic mean ... the geometric mean has better theoretical justification");
+      across a medium Eq. 3.31; Lifshitz approximation Eq. 3.32 with hbar omega ≈ 2 aJ; Table 3.9:
+      PTFE 38, polyethylene 76, diamond 340, fused silica 69, water 37, glycerol 66, metals
+      300-500 maJ.
+    support: EXT
+    refs: ["Israelachvili 1992", "Hiemenz 1986"]
+    vintage: "OK — Israelachvili values stand; retardation neglected"
+    polarity: "+"
+    spot_check: >
+      Eq. 3.32 reproduces Table 3.9 (diamond 343, PE 76, water 37, PTFE 38 maJ). Not in the book:
+      Eq. 3.29 with MM2 sp3-carbon C and diamond density gives ~650 maJ, ~2x the Lifshitz 340;
+      which convention 9.7 and 10.4.8 use matters at the 2x level. (tests)
+    consumed_by: ["3.5.2", "10.4.8a", "11", "14.2"]
+
+  - id: 3.5.1/vdw-between-objects
+    type: parameter
+    section: "3.5.1"
+    statement: >
+      Fig. 3.10 (after Israelachvili): plane-plane A/(12 pi s^2) per area, sphere-sphere,
+      etc.; potentials diverge as s -> 0, so "a minimum separation s_min ≈ 0.2 nm commonly is
+      assumed", rationalised as a ~0.1 nm gap between the Hamaker surface and the
+      excluded-volume surface. With A = 400 maJ, s = 0.2 nm: two r = 1 nm spheres attract with
+      ~0.83 nN; parallel surfaces ~2.7e9 N/m^2, "~1/20 the tensile strength of diamond";
+      doubling s (spacer bumps) gives ~3.3e8.
+    support: EXT
+    refs: ["Israelachvili 1992"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "0.83 nN, 2.65 GPa, 3.3e8 Pa. OK. (tests)"
+    consumed_by: ["13.2", "14.2.1"]
+
+  - id: 3.5.2/transverse-continuum-model
+    type: construction
+    section: "3.5.2"
+    statement: >
+      For sliding, unreactive, out-of-register interfaces (Ch. 7 and 10), "Neglecting elastic
+      deformations resulting from interfacial forces", each surface's outermost layer is spread
+      into a uniform plane interacting by exp-6 (Eqs. 3.34-3.36), deeper layers into Hamaker
+      continua with overlap repulsion neglected (Eqs. 3.37-3.38); total Eq. 3.33; "The gap d_g
+      between the plane and the surface of the continuum is chosen so as to count the effects
+      of each atom exactly once, in the long-range attraction limit."
+    support: INT
+    refs: ["3.3.2/mm2-exp-6-potential", "3.5.1/hamaker-constant"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "surfaces out of register (lattice mismatch or rotation) so atomic corrugation averages out"
+      - "no elastic relaxation of the surfaces under interfacial forces"
+      - "vdW attraction and overlap repulsion dominant; no electrostatics"
+      - 3.3.2/mm2-exp-6-potential
+    consumed_by: ["9.3.3/bounded-continuum", "9.7.1", "10.4.5", "10.4.6", "11"]
+    aliases: ["Section 3.5", "Section 3.5.2", "surface continuum models", "transverse-continuum model"]
+
+  - id: 3.5.2/fig-3.12-interface-curves
+    type: parameter
+    section: "3.5.2"
+    statement: >
+      Fig. 3.12 energy/force/stiffness vs separation for curves (a) n_a = 0.9e19 /m^2 C(1) over
+      n_v = 1.50e29 C(1), d_g = 0.09 nm; (b) 0.9e19 / 0.75e29; (c) 1.8e19 / 1.50e29; (d) 1.8e19 /
+      0.75e29; (e) 1.4e19 Si(19) over 1.50e29 C(1), d_g = 0.13 nm. The figure itself is not
+      transcribed; 9.7.1 reads "tensile strength ~1 GPa, stiffness per unit area > 30 N/m·nm^2"
+      and 10.4.5 reads "k_a ≈ 0 ... tensile stress ... ~1 GPa" from it.
+    support: INT
+    refs: ["3.5.2/transverse-continuum-model"]
+    polarity: "+"
+    priority: high
+    spot_check: >
+      Reconstructed from Eqs. 3.33-3.38 with continuum surfaces d_g behind each plane
+      (nsaudit.ch03.surface_curve): (a) max tension 0.45 GPa, k_a at equilibrium 22 N/m·nm^2,
+      s_eq 0.28 nm; (b) 0.20 GPa, 10; (c) 0.81 GPa, 41, compliance = 26 nm of diamond;
+      (d) 0.50 GPa, 26; (e) 1.13 GPa, 50. So 9.7.1's "~1 GPa, > 30 N/m·nm^2, ~30 nm slab" is
+      curve (c) or (e), a full-density (diamond (111)-like) surface layer, not (a). The
+      figure could not be checked against the print; this identification is by reconstruction.
+      All s_eq < the pairwise r_vdw0 (0.38 nm), as §3.3.2e says. (tests)
+    consumed_by: ["9.7.1/vdw-interface-props", "10.4.5"]
+    aliases: ["Fig. 3.12"]
+
+  - id: 3.5.3/linear-elastic-diamondoid
+    type: design-license
+    section: "3.5.3"
+    statement: >
+      "The mechanical behavior of stable diamondoid structures is often well approximated by
+      linear elastic models; the atomic details of their interiors are then irrelevant to their
+      external properties and can be neglected in much of the design process." For irregular
+      surfaces "there often is no substitute for modeling at the level of interatomic
+      potentials", but Eqs. 3.18-3.19 are "relatively insensitive to details of surface
+      structure (within the class of structures of chief interest here)". "Chapter 9 develops
+      bounded continuum models that permit a limited but atomically motivated return to
+      continuum approximations."
+    hedge: "often ... often ... limited"
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 3.3.3/stiffness-and-energy-vs-load
+      - 3.5.2/transverse-continuum-model
+    consumed_by: ["9.3.3/bounded-continuum", "9.8", "10.11"]
+    notes: The root of the bounded-continuum license chain (3.5.3 -> 9.3.3 -> 10.11 -> 12.3.3). Adjudicate together.
+
+  # ---- 3.6 Conclusions -----------------------------------------------------------------------
+
+  - id: 3.6/mm2-appropriate-for-design
+    type: proposition
+    section: "3.6"
+    statement: >
+      "For designing nanomechanical components, molecular mechanics models such as MM2 are
+      appropriate, available, and computationally affordable."
+    support: INT
+    refs: ["3.3"]
+    polarity: "-"
+    hypotheses:
+      - 3.3.1/mm2-adopted
+
+imports:
+
+  - from: "4.4.3/accuracy-requirements-nanomechanical"
+    used_for: what "good by nanomechanical standards" means; solution- vs machine-phase accuracy demands
+    at: ["3.3.1a", "3.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5/stiffness-vs-positional-uncertainty"
+    used_for: "As is detailed in Chapter 5, stiff interactions are often necessary in order to minimize quantum and thermal uncertainties in position"
+    at: ["3.3.3b"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "6/chemical-instabilities"
+    used_for: molecular mechanics cannot predict the instabilities Ch. 6 treats
+    at: ["3.4.1"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "8.4.4b/intersystem-crossing-slow"
+    used_for: spin pairing can be slow relative to thermal motion
+    at: ["3.4.2"]
+    cited: yes
+    hypotheses_discharged: n/a

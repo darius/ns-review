@@ -3,6 +3,17 @@
 One YAML file per chapter: `chapters/chNN.yaml`. It is the **source of truth** for that chapter.
 Everything else (`generated/`) is built from these by `tools/build.py`.
 
+## Chapter status
+
+- `extracted` — the interface file exists and builds.
+- `reconciled` — the build reports the chapter **reconcilable**: none of its imports from
+  already-extracted chapters dangle, and every `consumed_by` forward claim it makes into an
+  extracted section has a matching import there (claims into unextracted chapters or sections
+  stay pending and do not block). Imports from chapters not yet extracted remain pending; they
+  are the reason a verdict stays provisional, not a bar to `reconciled`. The build refuses a
+  `reconciled` status the chapter does not earn.
+- `audited` — every export has a verdict.
+
 ## Top level
 
 ```yaml
