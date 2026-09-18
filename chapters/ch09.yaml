@@ -1,0 +1,641 @@
+chapter: 9
+title: Nanoscale Structural Components
+status: extracted
+coverage: full
+source: source/ch09.txt
+history:
+  - date: 2026-09-18
+    note: Initial extraction in chat session, converted from prepass doc (prepass ids N9-nn kept in prepass_id).
+
+exports:
+
+  # ---- 9.2 Components in context -------------------------------------------
+
+  - id: 9.2/stiff-housing-architecture
+    prepass_id: N9-01
+    type: construction
+    section: "9.2"
+    statement: >
+      Architecture assumption: nanomechanical components are supported and constrained by stiff
+      housings, unlike biological machinery; much of a system's mass is housing.
+    support: BARE
+    refs: ["footnote credits E. Tribble for the design rationale, not the physics"]
+    polarity: "+"
+    consumed_by: ["10", "11", "12", "13", "14"]
+    notes: Propagates through all of Part II.
+
+  - id: 9.2/positional-uncertainty-saturates
+    prepass_id: N9-02
+    type: proposition
+    section: "9.2"
+    statement: >
+      "The thermal positional uncertainty of one region of a homogeneous three-dimensional
+      structure with respect to another approaches a distance-independent constant at large
+      separations."
+    support: BARE
+    polarity: "+"
+    priority: high
+    notes: >
+      Nontrivial statistical-mechanics claim stated bare in prose; Ch. 5 is the natural home
+      but no cross-reference is given. Verify independently.
+
+  - id: 9.2/housing-rigid-approx
+    prepass_id: N9-03
+    type: design-license
+    section: "9.2"
+    statement: >
+      Housings "can often be treated as rigid on a large scale, making corrections (when
+      necessary) for local compliance."
+    hedge: "can often be"
+    support: BARE
+    polarity: "-"
+    notes: Propagates into every Part II stiffness budget.
+
+  # ---- 9.3 Materials and models ---------------------------------------------
+
+  - id: 9.3.1/materials-table
+    prepass_id: N9-04
+    type: parameter
+    section: "9.3.1"
+    statement: >
+      Table 9.1: diamond E=1050 GPa, strength 50 GPa, rho 3500; graphite 686/20/2200;
+      H-6 carbon ~1500?/?/~3200; SiC 700/21/3200; Si 182/7/2300; B 440/13/2300;
+      Al2O3 532/15/4000; Si3N4 385/14/3100; W 350/4/19300.
+    support: EXT
+    refs: ["Kelly 1973", "Tamor and Hass 1990 (H-6 carbon)"]
+    polarity: "+"
+    vintage: "CHECK — strengths self-flagged by Drexler as inferred from measurements and may underestimate flaw-free values (conservative). H-6 carbon entry rests on 1990 tight-binding semiempirical calc plus assumed E/K ratio; SUPERSEDED? by DFT."
+    consumed_by: ["9.4", "10", "11", "13"]
+
+  - id: 9.3.1/metals-excluded
+    prepass_id: N9-05
+    type: scope-condition
+    section: "9.3.1"
+    statement: >
+      Metals excluded: "the atomic mobility permitted by metallic bonding sharply limits the
+      usefulness of metals in a nanomechanical context at ordinary temperatures."
+    hedge: "although some refractory metals and intermetallic compounds may in fact be useful, this volume assumes no use of metals"
+    support: BARE
+    polarity: "+"
+    notes: Scope exclusion for the whole volume, uncited and unquantified.
+
+  - id: 9.3.1/ionic-excluded
+    prepass_id: N9-06
+    type: scope-condition
+    section: "9.3.1"
+    statement: Ionic solids "expected to find no significant application."
+    support: BARE
+    polarity: "+"
+
+  - id: 9.3.1/mm2-adequate
+    prepass_id: N9-07
+    type: proposition
+    section: "9.3.1"
+    statement: >
+      Diamondoid structures are "reasonably well described by molecular mechanics models,"
+      enabling economical atomic-detail investigation.
+    support: INT
+    refs: ["3.3"]
+    polarity: "+"
+    consumed_by: ["9.4.3", "10", "11", "12", "13"]
+    notes: Licenses the MM2 methodology throughout Part II.
+
+  - id: 9.3.3/bounded-continuum
+    prepass_id: N9-08
+    type: construction
+    section: "9.3.3"
+    statement: >
+      The bounded continuum approach: convert a standard continuum model by treating boundaries
+      via 2-D-continuum surface atoms with vdW attraction and overlap repulsion.
+    support: INT
+    refs: ["3.5"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 9.3.3/isotropy-assumed
+      - 9.3.1/metals-excluded
+      - "surface geometry assigned per 9.4.2/delta-surf"
+    consumed_by: ["9.4", "10.11", "11", "12.3.3", "13.4.1"]
+    aliases: ["bounded continuum model", "bounded-continuum design"]
+    notes: >
+      The reusable-methodology node that makes Ch. 9 a hub. Audit before anything in Part II
+      that consumes it.
+
+  - id: 9.3.3/nonbonded-radii-2x
+    prepass_id: N9-09
+    type: parameter
+    section: "9.3.3"
+    statement: >
+      "At ordinary pressures, nonbonded-contact radii are approximately twice as large as
+      covalent radii," so mechanically meaningful surfaces fall well inside the excluded volume.
+    support: BARE
+    polarity: "+"
+
+  - id: 9.3.3/metal-surface-effects-excluded
+    prepass_id: N9-10
+    type: scope-condition
+    section: "9.3.3"
+    statement: >
+      Surface effects on mechanical properties of metals "are not considered here" (nonlocal
+      metallic bonding).
+    support: BARE
+    polarity: "-"
+    notes: Inherits from 9.3.1/metals-excluded.
+
+  - id: 9.3.3/isotropy-assumed
+    prepass_id: N9-11
+    type: scope-condition
+    section: "9.3.3"
+    statement: >
+      Bounded continuum models in this volume treat materials as isotropic; Drexler notes this
+      is "a poor approximation for others" and points to anisotropic composite models he does
+      not develop.
+    support: BARE
+    polarity: "+"
+    priority: high
+    notes: >
+      Self-flagged weakness. Diamond's elastic anisotropy is substantial. This is a hypothesis
+      of 9.3.3/bounded-continuum and therefore of every consumer of it.
+
+  # ---- 9.4 Surface effects and rod modulus ----------------------------------
+
+  - id: 9.4.2/radius-convention-0.1nn
+    prepass_id: N9-12
+    type: parameter
+    section: "9.4.2"
+    statement: Standard size convention — region occupied by atoms each assigned a summable 0.1 nN radius.
+    support: INT
+    refs: ["3.3.3b"]
+    polarity: "+"
+
+  - id: 9.4.2/delta-surf
+    prepass_id: N9-13
+    type: parameter
+    section: "9.4.2"
+    statement: >
+      Surface correction delta_surf ~0.07 nm (difference between covalent and nonbonded radii,
+      first- and second-row atoms alike). Ch. 11 uses 0.1 nm as a more conservative value.
+      H-terminated diamond: ~0.14 nm.
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["9.5.2", "11", "any stiffness estimate in Part II"]
+    aliases: ["surface correction", "delta_surf"]
+    notes: >
+      Internal inconsistency (0.07 vs 0.1) is declared, not resolved. Record the value used
+      at each downstream site. Design guidance attached: avoid monovalent surface atoms.
+
+  - id: 9.4.2/outer-atom-relaxation
+    prepass_id: N9-14
+    type: proposition
+    section: "9.4.2"
+    statement: >
+      A further correction may arise because outermost framework atoms have fewer constraints
+      and may relax more under stress.
+    hedge: '"can arise", "may be subject to"'
+    support: BARE
+    polarity: "+"
+    consumed_by: ["9.4.3"]
+
+  - id: 9.4.3/bond-density-area
+    prepass_id: N9-15
+    type: parameter
+    section: "9.4.3"
+    statement: >
+      Effective area computed from minimum framework bond count n_bonds and diamond bond
+      density ~1.925e19 m^-2 for the equivalent orientation, sidestepping surface definition.
+    support: BARE
+    polarity: "+"
+
+  - id: 9.4.3/rod-modulus-experiments
+    prepass_id: N9-16
+    type: proposition
+    section: "9.4.3"
+    statement: >
+      MM2/CSC computational result (Figs. 9.2-9.6, Table 9.4): on a per-bond basis thinner rods
+      have slightly greater E_l than thicker ones, but rods of all sizes have E_l substantially
+      lower than bulk diamond.
+    support: BARE
+    refs: ["Drexler's own computations"]
+    polarity: "+"
+    priority: high
+    notes: >
+      Original computation, not a citation. Highest-value reproduction target in Ch. 9: small
+      structures, documented method. Recompute with DFT or an MLIP.
+
+  - id: 9.4.3/deficit-is-mm2-artifact
+    prepass_id: N9-17
+    type: design-license
+    section: "9.4.3"
+    statement: >
+      "It appears that this modulus deficit results from defects in the MM2 model (Section 3.3.2)
+      rather than from surface relaxation."
+    hedge: "it appears that"
+    support: BARE
+    refs: ["3.3.2"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "the modulus deficit is an MM2 artifact (this is the claim itself; the attached mitigation 'MM2 values are conservative' is circular with it)"
+    consumed_by: ["9.8", "10", "11", "12", "13"]
+    notes: >
+      The load-bearing step of the chapter: licenses using bulk moduli for sub-nm components.
+      If the deficit is real, every downstream stiffness in Part II is optimistic. Drexler's
+      argument: trend continues to n_bonds=18 where interior atoms contribute substantially,
+      so it can't be a surface effect. Reproducible.
+
+  - id: 9.4.3/no-terminated-rods-stiffer
+    prepass_id: N9-18
+    type: proposition
+    section: "9.4.3"
+    statement: >
+      N/O-terminated rods (Fig. 9.3) are more compact and MM2 predicts substantially greater
+      stiffness; "a surface effect, but one which it is conservative to neglect."
+    support: BARE
+    polarity: "-"
+
+  - id: 9.4.3/hex-column-no-surface-relax
+    prepass_id: N9-19
+    type: proposition
+    section: "9.4.3"
+    statement: >
+      Hexagonal column at n_bonds=3 falls almost exactly on the line through the n_bonds=16
+      compact column, so surface relaxation effects "appear negligible in this family of
+      structures as well."
+    hedge: "appear negligible"
+    support: BARE
+    polarity: "-"
+    notes: Supports 9.4.3/deficit-is-mm2-artifact.
+
+  # ---- 9.5 Combinatorics of diamondoid structures ---------------------------
+
+  - id: 9.5.2/nstruct-exponential
+    prepass_id: N9-20
+    type: construction
+    section: "9.5.2"
+    statement: >
+      N_struct = N_opt^(n_v * V): number of distinct diamondoid structures is exponential in
+      volume, via hypothetical atom-by-atom construction with N_opt effective choices per atom.
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "choices per atom are approximately independent"
+    notes: Drexler flags "the proper value of N_opt is not obvious."
+
+  - id: 9.5.2/nopt-30
+    prepass_id: N9-21
+    type: parameter
+    section: "9.5.2"
+    statement: >
+      Si and Ge entropies of fusion 4.6e-23 and 4.7e-23 J/K per atom ~3.4k -> N_opt ~30.
+      Argon liquid-state count (Stillinger & Weber 1984) -> N_opt ~3, called "compatible."
+    support: EXT
+    refs: ["entropy-of-fusion data", "Stillinger and Weber 1984"]
+    polarity: "+"
+    vintage: "CHECK — argon route gives N_opt an OOM below the fusion route; unreconciled. Drexler lists three biases in the proxy and does not net them."
+    spot_check: "4.6e-23/1.381e-23 = 3.33k; e^3.4 = 30. OK"
+
+  - id: 9.5.2/multielement-factor-5
+    prepass_id: N9-22
+    type: parameter
+    section: "9.5.2"
+    statement: >
+      "A factor of 5 is a plausible estimate" for the increase in N_opt from atom-type choice
+      -> N_opt ~150; "calculations based on N_opt = 30 are conservative."
+    hedge: "plausible estimate"
+    support: BARE
+    polarity: "+"
+
+  - id: 9.5.2/nstruct-values
+    prepass_id: N9-23
+    type: proposition
+    section: "9.5.2"
+    statement: >
+      With N_opt=30, n_v=100 nm^-3: 1 nm^3 structural volume -> N_struct ~1e148; 1 nm^3
+      excluded volume with delta_surf=0.1 nm -> structural volume ~0.51 nm^3 -> ~1e75.
+    support: INT
+    refs: ["9.5.2/nstruct-exponential", "9.5.2/nopt-30", "9.4.2/delta-surf"]
+    polarity: "+"
+    spot_check: "30^100 = 10^147.7; 30^51 = 10^75.3. OK"
+    consumed_by: ["9.5.3"]
+
+  - id: 9.5.3/tolerance-exclusion
+    prepass_id: N9-24
+    type: proposition
+    section: "9.5.3"
+    statement: >
+      Surface-atom positions vary over ~0.2 nm about an ideal contour. 100 atoms at eps=0.01 nm
+      -> fraction ~1e-130 vs N_struct ~1e75 -> success probability ~1e-55. 50 atoms at eps=0.02 nm
+      -> ~1e-50; probability no structure exists ~1e-25.
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "surface-atom positions are independent across atoms (not stated as an assumption; real structures are strongly correlated)"
+    spot_check: "(0.01/0.2)^100 = 1e-130; (0.02/0.2)^50 = 1e-50. OK"
+    priority: high
+
+  - id: 9.5.3/any-shape-buildable
+    prepass_id: N9-25
+    type: design-license
+    section: "9.5.3"
+    statement: >
+      "Essentially any shape can be built, provided that tight (< 0.02 nm) tolerances are not
+      applied too widely."
+    support: INT
+    refs: ["10"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "tight tolerances are confined to working interfaces of moving parts (deferred to Ch. 10)"
+    consumed_by: ["10", "13"]
+    notes: >
+      Chapter's headline claim. Note the deferral: shape freedom is established except where
+      it matters most, and the exception is handed to Ch. 10.
+
+  - id: 9.5.3/brute-force-inadequate
+    prepass_id: N9-26
+    type: scope-condition
+    section: "9.5.3"
+    statement: >
+      "Brute-force search procedures would be inadequate to find acceptable structures."
+      Existence is argued; constructibility is not.
+    support: BARE
+    polarity: "+"
+    notes: Open problem acknowledged in the text.
+
+  - id: 9.5.4/antibody-diversity-analogy
+    prepass_id: N9-27
+    type: proposition
+    section: "9.5.4"
+    statement: >
+      Antibody hypervariable domains ~38 residues -> ~20^38 ~3e49 structures; Eq. 9.3 with
+      N_opt=30 suggests comparable diversity from < 35 atoms.
+    support: EXT
+    refs: ["immunology, general (uncited)"]
+    polarity: "+"
+    vintage: "SUPERSEDED? — 1992 immunology; low impact, order-of-magnitude argument"
+    spot_check: "20^38 = 10^49.4; ln(3e49)/ln(30) = 33.5. OK"
+
+  - id: 9.5.5/kaehler-brackets
+    prepass_id: N9-28
+    type: construction
+    section: "9.5.5"
+    statement: >
+      Indexed family of brackets from an anchoring surface, indexed by terminal-bond position
+      and orientation; family size "soon reaches millions."
+    support: EXT
+    refs: ["Kaehler 1990", "Kaehler 1992"]
+    polarity: "+"
+    vintage: "CHECK — availability of Kaehler refs"
+    notes: Proposed as a design method; no worked example in the chapter.
+
+  # ---- 9.6 High rotational symmetry -----------------------------------------
+
+  - id: 9.6.1/permissible-bond-strain
+    prepass_id: N9-29
+    type: parameter
+    section: "9.6.1"
+    statement: >
+      Permissible bond tensile strains "may be as large as 0.035 nm (~1.23 r0 ~0.187 nm)";
+      below this a Morse C-C bond has positive stiffness. Layers beyond the limit can be
+      stabilised by shear coupling to less-strained inner layers.
+    hedge: "may be as large as"
+    support: INT
+    refs: ["3.3.3a (Morse)", "contrast 6.4.4a"]
+    polarity: "+"
+    notes: >
+      Explicitly distinguished from the single-bond pure-tension model used for bond failure
+      rates in 6.4.4a — a deliberate, flagged divergence from an upstream model.
+
+  - id: 9.6.1/shell-t-over-r
+    prepass_id: N9-30
+    type: parameter
+    section: "9.6.1"
+    statement: >
+      Linear elastic: 0.035 nm strain at t/r ~0.46. Worst-case nonlinearity (no bond
+      compression): t/r <= ~0.23. Both neglect favourable angle-bending relaxation.
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - 9.6.1/strained-shell-instability-avoided
+      - 9.6.1/permissible-bond-strain
+
+  - id: 9.6.1/strained-shell-instability-avoided
+    prepass_id: N9-31
+    type: scope-condition
+    section: "9.6.1"
+    statement: >
+      "In general, the stability analysis for highly strained shells is complex, because of the
+      possibility of concerted bond rupture and rearrangement; the designs in this volume assume
+      considerably smaller bond strains."
+    support: BARE
+    polarity: "-"
+    consumed_by: ["10", "11"]
+    notes: >
+      Unresolved analysis closed by design margin. Audit action: confirm every strained-shell
+      design in Ch. 10-11 stays "considerably" below.
+
+  - id: 9.6.1/merkle-shell-cad
+    prepass_id: N9-32
+    type: construction
+    section: "9.6.1"
+    statement: CAD software generating strained-shell and Lomer-dislocation curved-shell structures.
+    support: EXT
+    refs: ["Merkle 1991", "Merkle 1992a", "Merkle and Balasubramaniam"]
+    polarity: "+"
+    vintage: "CHECK — software presumably unavailable; results not independently reproduced"
+
+  - id: 9.6.2/exhaustive-catalogue-possible
+    prepass_id: N9-33
+    type: proposition
+    section: "9.6.2"
+    statement: >
+      Set of high-rotational-symmetry diamondoid structures, short length, diameter <= 1 nm
+      "may be small enough to permit the development of an exhaustive catalogue."
+    hedge: "may be"
+    support: BARE
+    polarity: "+"
+
+  # ---- 9.7 Adhesive interfaces ----------------------------------------------
+
+  - id: 9.7.1/vdw-interface-props
+    prepass_id: N9-34
+    type: parameter
+    section: "9.7.1"
+    statement: >
+      Simple complementary vdW diamondoid contact: tensile strength ~1 GPa, stiffness per unit
+      area > 30 N/m·nm^2; compliance equal to a ~30 nm slab of diamond.
+    support: INT
+    refs: ["Fig. 3.12"]
+    polarity: "+"
+    priority: high
+    consumed_by: ["10", "14.2.1b", "14.2.2a"]
+
+  - id: 9.7.1/vdw-interface-degrades-strength
+    prepass_id: N9-35
+    type: proposition
+    section: "9.7.1"
+    statement: >
+      A simple vdW interface "degrades the strength of a diamondoid structure by about two orders
+      of magnitude, and substantially degrades the stiffness of systems built on a 100 nm scale."
+    support: INT
+    refs: ["9.7.1/vdw-interface-props", "9.3.1/materials-table"]
+    polarity: "+"
+    notes: >
+      Negative-direction result reported against interest. Evidence the chapter is not
+      uniformly optimistic.
+
+  - id: 9.7.2/ionic-interface-props
+    prepass_id: N9-36
+    type: parameter
+    section: "9.7.2"
+    statement: >
+      Ionic interfaces modelled on NaCl: theoretical breaking stress ~2.7 GPa; interlayer
+      stiffness per unit area ~170 N/m·nm^2.
+    support: EXT
+    refs: ["Kelly 1973"]
+    polarity: "+"
+    vintage: CHECK
+
+  - id: 9.7.3/covalent-interfaces-lossless
+    prepass_id: N9-37
+    type: design-license
+    section: "9.7.3"
+    statement: >
+      Covalent interfaces: B/N-terminated diamond(111) join via dipolar bonds; diene/dienophile
+      arrays via Diels-Alder; hexagonal diamond surfaces "apparently bond to form continuous
+      hexagonal diamond"; diamond(110) pairs "apparently" form continuous cubic diamond —
+      "without leaving a distinct interface, and hence without loss of strength or stiffness."
+    hedge: '"apparently" (twice), "can be designed to"'
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["10.7", "14.2.1"]
+    notes: >
+      Strongest possible claim (zero interface penalty) at the weakest support level (bare,
+      doubly hedged). Drexler's own open-problems list (9.8) flags exactly this.
+
+  - id: 9.7.3/diamond-111-surface-energy
+    prepass_id: N9-38
+    type: parameter
+    section: "9.7.3"
+    statement: >
+      Diamond(111) surface energy ~5.4 J/m^2; if suddenly thermalised, enough to raise a 1 nm
+      slab by ~1e3 K.
+    support: BARE
+    polarity: "+"
+    consumed_by: ["14.2.1c"]
+    notes: 14.2.1c uses ~5 J/m^2 citing Field 1979; consistent.
+
+  - id: 9.7.3/energy-release-controllable
+    prepass_id: N9-39
+    type: design-license
+    section: "9.7.3"
+    statement: >
+      The bonding-energy release problem is answered by four mechanisms: (i) adhesion as the
+      inverse of crack formation, joined by controlled relaxation of inhomogeneous stress;
+      (ii) interposed structures forcing a controlled rate; (iii) surface structures with
+      thermal activation barriers; (iv) alignment pegs (14.2.2a).
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "at least one of the four mechanisms achieves high recovery efficiency (no efficiency is stated anywhere in 9.7)"
+    consumed_by: ["14.2.1c"]
+    notes: >
+      KEY OUT-EDGE WITH A GAP. 14.2.1c assumes "much or almost all of the potential energy of
+      bonding can be recovered as mechanical work," dropping block-assembly energy from 9e6 to
+      5e5 J/kg — a factor of ~18 feeding the nanofactory's total dissipation. That factor traces
+      here, to four qualitative, unquantified, uncited mechanisms. Independent of the friction
+      dispute.
+
+  # ---- 9.8 Conclusions and open problems ------------------------------------
+
+  - id: 9.8/bulk-stiffness-applies
+    prepass_id: N9-40
+    type: proposition
+    section: "9.8"
+    statement: >
+      Bulk-material stiffnesses can describe sub-nm components provided the modulus is applied
+      to the structural cross-section (excluding the outer overlap-force layer and monovalent
+      atoms).
+    support: INT
+    refs: ["9.3.3/bounded-continuum", "9.4.2/delta-surf", "9.4.3/rod-modulus-experiments", "9.4.3/deficit-is-mm2-artifact"]
+    polarity: "+"
+    hypotheses:
+      - 9.4.3/deficit-is-mm2-artifact
+    consumed_by: ["10", "11", "12", "13"]
+    notes: Summary claim consolidating the chapter; inherits the circularity in 9.4.3/deficit-is-mm2-artifact.
+
+  - id: 9.8/open-problems
+    prepass_id: N9-41
+    type: scope-condition
+    section: "9.8"
+    statement: >
+      Author-declared open problems: (a) improve bounded continuum models and explore validity
+      range; (b) merge FEM with bounded continuum + molecular mechanics; (c) catalogue small
+      regular structures; (d) software for irregular structures meeting boundary conditions;
+      (e) studies of the joining of diamond surfaces; (f) characterise B-N dipolar bonds.
+    support: BARE
+    polarity: "+"
+    notes: "(e) -> 9.7.3/covalent-interfaces-lossless, 9.7.3/energy-release-controllable; (f) -> 9.7.3/covalent-interfaces-lossless and 10.7 gears."
+
+imports:
+
+  - from: "3.3/molecular-mechanics-models"
+    used_for: MM2 as the descriptive model for diamondoid structures
+    at: ["9.3.1", "9.4.3"]
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm2-defects"
+    used_for: attribution of the rod-modulus deficit to MM2 defects (9.4.3/deficit-is-mm2-artifact)
+    at: ["9.4.3"]
+    hypotheses_discharged: unknown
+    notes: The attribution is load-bearing; what 3.3.2 actually says about MM2's stiffness errors must be checked.
+
+  - from: "3.3.3a/morse-potential"
+    used_for: positive-stiffness limit for permissible bond strain
+    at: ["9.6.1"]
+    hypotheses_discharged: unknown
+
+  - from: "3.3.3b/radii-0.1nn"
+    used_for: size convention
+    at: ["9.4.2"]
+    hypotheses_discharged: unknown
+
+  - from: "3.5/surface-continuum-models"
+    used_for: basis of the bounded continuum approach
+    at: ["9.3.3"]
+    hypotheses_discharged: unknown
+
+  - from: "3/fig-3.12-vdw-interface"
+    used_for: vdW interface strength and stiffness values
+    at: ["9.7.1"]
+    hypotheses_discharged: unknown
+
+  - from: "6.4.4a/bond-failure-rates"
+    used_for: contrast — Ch. 9 deliberately diverges from this single-bond pure-tension model
+    at: ["9.6.1"]
+    hypotheses_discharged: n/a
+    notes: Divergence is explicit and flagged in the text.
+
+  - from: "8.6.6/cluster-strategies"
+    used_for: cross-reference on structure-building strategies
+    at: ["9.5"]
+    hypotheses_discharged: unknown
+
+  - from: "10/friction-and-tolerances"
+    used_for: forward deferral — where tight tolerances actually bind
+    at: ["9.5.3"]
+    hypotheses_discharged: unknown
+    notes: Forward reference; Ch. 10 must supply the exception to 9.5.3/any-shape-buildable.
+
+  - from: "13.2/receptors"
+    used_for: forward cross-reference on binding
+    at: ["9.5.4"]
+    hypotheses_discharged: n/a
+
+  - from: "14.2/block-assembly"
+    used_for: forward cross-reference on adhesive interfaces in assembly
+    at: ["9.7"]
+    hypotheses_discharged: n/a

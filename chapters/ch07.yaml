@@ -1,0 +1,232 @@
+chapter: 7
+title: Energy Dissipation
+status: extracted
+coverage: partial
+sections: ["7.4"]
+source: source/ch07-s7.4.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Section 7.4 only (thermoelastic damping and phonon viscosity), extracted in chat session
+      alongside Ch. 9 as a schema test. The rest of Ch. 7 is the next extraction target:
+      highest out-degree chapter in the book.
+
+exports:
+
+  # ---- 7.4.1 Thermoelastic damping ------------------------------------------
+
+  - id: 7.4.1/grueneisen-diamond
+    prepass_id: N7-01
+    type: parameter
+    section: "7.4.1"
+    statement: >
+      Grüneisen number gamma_G = beta*K/C_vol. Diamond: beta = 3.5e-6 /K, K ~4.4e11 N/m^2,
+      C_vol ~1.7e6 J/K·m^3 -> gamma_G ~0.9. Ordinary materials 1.5-2.5; little T-dependence near 300 K.
+    support: EXT
+    refs: ["Gray 1972 (beta)"]
+    polarity: "+"
+    vintage: >
+      K OK (modern 4.42e11). C_vol OK (modern 1.76e6). beta CHECK — modern linear CTE ~1.0e-6/K
+      -> volumetric ~3.0e-6; Drexler ~15% high, conservative direction.
+    spot_check: "3.5e-6 * 4.4e11 / 1.7e6 = 0.906. OK"
+    notes: >
+      AUDIT FLAG: a single scalar gamma_G is the mean anharmonicity. Akhiezer-type loss depends
+      on the dispersion of mode Grüneisen parameters (uniform gamma_i gives no inter-mode
+      disequilibrium). Small mean does not imply small variance. Bears on 7.4.2.
+
+  - id: 7.4.1/thermoelastic-derivation
+    prepass_id: N7-02
+    type: construction
+    section: "7.4.1"
+    statement: Expression for delta-W from the adiabatic/isothermal difference in work of compression.
+    support: EXT
+    refs: ["Lothe 1962"]
+    polarity: "+"
+    vintage: CHECK
+
+  - id: 7.4.1/worst-case-cycle-loss
+    prepass_id: N7-03
+    type: parameter
+    section: "7.4.1"
+    statement: >
+      Worst-case thermodynamic cycle for diamond dissipates ~2.2e-24 (delta-p)^2 J/nm^3·cycle,
+      p in GPa.
+    support: INT
+    refs: ["Eq. 7.49"]
+    polarity: "+"
+
+  - id: 7.4.1/isothermal-limit-reduction
+    prepass_id: N7-04
+    type: proposition
+    section: "7.4.1"
+    statement: >
+      Nanomechanical systems "frequently approach the isothermal limit"; dissipation is reduced
+      by ~tau_therm/t_cycle relative to worst case.
+    hedge: "frequently approach"
+    support: BARE
+    polarity: "-"
+    hypotheses:
+      - "omega * tau_therm << 1"
+
+  - id: 7.4.1/tau-therm-and-kt
+    prepass_id: N7-05
+    type: parameter
+    section: "7.4.1"
+    statement: >
+      tau_therm ~ C_vol * l^2 / K_T. K_T for glasses/nonporous ceramics 1-10 W/m·K; diamond
+      ~700 W/m·K. Worked: K_T=10, l=10 nm, C_vol=2e6 -> tau_therm ~1e-11 s; reduction ~1e-2 at
+      1 GHz, ~1e-5 at 1 MHz.
+    support: EXT
+    refs: ["Gray 1972 (diamond K_T)"]
+    polarity: "+"
+    vintage: >
+      SUPERSEDED? — diamond K_T: modern natural-abundance ~2000-2200 W/m·K, isotopically
+      enriched ~3300. Gray's 700 is low by ~3x. Low impact on Drexler's own numbers (worked
+      estimates use K_T=10), but any downstream use of the diamond value inherits a 3x error.
+    spot_check: "tau = 2e6*(1e-8)^2/10 = 2.0e-11 s; ratios 2e-2 and 2e-5. OK"
+    consumed_by: ["7.4.3", "10", "12"]
+    priority: high
+
+  - id: 7.4.1/single-axis-correction-neglected
+    prepass_id: N7-06
+    type: scope-condition
+    section: "7.4.1"
+    statement: >
+      Single-axis compressive load has lesser effect than isotropic pressure of the same formal
+      magnitude; correction neglected, "tending to favor overestimates of energy dissipation."
+    support: BARE
+    polarity: "-"
+    notes: Self-labelled conservative; verify direction.
+
+  # ---- 7.4.2 Phonon viscosity (= Akhiezer damping) --------------------------
+
+  - id: 7.4.2/phonon-viscosity-model
+    prepass_id: N7-07
+    type: construction
+    section: "7.4.2"
+    statement: >
+      Shear causes no volume change hence no thermoelastic loss, but compresses one axis and
+      extends another; "within a factor of 3/2" the thermoelastic analogy yields an effective
+      viscosity. Dissipation follows 7.4.1 with tau_relax substituted for tau_therm and shear
+      stress for pressure.
+    support: EXT
+    refs: ["Lothe 1962"]
+    polarity: "+"
+    aliases: ["phonon viscosity", "Akhiezer damping", "Mason phonon-viscosity"]
+    hypotheses:
+      - 7.4.2/tau-relax-1e-13
+      - "omega * tau_relax << 1 (Akhiezer regime, not Landau-Rumer)"
+      - "tau_relax is the relaxation time governing inter-mode energy redistribution (see tau-relax notes)"
+    vintage: "CHECK — Lothe 1962 predates the modern Akhiezer/Landau-Rumer treatment; check whether the 3/2-factor analogy survives"
+    consumed_by: ["10", "12"]
+    priority: high
+
+  - id: 7.4.2/tau-relax-1e-13
+    prepass_id: N7-08
+    type: parameter
+    section: "7.4.2"
+    statement: >
+      "tau_relax measures the rate of equilibration of phonon energy between different directions
+      in the solid, which can be accomplished by elastic scattering such as that occurring at the
+      boundaries of a solid body or at internal inhomogeneities. In nanomechanical systems,
+      scattering typically limits phonon mean free paths to nanometer distances, resulting in
+      values of tau_relax ~1e-13 s for v_s ~1e4 m/s."
+    support: BARE
+    polarity: "+"
+    priority: high
+    notes: >
+      tau enters the loss NUMERATOR in the omega*tau<<1 regime, so a short tau means low loss.
+      This is the single most load-bearing parameter in 7.4.2 and is asserted without citation.
+      SUBSTANTIVE CONCERN (adjudicate at audit): boundary scattering is elastic — it randomizes
+      direction but does not redistribute energy among modes as anharmonic three-phonon processes
+      do. The relaxation time governing Akhiezer loss is the inelastic mode-population
+      equilibration time. Substituting an elastic-scattering time is not obviously conservative
+      and may be the wrong tau entirely.
+
+  - id: 7.4.2/phonon-viscosity-small-except
+    prepass_id: N7-09
+    type: scope-condition
+    section: "7.4.2"
+    statement: >
+      "Because of this small time constant, phonon viscosity losses typically are small compared
+      to thermoelastic losses, save in systems undergoing very high frequency motion or nearly
+      pure shear."
+    hedge: "typically are small ... save in"
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "NOT very high frequency motion (no threshold given)"
+      - "NOT nearly pure shear (no threshold given)"
+    consumed_by: ["10 (sliding interfaces: shear side)", "12 (rod logic: frequency side)"]
+    notes: >
+      HIGHEST PRIORITY IN THIS PASS. A negative claim with a self-declared exception clause,
+      unreferenced and unquantified. The audit question is not "is Akhiezer damping present in
+      the book" (it is) but "was the author's own stated exception honoured downstream" — a
+      graph question answerable only by checking out-edges. See docs/DECISIONS.md.
+
+  # ---- 7.4.3 Moving parts and alignment bands -------------------------------
+
+  - id: 7.4.3/moving-part-drag
+    prepass_id: N7-10
+    type: proposition
+    section: "7.4.3"
+    statement: >
+      Moving stress regions characterized by V ~l^3 (contacts) or ~d·l^2 (bands); tau_cycle ~l/v.
+      Worked: beta=3.5e-6, K_T=10, l=10 nm, R=10, T=300 K, delta-p=1e8 N/m^2 -> P_drag ~4 W/m^2
+      at 1 m/s, 0.04 W/m^2 at 1 cm/s.
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - 7.4.3/mfp-shorter-than-l
+      - 7.4.1/isothermal-limit-reduction
+      - 7.4.1/single-axis-correction-neglected
+    consumed_by: ["10"]
+
+  - id: 7.4.3/mfp-shorter-than-l
+    prepass_id: N7-11
+    type: scope-condition
+    section: "7.4.3"
+    statement: >
+      The 7.4.3 drag estimate is "based on the assumption that phonon mean free paths are
+      shorter than l."
+    support: BARE
+    polarity: "+"
+    priority: high
+    notes: Stated scope condition. Must be checked at every use site of 7.4.3/moving-part-drag.
+
+  - id: 7.4.3/beta-table
+    prepass_id: N7-12
+    type: parameter
+    section: "7.4.3"
+    statement: >
+      Table 7.1 volumetric beta (1e-6 /K): diamond 3.5, Si 7.5, SiC 11.1, sapphire 15.6,
+      quartz 36.0, vitreous silica 1.2.
+    support: EXT
+    refs: ["Gray 1972"]
+    polarity: "+"
+    vintage: CHECK
+
+  - id: 7.4.3/beta-design-control
+    prepass_id: N7-13
+    type: design-license
+    section: "7.4.3"
+    statement: >
+      The quartz/vitreous-silica spread shows beta "is sensitive to patterns of bonding and hence
+      is subject to substantial design control in the products of molecular manufacturing."
+    support: BARE
+    polarity: "-"
+    notes: Design-license claim resting on a two-point comparison in one material system.
+
+imports:
+
+  - from: "7.3/phonon-scattering"
+    used_for: context for tau_relax and mean free paths
+    at: ["7.4.2"]
+    hypotheses_discharged: unknown
+    notes: Same chapter; will resolve when 7.3 is extracted.
+
+  - from: "7/eq-7.49"
+    used_for: worst-case cycle loss coefficient
+    at: ["7.4.1"]
+    hypotheses_discharged: unknown

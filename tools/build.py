@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""Validate chapters/*.yaml and criticism/register.yaml; generate generated/INDEX.md.
+
+Checks (exit nonzero on hard errors):
+  - schema: required fields, enum values, id format <section>/<mnemonic>, id's chapter matches file
+  - duplicate ids across chapters
+  - hypotheses that name an id: the id must exist (or be pending in an unextracted chapter)
+  - imports: pending (from-chapter not extracted) vs DANGLING (extracted, id absent)
+  - consumed_by: for each extracted target chapter, whether an import back to this id exists
+    (unconfirmed forward refs are reported, not errors)
+  - scope-condition exports never referenced as anyone's hypothesis (warning: orphan condition)
+Generates: reverse index (who imports / who attacks each export), negative-claims register,
+support-type stats, pending/dangling lists.
+"""
+import re, sys
+from collections import defaultdict
+from pathlib import Path
+import yaml
+
+ROOT = Path(__file__).resolve().parent.parent
+TYPES = {"parameter", "proposition", "construction", "scope-condition", "design-license"}
+SUPPORT = {"INT", "EXT", "BARE"}
+STATUS = {"extracted", "reconciled", "audited"}
+VERDICTS = {None, "verified", "verified-modified", "uncertain", "hypothesis-violated", "refuted"}
+ID_RE = re.compile(r"^(\d+(?:\.\d+)*[a-z]?)/([a-z0-9][a-z0-9.-]*)$")
+
+errors, warnings = [], []
+
+
+def err(m): errors.append(m)
+def warn(m): warnings.append(m)
+
+
+def chapter_of(id_: str) -> int | None:
+    m = ID_RE.match(id_)
+    return int(m.group(1).split(".")[0]) if m else None
+
+
+def load_chapters():
+    chapters = {}
+    for p in sorted((ROOT / "chapters").glob("ch*.yaml")):
+        d = yaml.safe_load(p.read_text())
+        n = d.get("chapter")
+        if not isinstance(n, int):
+            err(f"{p.name}: missing/invalid 'chapter'"); continue
+        if d.get("status") not in STATUS:
+            err(f"{p.name}: status must be one of {sorted(STATUS)}")
+        if d.get("coverage") == "partial" and not d.get("sections"):
+            err(f"{p.name}: coverage: partial requires 'sections'")
+        for ex in d.get("exports", []):
+            for f in ("id", "type", "section", "statement", "support", "polarity"):
+                if f not in ex:
+                    err(f"{p.name}: export {ex.get('id','?')} missing '{f}'")
+            i = ex.get("id", "")
+            if not ID_RE.match(i):
+                err(f"{p.name}: bad id format '{i}' (want <section>/<mnemonic>)")
+            elif chapter_of(i) != n:
+                err(f"{p.name}: id '{i}' does not belong to chapter {n}")
+            if ex.get("type") not in TYPES: err(f"{p.name}: {i}: bad type {ex.get('type')}")
+            if ex.get("support") not in SUPPORT: err(f"{p.name}: {i}: bad support {ex.get('support')}")
+            if str(ex.get("polarity")) not in {"+", "-"}: err(f"{p.name}: {i}: polarity must be '+' or '-'")
+            if ex.get("verdict") not in VERDICTS: err(f"{p.name}: {i}: bad verdict {ex.get('verdict')}")
+            if ex.get("support") == "EXT" and not ex.get("vintage"):
+                warn(f"{i}: EXT support without 'vintage'")
+        for im in d.get("imports", []):
+            if "from" not in im or "used_for" not in im:
+                err(f"{p.name}: import missing 'from'/'used_for': {im}")
+        chapters[n] = d
+    return chapters
+
+
+def load_criticism():
+    p = ROOT / "criticism" / "register.yaml"
+    return yaml.safe_load(p.read_text()) if p.exists() else []
+
+
+def main():
+    chapters = load_chapters()
+    crit = load_criticism()
+    extracted = set(chapters)
+
+    def covered(id_: str) -> bool:
+        """Is the section of this id inside the extracted coverage of its chapter?"""
+        c = chapter_of(id_)
+        if c not in chapters: return False
+        d = chapters[c]
+        if d.get("coverage", "full") != "partial": return True
+        sec = ID_RE.match(id_).group(1)
+        return any(sec == s or sec.startswith(s + ".") for s in d["sections"])
+    exports = {}          # id -> (chapter, export)
+    for n, d in chapters.items():
+        for ex in d.get("exports", []):
+            if ex["id"] in exports:
+                err(f"duplicate id {ex['id']} in ch{n} and ch{exports[ex['id']][0]}")
+            exports[ex["id"]] = (n, ex)
+
+    # --- hypotheses referencing ids
+    hyp_refs = defaultdict(list)   # condition id -> [item ids that depend on it]
+    for i, (n, ex) in exports.items():
+        for h in ex.get("hypotheses") or []:
+            if isinstance(h, str) and ID_RE.match(h):
+                hyp_refs[h].append(i)
+                c = chapter_of(h)
+                if h not in exports and covered(h):
+                    err(f"{i}: hypothesis '{h}' names an id absent from extracted ch{c}")
+    for i, (n, ex) in exports.items():
+        if ex["type"] == "scope-condition" and i not in hyp_refs and ex["section"] != str(n):
+            warn(f"orphan scope-condition {i}: no export lists it as a hypothesis")
+
+    # --- imports: pending vs dangling; reverse index
+    importers = defaultdict(list)  # export id -> [(chapter, at)]
+    pending, dangling = [], []
+    for n, d in chapters.items():
+        for im in d.get("imports", []):
+            f = im["from"]; c = chapter_of(f)
+            if c is None:
+                err(f"ch{n}: import from '{f}' is not a valid id"); continue
+            if f in exports:
+                importers[f].append((n, im.get("at", [])))
+            elif covered(f):
+                dangling.append((n, f, im.get("used_for", "")))
+            else:
+                pending.append((n, f, im.get("used_for", "")))
+    for n, f, u in dangling:
+        err(f"DANGLING import in ch{n}: '{f}' (ch{chapter_of(f)} is extracted but has no such id) — {u}")
+
+    # --- consumed_by confirmation
+    unconfirmed = []
+    for i, (n, ex) in exports.items():
+        for tgt in ex.get("consumed_by") or []:
+            m = re.match(r"^(\d+)", str(tgt))
+            if not m: continue
+            c = int(m.group(1))
+            if c in extracted and c != n and chapters[c].get("coverage","full") == "full" \
+                    and not any(k == c for k, _ in importers.get(i, [])):
+                unconfirmed.append((i, tgt))
+
+    # --- criticism
+    attackers = defaultdict(list)
+    for e in crit:
+        for t in e.get("targets") or []:
+            attackers[t].append(e["id"])
+            c = chapter_of(t)
+            if c is None: err(f"criticism {e['id']}: bad target id '{t}'")
+            elif t not in exports and covered(t):
+                warn(f"criticism {e['id']}: target '{t}' absent from extracted ch{c}")
+
+    # --- stats
+    stats = defaultdict(lambda: defaultdict(int))
+    for i, (n, ex) in exports.items():
+        stats[n][ex["support"]] += 1; stats[n]["total"] += 1
+        if ex["polarity"] == "-": stats[n]["neg"] += 1
+        if ex["polarity"] == "-" and ex["support"] == "BARE": stats[n]["neg_bare"] += 1
+
+    # --- write INDEX.md
+    out = ["# Generated index — do not edit (tools/build.py)\n"]
+    out.append("## Coverage\n")
+    for n, d in sorted(chapters.items()):
+        cov = d.get("coverage", "full")
+        secs = f" ({', '.join(d['sections'])})" if cov == "partial" else ""
+        s = stats[n]
+        out.append(f"- **Ch. {n}** {d.get('title','')} — {d['status']}, {cov}{secs}: "
+                   f"{s['total']} exports, INT {s['INT']} / EXT {s['EXT']} / BARE {s['BARE']} "
+                   f"({100*s['BARE']//max(s['total'],1)}% bare); negative {s['neg']} (bare-negative {s['neg_bare']})")
+    out.append("\n## Priority audit set — negative & bare\n")
+    for i, (n, ex) in sorted(exports.items()):
+        if ex["polarity"] == "-" and ex["support"] == "BARE":
+            pr = ex.get("priority", "normal")
+            out.append(f"- `{i}` [{pr}] {ex['statement'].strip()[:140]}")
+    out.append("\n## Reverse index — who depends on each export\n")
+    for i, (n, ex) in sorted(exports.items()):
+        rows = []
+        for k, at in importers.get(i, []):
+            rows.append(f"imported by ch{k} at {', '.join(at) or '?'}")
+        for dep in hyp_refs.get(i, []):
+            rows.append(f"hypothesis of `{dep}`")
+        for a in attackers.get(i, []):
+            rows.append(f"attacked by `{a}`")
+        for tgt in ex.get("consumed_by") or []:
+            rows.append(f"(book/forward) consumed by {tgt}")
+        if rows:
+            out.append(f"- `{i}` ({ex['type']}, {ex['support']}, {ex['polarity']})")
+            out.extend(f"    - {r}" for r in rows)
+    out.append("\n## Pending imports (source chapter not yet extracted)\n")
+    for n, f, u in sorted(pending):
+        out.append(f"- ch{n} <- `{f}` — {u}")
+    out.append("\n## Unconfirmed forward references (book says consumed, target chapter extracted, no import found)\n")
+    for i, tgt in unconfirmed:
+        out.append(f"- `{i}` → {tgt}")
+    out.append("\n## Criticism targets pending extraction\n")
+    for e in crit:
+        for t in e.get("targets") or []:
+            if t not in exports:
+                out.append(f"- `{e['id']}` → `{t}`")
+    if warnings:
+        out.append("\n## Warnings\n"); out.extend(f"- {w}" for w in warnings)
+    (ROOT / "generated").mkdir(exist_ok=True)
+    (ROOT / "generated" / "INDEX.md").write_text("\n".join(out) + "\n")
+
+    print(f"exports: {len(exports)}  imports pending: {len(pending)}  dangling: {len(dangling)}  "
+          f"criticism entries: {len(crit)}  warnings: {len(warnings)}  errors: {len(errors)}")
+    for w in warnings: print("  warn:", w)
+    for e in errors: print("  ERROR:", e)
+    sys.exit(1 if errors else 0)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,178 @@
+# Prior criticism and empirical results bearing on Nanosystems.
+# Each entry *imports* from chapters via `targets` (export ids; pending until the chapter is extracted).
+# `status` and `axis` per docs/SCHEMA.md. Entries marked `unread` are known to exist but not yet processed.
+
+- id: prase-2026-considerations-appendix
+  kind: technical-critique
+  author: Muireall Prase
+  date: 2026
+  url: https://muireall.space/pdf/considerations.pdf
+  location: appendix (Nanosystems critique)
+  targets:
+    - "7.4.2/phonon-viscosity-small-except"
+    - "12/rod-logic-q-3770"            # pending: Drexler's "1/600 of mechanical energy per cycle"
+    - "12/rod-logic-error-rate"         # pending: the 1e-64 error rate claim
+    - "12.7.4/energy-per-instruction"   # pending: 1e-16 J/instr, consumed by 14.4.8
+  claim: >
+    Three arguments against the GHz rod-logic computer. (1) Akhiezer/phonon-viscosity damping:
+    Drexler's Q ~3770 sits at the bulk-diamond f·Q ceiling (3.7e13 Hz) evaluated at the ~10 GHz
+    effective switching frequency, before accounting for the device being a soft, vdW-coupled
+    molecular assembly (sound speed ~1 km/s) rather than bulk diamond, which costs >=2 OOM.
+    (2) Molecular relaxation: rod length / sound speed ~6 ps lag against 100 ps switching gives
+    order-unity fractional loss of kinetic energy — no tau, no regime question. (3) Fluctuation-
+    dissipation: the low dissipation and the 1e-64 error rate are not independent; a 3-OOM
+    dissipation increase drives noise force to ~0.5 nN vs ~1 nN alignment force -> errors in
+    1e-3 to 1e-2 of cycles. Also: predictions that Drexler (10-40%) vs a peer (95%) would concede.
+  status: unrebutted
+  axis: omitted-channel; stated-exception-not-honoured
+  notes: >
+    Our reading (see ch07.yaml 7.4.2/phonon-viscosity-small-except): the accurate charge is not
+    "omitted" but "included in 7.4.2 with an explicit exception for very high frequency motion,
+    which Ch. 12 may not honour." Fn. 30 of the critique acknowledges the Mason special case in
+    7.4.2. Fn. 28's claim that the Landau-Rumer crossover is at ~1 THz is wrong (back out tau
+    from the cited f·Q: crossover ~20-75 GHz), but not load-bearing. Argument (2) is the
+    strongest and needs none of the phonon-gas subtleties. The critique is scoped to
+    nanomechanical *computers*; it grants that slower-and-larger fixes most of it, so Ch. 13-14
+    mills at 1 MHz are largely insulated (our analysis: ~2 OOM margin even granting the full
+    correction). The propagation into Ch. 14 runs through the control-computation term
+    (14.4.8 <- 12.7.4), not the machinery.
+
+- id: moriarty-phoenix-2005
+  kind: technical-critique
+  author: Philip Moriarty (with Chris Phoenix; hosted by Richard Jones)
+  date: 2005
+  url: https://softmachines.org/?p=70
+  location: three PDFs (PhoenixMoriartyI/II/III.pdf), ~56 pages, plus blog comments
+  targets:
+    - "8.5.4/abstraction-steric-hindrance"   # pending: Fig. 8.14
+    - "15.4.5/bead-imaging"                   # pending: Fig. 15.3
+    - "16/stage1-to-stage2-path"              # pending
+    - "13.3.6/error-rates"                    # pending
+  claim: >
+    (a) Fig. 8.14 abstraction: surface free energy constrains tip facet structure regardless of
+    fabrication technology, so even 1 nm radius of curvature leaves enough steric hindrance to
+    rule out the reaction as drawn. (b) 15.4.5: Drexler's statement that scanning the primary
+    bead yields a low-resolution image of the flat-side bead array is wrong — one gets a sum of
+    high-resolution images of the primary bead surface. (c) "Even Nanosystems provides no
+    strategy to move from the UHV diamondoid Stage 1 to Stages 2, 3 and 4." (d) Error rates
+    flagged as an unaddressed thread.
+  status: unread   # blog post and comments read; the three PDFs not yet processed
+  axis: bound-vs-engineering-number
+  notes: >
+    The Finney-Moriarty comment exchange is a clean instance of the recurring axis: Finney says
+    evaluate Ch. 8 as mature technology; Moriarty says the objection is surface physics
+    constraining tip structure at any technology level. (b) is a flatly contradicted specific
+    sentence — cleanly adjudicable. Moriarty largely targets Part I chemistry and Part III
+    implementation; Prase targets Part II mechanics. They barely overlap, which is why the
+    audit root set must include Ch. 8 and 16, not only 6/7/10/12.
+
+- id: moriarty-epsrc-2008-2013
+  kind: experiment
+  author: Philip Moriarty (EPSRC Leadership Fellowship, ~£1.53M)
+  date: 2008-2013
+  url: null   # see chemistryworld.com coverage; grant ref EP/G007837/1 (archived)
+  targets:
+    - "8/diamond-mechanosynthesis-toolset"    # pending
+  claim: >
+    Funded explicitly to test Freitas-Merkle DFT predictions for diamond mechanosynthesis by
+    experiment. Initial goal: atom-by-atom assembly on diamond surfaces. Published output:
+    silicon dimer manipulation on Si(100), with the stated rationale that silicon is much easier
+    to work with than diamond (atomically flat, low-defect surfaces are preparable).
+  status: superseded-by-experiment   # partial negative result on diamond specifically
+  axis: material-choice
+  notes: >
+    The closest thing to an experimental test of Ch. 8 that exists. Outranks argument. Moriarty's
+    2014 OpenPhil interview: non-scalable atom-by-atom construction of small 3D objects via SPM
+    maybe ~30 years out; APM "probably feasible for a relatively narrow subset of materials";
+    silicon more promising than diamondoid.
+
+- id: smalley-2001-2003
+  kind: technical-critique
+  author: Richard Smalley
+  date: 2001 (Sci. Am.), 2003 (C&EN exchange with Drexler)
+  url: https://en.wikipedia.org/wiki/Drexler%E2%80%93Smalley_debate_on_molecular_nanotechnology
+  targets:
+    - "8/mechanosynthesis-general"    # pending
+  claim: >
+    "Fat fingers" / "sticky fingers": positional control of every atom in a bimolecular reaction
+    is impossible; enzyme-like chemistry requires water.
+  status: straw-man-consensus
+  axis: definition-of-positional-chemistry
+  notes: >
+    Jones (2004), Moriarty, and Marblestone (2021) independently characterise this as attacking
+    a straw man; Drexler-Foster 1991 (effective-concentration enhancement) already answered the
+    "every atom" version. The best-known critique is the weakest. Sociologically decisive
+    regardless (Marblestone's "taboo" thesis).
+
+- id: jones-softmachines-questions
+  kind: technical-critique
+  author: Richard Jones
+  date: c. 2004-2005
+  url: http://www.softmachines.org/wordpress/?p=175
+  targets: []
+  claim: "A list of 'more pointed questions about Nanosystems' (per Marblestone). Not yet read."
+  status: unread
+  axis: null
+  notes: Jones's overall stance is the soft/biological alternative (Soft Machines, 2004). Also see ?p=60, ?p=652.
+
+- id: marblestone-2021-bottleneck
+  kind: field-state
+  author: Adam Marblestone
+  date: 2021 (Bottlenecks 2021, Denver); reposted 2023 with updates
+  url: https://longitudinal.blog/bottleneck-analysis-positional-chemistry/
+  url_alt: "https://web.mit.edu/amarbles/www/docs/Bottleneck_analysis_positional_chemistry.pdf (dead as of 2026-09; Wayback has captures)"
+  targets: []
+  claim: >
+    Not an audit of the physics. Why positional chemistry stalled (sociological bottleneck after
+    Smalley; systems problem beyond one lab) and what would restart it (ARPA-like programs).
+    Two paths: vacuum mechanosynthesis (CBN Nanotechnologies, Canada, ~$200M, Merkle on patents,
+    no published demos) and ribosome-like molecular 3D printing in solution (DNA origami +
+    spiroligomers; DOE APM program ~$8M under David Forrest, since redirected).
+  status: n/a
+  axis: unrefuted-vs-unpursued
+  notes: >
+    Directly relevant to this project: (1) proposes "an open source 'Nanosystems 2.0 with modern
+    computation'" — ML potentials, accelerated DFT, web-accessible, chemists can verify — as an
+    ARPA-scale program; (2) documents the Drexler-Foster 1991 papers (Nature 343:600 and two
+    follow-ups) as a concrete solution-phase experimental path never followed up, distinct from
+    Ch. 16's UHV route and untouched by Moriarty's Ch. 16 objection; (3) reframes diamondoid as
+    chosen for analytical tractability rather than as the endpoint; (4) notes only a few pages
+    of Nanosystems address how to get from here to there. Canonical URL is the blog; the blog
+    text matches the PDF verbatim where checked and has a post-2021 update block; the PDF's
+    appendices were seen, the blog's were not verified.
+
+- id: rintamaki-technical-review
+  kind: defense
+  author: (jrin771)
+  date: unknown
+  url: https://jrin771.github.io/nanosystems.html
+  targets: []
+  claim: Defense-side technical review citing Marblestone and Jones. Possibly study notes.
+  status: unread
+  axis: null
+  notes: Included for balance; a register built only from critics has a selection problem.
+
+- id: nas-2006-triennial-review
+  kind: review
+  author: US National Academy of Sciences
+  date: 2006
+  url: https://www.nap.edu/catalog/23603/triennial-review-of-the-national-nanotechnology-initiative
+  targets: []
+  claim: >
+    "Technical Feasibility of Site-Specific Chemistry for Large-Scale Manufacturing": arguments
+    use accepted science but constitute "a theoretical analysis demonstrating the possibility
+    of a class of as-yet unrealizable devices"; evaluation difficult for lack of experimental
+    demonstrations; modeling stability does not tell one how to build.
+  status: unread
+  axis: unrefuted-vs-unpursued
+  notes: Per Marblestone, does not cite Drexler-Foster 1991.
+
+- id: openphil-2015-apm-report
+  kind: review
+  author: Open Philanthropy
+  date: 2015
+  url: https://www.openphilanthropy.org/research/cause-reports/atomically-precise-manufacturing
+  targets: []
+  claim: Cause report on APM including interviews with Drexler, Moriarty, and others.
+  status: unread
+  axis: null
