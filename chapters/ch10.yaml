@@ -1,0 +1,885 @@
+chapter: 10
+title: Mobile Interfaces and Moving Parts
+status: extracted
+coverage: partial
+sections: ["10.3.4", "10.3.5", "10.3.6", "10.4", "10.8", "10.11", "10.12"]
+source: source/ch10.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Sliding-contact dissipation (10.3.4-10.3.6), symmetrical sleeve bearings (10.4 in full),
+      barriers in extended systems (10.8), and the bounded-continuum license and conclusions
+      (10.11-10.12). Chosen to close the pending imports of Ch. 7 (design values of
+      delta-k_a/k_a, A/d) and Ch. 12 (Eq. 10.23, Section 10.8), and because Prase's friction
+      objection lands on 10.4.6. Not extracted: 10.2, 10.3.1-10.3.3 (Fourier transforms and the
+      Monte Carlo barrier model), 10.5-10.7 (nuts, atomic axles, gears), 10.9-10.10. Worked
+      numbers reproduced in nsaudit/ch10.py (tests/test_ch10.py); the diamond constants of
+      10.4.6 are re-derived there from the Ch. 7 functions.
+
+exports:
+
+  # ---- 10.3.4 - 10.3.6 Sliding contacts --------------------------------------------
+
+  - id: 10.3.4/contact-phonon-scattering
+    type: parameter
+    section: "10.3.4"
+    statement: >
+      A small sliding contact as a moving oscillator (7.3.4): "With surface interaction
+      stiffnesses of several N/m per atom, a total stiffness on the order of 30 N/m will not be
+      atypical", giving ~3e-16 W at 1 m/s and ~3e-20 W at 1 cm/s.
+    hedge: "will not be atypical"
+    support: INT
+    refs: ["7.3.4/oscillator-cross-section"]
+    polarity: "+"
+    consumed_by: ["10.3.4b-c", "12.3.4f"]
+
+  - id: 10.3.4/contact-acoustic-radiation-negligible
+    type: proposition
+    section: "10.3.4"
+    statement: >
+      F_max ≈ 1.7e10 delta-V_barrier (Eq. 10.6, from Eq. 3.19); Eq. 10.7 with delta-V = 1 maJ,
+      diamond, k ≈ 2.2e10 /m -> ~3e-19 W at 1 m/s, ~3e-23 W at 1 cm/s: "small compared to those
+      resulting from phonon scattering"; balanced-force geometries (Eq. 7.21) "still lower."
+    support: INT
+    refs: ["7.2.3/point-force-radiation", "7.2.5/pressure-in-volume-radiation", "Eq. 3.19"]
+    polarity: "-"
+    spot_check: "Eq. 10.7: 3.1e-19 and 3.1e-23 W. OK. (tests/test_ch10.py)"
+
+  - id: 10.3.4/contact-thermoelastic-negligible
+    type: proposition
+    section: "10.3.4"
+    statement: >
+      Eq. 7.50 with diamond parameters (K_T = 10), nm^2 areas and nm^3 volumes: alternating
+      forces ~3e-30 J/cycle (~1e-20 W); the varying total force (~1 nN, ~1 GPa over ~1 nm)
+      ~1e-27 J/cycle (~1e-18 W) at 1 m/s. "Thermoelastic-damping losses thus are small compared
+      to phonon-scattering losses."
+    support: INT
+    refs: ["7.4.1/isothermal-limit-reduction", "7.4.1/tau-therm-and-kt"]
+    polarity: "-"
+    hypotheses:
+      - 7.4.1/isothermal-limit-reduction
+    spot_check: >
+      Loaded-region case: 7.3e-28 J, 7.3e-19 W. OK. Alternating-force case: with F from Eq. 10.6
+      at 1 maJ over 1 nm^2 (17 MPa) the same recipe gives ~2e-31 J, 15x below the printed 3e-30;
+      inputs not stated. (tests)
+
+  - id: 10.3.5/static-friction
+    type: parameter
+    section: "10.3.5"
+    statement: >
+      Static friction "is effectively zero" where delta-V_barrier << kT; otherwise (low T, no
+      tunnelling) F_frict = 4 pi delta-V_barrier / d_a (Eq. 10.8): ~0.05 nN per maJ at d_a ≈
+      0.25 nm.
+    support: BARE
+    polarity: "+"
+    spot_check: "4 pi × 1e-21 / 0.25e-9 = 5.0e-11 N. OK."
+
+  - id: 10.3.6/coupled-sites-rigid-coupling
+    type: construction
+    section: "10.3.6"
+    statement: >
+      Extended contacts: smooth motion requires the positive stiffness linking regions to exceed
+      the negative stiffness of barriers "on all length scales." Pairing regions with
+      near-cancelling potentials gives |k_s| <= 3 delta-V_1 (pi/d_a)^2 (Eq. 10.9) = 0.5 N/m for
+      1 maJ, vs ~100 N/m for a 10 nm × 1 nm^2 diamond rod; induction over scales needs N >= 4
+      candidate structures per region (Eq. 10.10), "larger values ensure reliability."
+    support: INT
+    refs: ["10.3.1", "10.3.2"]
+    polarity: "+"
+    hypotheses:
+      - "barrier-height vectors of candidate structures are essentially randomly distributed (10.3.1-10.3.2 Monte Carlo model, not extracted)"
+      - "linking stiffness large compared to ~0.5 N/m"
+    spot_check: "0.47 N/m; rod 105 N/m. OK."
+    consumed_by: ["10.8", "12.3.3b"]
+
+  # ---- 10.4.1 - 10.4.5 Sleeve bearing models ----------------------------------------
+
+  - id: 10.4.1/cylindrical-interface-model
+    type: construction
+    section: "10.4.1"
+    statement: >
+      For stiffness and dynamic friction a sleeve bearing "can often be approximated as a
+      cylindrical interface" with normal stiffness per area k_a and a distinct (possibly low)
+      axial k_a,para; static friction needs atomic detail; in the no-relaxation approximation a
+      single coplanar ring-ring interaction "captures the essential characteristics ... save for
+      the omission of (potentially favorable) cancellations."
+    hedge: "can often be"
+    support: EXT
+    refs: ["Drexler 1987b"]
+    vintage: "CHECK — the 1987 preliminary study"
+    polarity: "+"
+    consumed_by: ["10.4.2-10.4.6", "10.5"]
+
+  - id: 10.4.2/lcm-symmetry
+    type: proposition
+    section: "10.4.2"
+    statement: >
+      For n-fold inner and m-fold outer rings the potential's symmetry angle is theta_sym =
+      2 pi / lcm(n, m) (Eq. 10.13; "Numerical experiments indicate"; "Merkle (1992b) has
+      constructed a mathematical proof"), giving an effective spatial frequency Eq. 10.14 that
+      is high when lcm(n, m) >> n.
+    support: EXT
+    refs: ["Merkle 1992b"]
+    vintage: "OK — number theory; check the Merkle reference is published"
+    polarity: "+"
+    consumed_by: ["10.4.3", "10.4.4"]
+
+  - id: 10.4.3/unloaded-barriers-minute
+    type: proposition
+    section: "10.4.3"
+    statement: >
+      Coplanar-ring MM2 exp-6 (H|H) calculations, d_a = 0.3 nm, s_gap = 0.2 nm (Fig. 10.10-10.12):
+      "Unloaded bearings for which lcm(n, m) >> n and d_a is reasonably small usually have minute
+      values of delta-V_barrier; the best values of n and m are relatively prime. Small loads,
+      however, destroy the symmetries upon which this result depends." Choices "significantly
+      adverse"; k_s ≈ 10 N/m per ring for isotropic systems.
+    hedge: "usually"
+    support: BARE
+    refs: ["Drexler's own computations, Figs. 10.10-10.12", "Eq. 3.8", "Table 3.1"]
+    polarity: "-"
+    hypotheses:
+      - "no-relaxation, single ring pair (10.4.1)"
+      - 10.4.2/lcm-symmetry
+    notes: Original computation; reproducible (coplanar rings, MM2 exp-6). Candidate for nsaudit.
+
+  - id: 10.4.4/loaded-barriers-negligible-for-large-nm
+    type: proposition
+    section: "10.4.4"
+    statement: >
+      Offsetting the inner ring: "even small displacements destroy the delicate cancellations
+      required for extremely low delta-V_barrier, but for suitably chosen systems with n and
+      m >= 25, values of delta-V_barrier can be negligible compared to kT_300, even at
+      substantial displacements." Holds for multiple rings "so long as their number is modest or
+      (as can often be arranged) they contribute sinusoidal potentials that ... approximately
+      cancel." n = 9, m = 14, delta-x = 0.01 nm: F ~0.96 nN, barrier ~1 maJ, force fluctuation
+      ~0.1 nN, k_s ~100 N/m, energy fluctuation ~0.05 maJ. n = 19, m = 27: ~2 nN, 210 N/m,
+      fluctuations < 1e-4 nN, ~1e-29 J.
+    hedge: "suitably chosen ... can be negligible ... as can often be arranged"
+    support: BARE
+    refs: ["Drexler's own computations, Figs. 10.13-10.14"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "n, m >= 25 or a suitably chosen smaller pair"
+      - "ring count modest or phases arranged to cancel"
+      - "no-relaxation approximation"
+    consumed_by: ["10.4.6a", "10.4.7", "11", "13"]
+    notes: >
+      The load-bearing result for loaded bearings; the "energy fluctuations neglected" (0.05 maJ
+      for n=9,m=14) are comparable to the 12.3.4 loss budget lines. Reproducible.
+
+  - id: 10.4.4/axial-load-via-corrugations
+    type: proposition
+    section: "10.4.4"
+    statement: >
+      "Load along the axis can be supported by interlocking circumferential corrugations, and
+      do not disrupt the rotational symmetry of the bearing."
+    support: BARE
+    polarity: "-"
+    consumed_by: ["10.4.6b", "10.4.7"]
+
+  - id: 10.4.5/transverse-continuum-stiffness
+    type: parameter
+    section: "10.4.5"
+    statement: >
+      Transverse-continuum surface model (3.5.2, Fig. 3.12) "provides a good approximation for a
+      broad class of sleeve bearings"; k_a ranges from large positive to moderate negative with
+      s_gap; at k_a ≈ 0 the interfacial tensile stress "can be ~1 GPa, but this is only a few
+      percent of the tensile strength of diamond"; k_s,bear = pi k_a l r_eff (Eq. 10.15).
+    hedge: "good approximation for a broad class"
+    support: INT
+    refs: ["3.5.2", "Fig. 3.12"]
+    polarity: "+"
+    hypotheses:
+      - "surfaces smooth, regular, nonpolar, nonreactive and out of register"
+      - "r_eff >> s_gap"
+      - "k_a > 0 (shaft centred)"
+    consumed_by: ["10.4.6", "11", "12.3.3"]
+
+  # ---- 10.4.6 Mechanisms of energy dissipation ---------------------------------------
+
+  - id: 10.4.6/dissipation-inventory
+    type: scope-condition
+    section: "10.4.6"
+    statement: >
+      Sleeve-bearing losses considered: acoustic radiation (7.2), shear-reflection drag (7.3.6),
+      band-stiffness scattering (7.3.5c), band-flutter scattering (7.3.5d), thermoelastic damping
+      (7.4.1). "Aside from acoustic radiation, all of the following models estimate dissipation
+      at the cylindrical interface ... using relationships developed for the limiting case of a
+      flat interface between indefinitely extended solids." Sample bearing: k_s,bear = 1000 N/m,
+      r_eff = l = 2 nm.
+    support: INT
+    refs: ["7.2", "7.3.5", "7.3.6", "7.4.1"]
+    polarity: "-"
+    priority: high
+    notes: >
+      Second use site (after 12.3.4) whose inventory omits phonon viscosity (7.4.2) — here the
+      "nearly pure shear" branch of the exception is the relevant one — and interfacial
+      phonon-phonon scattering (7.3.7). See the inferred imports below. Adjudicate at audit.
+
+  - id: 10.4.6/acoustic-radiation-negligible
+    type: proposition
+    section: "10.4.6"
+    statement: >
+      Unloaded symmetrical bearings of high spatial frequency: oscillating forces zero, torques
+      and pressures negligible. Loaded: torsional radiation Eq. 10.16 ~1e-25 W (delta-V = 1 maJ,
+      r = 1 nm, v = 1 m/s, d_a = 0.25 nm); force radiation Eq. 10.17 with "In typical instances,
+      F_max << 0.1 nN" -> << 1e-17 W; n = 19, m = 27 -> ~1e-23 W. Avoid sustained operation near
+      the transverse resonance Eq. 10.18 (~100 m/s, > 1e12 rad/s for ~1000 N/m rotors).
+    hedge: "In typical instances"
+    support: INT
+    refs: ["7.2.3/point-force-radiation", "7.2.4/point-torque-radiation", "10.4.4/loaded-barriers-negligible-for-large-nm"]
+    polarity: "-"
+    spot_check: "Eq. 10.16 with G = E/2 gives 4.9e-25 W (book ~1e-25); Eq. 10.17: 1.4e-17, 1.4e-23 W; critical speed ~130 m/s. OK. (tests)"
+
+  - id: 10.4.6/t-trans-diamond
+    type: parameter
+    section: "10.4.6"
+    statement: >
+      Eq. 7.41-7.42 with diamond modulus, atom density and Debye temperature at 300 K:
+      T_trans ≈ z/(1+3z), z = 2.4e-37 k_a^1.7 (Eq. 10.19; k_a in N/m^3), T_trans ≈ z for
+      k_a <= 300 N/m·nm^2 (Eq. 10.20). "these approximations should overestimate the transmission
+      coefficient for interfaces that are curved or that have mismatched acoustic speeds, and
+      hence should prove conservative."
+    hedge: "should overestimate ... should prove conservative"
+    support: INT
+    refs: ["7.3.5/transmission-coefficient", "7.3.5/planar-model-is-upper-bound"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.3.5/transmission-coefficient
+      - 7.3.5/planar-model-is-upper-bound
+    spot_check: >
+      2.4e-37 reproduces from Eq. 7.41 with M = 1.05e12, n = 176/nm^3 and T_D = 2230 K (the
+      measured value), reading d_n as n^(+1/3) M/k_a. Two things follow: (i) §7.3.5e prints
+      d_n = n^(-1/3) M/k_a, which is dimensionally m^2 and cannot be "thickness in atomic layers";
+      the constant requires n^(+1/3), so the printed exponent sign is a typo; (ii) the T_D used
+      here is the measured 2230 K, not the 1570 K that the printed Eq. 7.29 yields — with 1570 K
+      the constant would be 1.5e-37. Consistent with 7.3.2's working values being right and its
+      printed equation wrong. (nsaudit.ch10.t_trans_coefficient, tests)
+    consumed_by: ["10.4.6b-e", "11", "12.3.4c"]
+
+  - id: 10.4.6/shear-reflection-drag
+    type: parameter
+    section: "10.4.6"
+    statement: >
+      Eq. 10.21: P_drag < 1.8e-33 k_a^1.7 v^2 S; via Eq. 10.15, Eq. 10.22: < 1.6e-33
+      k_s,bear^1.7 (l r_eff)^-0.7 v^2. Sample bearing: ~3e-16 W at 1 m/s, ~3e-20 W at 1 cm/s.
+      Axial-stiffness coupling adds an independent channel, ~0.3 P_drag when axial stiffness
+      equals k_s,bear.
+    support: INT
+    refs: ["7.3.6/shear-reflection-drag", "10.4.6/t-trans-diamond", "10.4.5/transverse-continuum-stiffness"]
+    polarity: "+"
+    hypotheses:
+      - 7.3.6/shear-reflection-drag
+      - "D_sr ≈ 1"
+      - 10.4.6/t-trans-diamond
+    spot_check: "1.8e-33 = (eps/2)(2.4e-37)/v_s with eps = 2e8, v_s = 1.38e4; 1.6e-33 = 1.8e-33 × 2 pi pi^-1.7; 3.0e-16 W. OK. (tests)"
+    consumed_by: ["10.4.6f", "11", "12.3.4c"]
+
+  - id: 10.4.6/band-stiffness-drag
+    type: parameter
+    section: "10.4.6"
+    statement: >
+      Eq. 10.23: P_drag < 3.0e-33 k_a^1.7 R^2 (delta-k_a/k_a) v^2 S; Eq. 10.24 in k_s,bear form
+      (2.7e-33). Sample bearing, R = 10: ~2e-14 W at 1 m/s for delta-k_a/k_a = 0.4;
+      ~1.5e-16 W for 0.003.
+    support: INT
+    refs: ["7.3.5/band-stiffness-drag", "10.4.6/t-trans-diamond"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.3.5/band-stiffness-drag
+      - 10.4.6/r-le-10-by-design
+      - 10.4.6/delta-ka-over-ka-values
+      - 7.2.6/subsonic-bands-design-constraint
+    spot_check: "3.0e-33 = 0.85 (eps/v_s) 2.4e-37; 2.7e-33 after cylinder conversion; 2.05e-14 and 1.5e-16 W. OK. (tests)"
+    consumed_by: ["10.4.6f", "11", "12.3.4c (Eq. 10.23 with 0.4, R = 10)", "13"]
+    aliases: ["Eq. 10.23", "band-stiffness scattering drag"]
+    notes: >
+      This is the formula 12.3.4c applies to logic rods, with the high-drag parameter set
+      (0.4). Prase's edge/perimeter-friction objection (Qu et al. 2020) attaches here: the
+      formula is an area law with no edge term.
+
+  - id: 10.4.6/r-le-10-by-design
+    type: design-license
+    section: "10.4.6"
+    statement: >
+      In the coplanar ring model R = |m/(m - n)|; "if the interatomic spacings in the inner and
+      outer rings are equal, then R ≈ 10 when s_gap ≈ 0.2 nm, and r_inner <= 2 nm. Regardless of
+      bearing radius, differences in surface structure or strain on opposite sides of the
+      interface can be used to ensure that R <= 10."
+    support: BARE
+    polarity: "-"
+    hypotheses:
+      - 7.2.6/band-velocity-ratio
+    consumed_by: ["10.4.6c-f", "7.3.5 (worked values)", "12.3.4c"]
+    notes: Every downstream R = 10 traces here. No design example demonstrates the "regardless of radius" claim.
+
+  - id: 10.4.6/delta-ka-over-ka-values
+    type: parameter
+    section: "10.4.6"
+    statement: >
+      delta-k_a/k_a from stiffness variation of nonbonded row-row interactions vs offset,
+      "strongly dependent on the spatial frequencies involved": for first-row atoms (carbon
+      model) ≈ 0.3-0.4 (stiffness per atom 1 and 10 N/m) at d_a = 0.25 nm, and ~0.001-0.003 at
+      d_a = 0.125 nm; the latter "cannot be physically achieved in coplanar rings, but it
+      correctly models a ring sandwiched between two other equidistant rings ... with a
+      rotational offset of 0.125 nm."
+    support: BARE
+    refs: ["Drexler's own computation (unpublished detail)"]
+    polarity: "+"
+    priority: high
+    consumed_by: ["10.4.6c-f", "10.4.7a", "7.3.5 (worked values)", "12.3.4c"]
+    notes: >
+      A 100x lever on every bearing drag number, resting on an unshown calculation and a
+      geometric argument for the low value. Reproducible with MM2 exp-6 row sums. Candidate for
+      nsaudit. Which value a downstream design earns depends on 10.4.7/interface-catalogue.
+
+  - id: 10.4.6/band-flutter-negligible
+    type: proposition
+    section: "10.4.6"
+    statement: >
+      Eq. 10.25 (1.2e-31 k_s^1.7 (l r)^-0.7 R^2 (A/d_a)^2 v^2) with delta-p <= 3e-11 delta-k_a
+      (Eq. 3.18), stress decay depth w = R d_a / 2 pi ≈ 0.4 nm, A ≈ w delta-p / M: < 5e-18 W for
+      k_a = 8e19, delta-k_a/k_a = 0.4; "negligible in comparison to band-stiffness scattering."
+    support: INT
+    refs: ["7.3.5/band-flutter-drag", "Eq. 3.18"]
+    polarity: "-"
+    spot_check: "w = 0.40 nm, A = 3.7e-13 m, P = 4.9e-18 W; constant 1.27e-31. OK. (tests)"
+
+  - id: 10.4.6/thermoelastic-negligible
+    type: proposition
+    section: "10.4.6"
+    statement: >
+      Eq. 10.26: P ≈ 4.3e-27 · 2 pi r_eff l w (delta-p v / d_a)^2 with tau_therm = 1e-12 s;
+      ~6e-16 W (delta-k_a/k_a = 0.4), ~8e-20 W (0.003) at 1 m/s. "This too is negligible in
+      comparison to band-stiffness scattering."
+    support: INT
+    refs: ["7.4.1/isothermal-limit-reduction", "7.4.3/moving-part-drag"]
+    polarity: "-"
+    hypotheses:
+      - 7.4.1/isothermal-limit-reduction
+      - "tau_therm = 1e-12 s (asserted)"
+    spot_check: >
+      4.3e-27 = 2 beta^2 T tau / C_vol, i.e. Eq. 7.50 with t_cycle = d_a/v rather than the
+      Eq. 7.54 form the text names. 6.4e-16 W reproduces; the 0.003 case gives 3.6e-20 vs
+      printed 8e-20 (factor 2). tau_therm = 1e-12 s is 40x the Eq. 7.51 diffusive value for a
+      0.4 nm region at K_T = 10 (and 2.5e9x the K_T = 700 value): conservative for loss. Note
+      6e-16 W exceeds the shear-reflection term (3e-16) — "negligible" is relative to the
+      2e-14 band-stiffness term in the 0.4 case only. (tests)
+
+  - id: 10.4.6/total-drag-bound
+    type: parameter
+    section: "10.4.6"
+    statement: >
+      Eq. 10.27: P_drag < (2.0e-33 + 3.5e-33 (delta-k_a/k_a) R^2) k_s,bear^1.7 (l r_eff)^-0.7
+      v^2, dropping "apparently negligible" mechanisms and ×1.3 for axial stiffness. Sample:
+      ~2.7e-14 v^2 W (0.4, "dominated by band-stiffness scattering") or ~5.8e-16 v^2 W (0.003);
+      "< 0.06 kT_300 per rotation" at 1 m/s; "high ... per unit volume (~1e11 W/m^3)".
+      "intended to provide only a gross upper bound"; two-digit constants "usually lack the
+      accuracy that this notation might imply."
+    hedge: "apparently negligible ... gross upper bound"
+    support: INT
+    refs: ["10.4.6/shear-reflection-drag", "10.4.6/band-stiffness-drag"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 10.4.6/dissipation-inventory
+      - 10.4.6/t-trans-diamond
+      - 10.4.6/r-le-10-by-design
+      - 10.4.6/delta-ka-over-ka-values
+      - 7.3.5/planar-model-is-upper-bound
+      - 7.2.6/subsonic-bands-design-constraint
+    spot_check: >
+      Constants and both sample values reproduce. Per rotation: 2.7e-14 W × 2 pi (2 nm) / (1 m/s)
+      = 3.4e-22 J = 0.082 kT, not 0.06 (25% low vs its own inputs). Power density over the
+      interface cylinder is 1.1e12 W/m^3; ~1e11 needs an outer radius ~6 nm (volume undefined
+      in the text). (tests)
+    consumed_by: ["11", "13", "14", "12.3.4c"]
+    aliases: ["bearing drag bound", "Eq. 10.27"]
+
+  - id: 10.4.6/drag-consistent-with-efficiency
+    type: proposition
+    section: "10.4.6"
+    statement: >
+      The per-rotation loss "is consistent with high system efficiency, if a rotation of the
+      bearing is associated with some process that does many times kT_300 of useful work (e.g.,
+      in a motor, Section 11.7, or a mechanosynthetic system, Section 13.3)."
+    hedge: "if"
+    support: INT
+    refs: ["11.7", "13.3"]
+    polarity: "-"
+    consumed_by: ["11.7", "13.3", "14"]
+
+  # ---- 10.4.7 Sleeve bearings in molecular detail ---------------------------------------
+
+  - id: 10.4.7/interface-catalogue
+    type: construction
+    section: "10.4.7"
+    statement: >
+      Terminated diamond (111) and (100) interfaces (Figs. 10.15-10.16: N, H, F, O, S
+      terminations; interlocking rows). Interfaces with d_a ≈ 0.25 nm are "the high-drag cases";
+      H- and F-terminated (111) "will (in the absence of significant axial loads) exhibit
+      d_a,eff ≈ 0.125 nm ... the low-drag cases"; N-terminated (111) has 0.125 nm first-layer
+      but "the second atomic layer introduces significant interactions with d_a ≈ 0.25 nm."
+    support: BARE
+    refs: ["Drexler's own designs"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "no significant axial load (for the 0.125 nm effective spacing)"
+    consumed_by: ["10.4.6c (which delta-k_a/k_a a design earns)", "11", "13"]
+    notes: >
+      Decides whether a real bearing gets the 0.003 or the 0.4 drag parameter: the low value
+      needs H/F termination AND no axial load. Interlocking (axially stiff) interfaces are all
+      high-drag. Cross-check every Part II bearing that claims low drag against this.
+
+  - id: 10.4.7/interfacial-stability
+    type: proposition
+    section: "10.4.7"
+    statement: >
+      Each interface "appears stable enough for practical use under the baseline conditions
+      assumed in this volume (i.e., no extreme temperatures, no UV exposure, no extraneous
+      reactive molecules, no extreme mechanical loads)"; low-polarity interfaces "should
+      guarantee the absence of contact charging"; surface-surface reaction is strongly
+      endoergic, barrier > 500 maJ, rate < 1e-39 /s.
+    hedge: "appears stable enough ... should guarantee"
+    support: BARE
+    refs: ["6.4.7 (contact charging)"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "baseline conditions: no extreme T, no UV, no reactive molecules, no extreme loads"
+    consumed_by: ["11", "13", "14"]
+    notes: The > 500 maJ barrier is asserted from bond-count reasoning, not computed. Adjudicate at audit.
+
+  - id: 10.4.7/graphite-18gpa
+    type: parameter
+    section: "10.4.7"
+    statement: >
+      Graphite transforms to a transparent nondiamond phase at ~18 GPa at room temperature
+      (Utsumi and Yagi 1991), ~0.5 nN per atom, ~20 N/m; nucleated at specific sites over ~1 h;
+      "Small areas of graphitic bearing interface can presumably be made that lack suitable
+      nucleation sites, hence interfacial pressures of ~18 GPa should be consistent with
+      chemical stability."
+    hedge: "presumably ... should be"
+    support: EXT
+    refs: ["Utsumi and Yagi 1991"]
+    vintage: "CHECK — cold-compressed graphite phase; later work (Mao et al. 2003) confirms a ~17 GPa transition"
+    polarity: "-"
+
+  - id: 10.4.7/strained-shell-bearing-2808
+    type: construction
+    section: "10.4.7"
+    statement: >
+      2808-atom strained-shell bearing, n = 34, m = 46 (lcm/n = 23), r_eff ≈ 3.5 nm, l ≈ 1.0 nm,
+      outer radius ~4.8 nm, interlocking (100)-derived interface with S bridges (Figs. 10.17-18).
+      MM2 (Polygraf): max strained C-C 0.166 nm "well within the estimated positive-stiffness
+      limit of 0.187 nm"; closest contacts 0.284 (S|O), 0.270 nm (S|N), forces ~0.56, ~1.1 nN,
+      stiffnesses ~20, ~40 N/m; interface compliance ~1e-21 m^2·m/N; axial stiffness "should
+      exceed 2000 N/m"; delta-V_barrier < 0.03 maJ; "the estimated drag in a bearing of this
+      sort is larger than that calculated in the examples of Section 10.4.6."
+    hedge: "perhaps over designed ... should exceed"
+    support: EXT
+    refs: ["Merkle 1991 (structure generator)", "Polygraf (Polygen)", "Drexler's own computation"]
+    vintage: "CHECK — MM2 on strained shells; recompute with a modern potential"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 9.6.1/permissible-bond-strain
+      - 9.6.1/strained-shell-instability-avoided
+      - 9.3.1/mm2-adequate
+    consumed_by: ["11", "13"]
+    notes: >
+      A concrete atomic-detail design with stated numbers: the best reproduction target in
+      Ch. 10 (Moriarty's "examples in atomic detail are sparse" concern applies; this is one).
+      Note the last sentence: the designed bearing is higher-drag than the sample calculation.
+
+  - id: 10.4.7/small-bearing-n-chains
+    type: construction
+    section: "10.4.7"
+    statement: >
+      Small sleeve bearing (Fig. 10.19) with sp3 nitrogen-chain ridges on shaft and sleeve.
+      "isolated chains of this sort are apparently unstable (a search of the chemical
+      literature failed to identify a well-characterized example)"; embedded chains resist
+      cleavage elastically; the accessible failure mode (N=N dimerisation, Fig. 10.20) "is only
+      moderately exoergic (~70 maJ?) on a per-bond-cleaved basis" and kinetically prohibited;
+      "these structures appear sufficiently stable for use, although none of the following
+      design and analysis relies on this." MM2/CSC with custom N-N-N parameters (theta_0 =
+      114.5 deg from AM1; k_theta = 0.740 aJ/rad^2): axial stiffness ~360 N/m, transverse
+      ~470 N/m, rotational barriers < 0.001 maJ; "Bearing stiffnesses (but not barriers) are
+      sensitive to the choice of theta_0." Strain energy ~12 aJ, 71% angle bending, 22
+      cyclobutane rings; press-fit assembly costs ~1.7 aJ, "appears feasible". Designed 1990;
+      the Fig. 1.1 bearing is a different 1992 structure omitting the N atoms.
+    hedge: "apparently unstable ... ~70 maJ? ... appear sufficiently stable ... appears feasible"
+    support: BARE
+    refs: ["Drexler's own computation; AM1 fit with R. Merkle"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 9.3.1/mm2-adequate
+      - "MM2 extended with ad hoc N-N-N parameters"
+    notes: >
+      Self-flagged chemistry ("questionable sp3 nitrogen atoms", per the Fig. 1.1 remark).
+      Reproducible with DFT today; this is exactly the kind of structure Moriarty's critique
+      asks to see checked. High-value reproduction target.
+
+  - id: 10.4.8/asymmetric-sleeve-compensation
+    type: design-license
+    section: "10.4.8"
+    statement: >
+      Transverse load "can (in many instances) be supported by differences in van der Waals
+      attraction resulting from an asymmetric structure" (Hamaker-constant regions behind the
+      surface), reducing delta-V_barrier and raising load capacity without raising interfacial
+      stiffness; for sleeves with > 10 interfacial atoms "the calculations of Section 10.3
+      suggest that an asymmetric placement of sleeve atoms can be chosen to ensure that
+      delta-V_barrier < 1 maJ."
+    hedge: "in many instances ... suggest ... can be chosen"
+    support: INT
+    refs: ["10.3"]
+    polarity: "-"
+    hypotheses:
+      - "10.3 Monte Carlo barrier statistics apply (not extracted)"
+
+  - id: 10.4.8/assembly-of-interlocking-sleeves
+    type: proposition
+    section: "10.4.8"
+    statement: >
+      Shallow-groove or large-gap bearings "often can be assembled ... by pressing the shaft into
+      the sleeve"; strongly interlocking ones cannot: the sleeve "must be synthesized in situ
+      around the shaft ... or must have a final assembly step that closes an adhesive
+      interface"; two C-shaped segments with seams "can nonetheless be designed to exhibit low
+      delta-V_barrier."
+    support: BARE
+    polarity: "+"
+    consumed_by: ["13", "14"]
+    notes: A manufacturability constraint stated here and owed by Ch. 13-14.
+
+  # ---- 10.8 Barriers in extended systems -----------------------------------------------
+
+  - id: 10.8/barriers-in-extended-systems
+    type: proposition
+    section: "10.8"
+    statement: >
+      For mechanically coupled components moving "as a nearly rigid unit" along q, where local
+      negative stiffnesses are small compared to linking stiffnesses, "the overall barriers are
+      bounded by the sum of the component barriers, but can be much lower if nearly sinusoidal
+      contributions from different components have the same period and are made to cancel."
+    support: INT
+    refs: ["10.3.6/coupled-sites-rigid-coupling"]
+    polarity: "+"
+    hypotheses:
+      - 10.3.6/coupled-sites-rigid-coupling
+    consumed_by: ["12.3.3b", "11", "13"]
+    aliases: ["Section 10.8", "barriers in extended systems"]
+
+  - id: 10.8/tuning-component
+    type: design-license
+    section: "10.8"
+    statement: >
+      A subsystem "can commonly be extended by adding a tuning component" whose only function is
+      to adjust the overall potential; for irregular-on-irregular sliding, strips of the tuning
+      surface each interacting with one moving atom give "sufficient freedom to design systems
+      with V'(q) ≈ -V(q)." "This design task is feasible if each strip of the fixed surface of
+      the tuning component interacts with only one moving atom."
+    hedge: "can commonly ... feasible if"
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "V(q) does not produce excessive negative stiffness"
+      - 10.8/barriers-in-extended-systems
+    consumed_by: ["10.12", "11", "12"]
+    notes: >
+      An existence argument by counting degrees of freedom, with no worked example or
+      constructive procedure (cf. 9.5.3/brute-force-inadequate). Adjudicate at audit.
+
+  # ---- 10.11 - 10.12 -------------------------------------------------------------------
+
+  - id: 10.11/bounded-continuum-license
+    type: design-license
+    section: "10.11"
+    statement: >
+      Diamondoid components "can approximate any desired shape, so long as strong precision and
+      symmetry requirements are not imposed, and so long as features either have a specified
+      structure or dimensions >= 1 nm"; properties "can approximate those of diamond, save for a
+      surface correction ... and degradation of stiffness by a factor no worse than 0.5"; smooth
+      motion "may be assumed" when one of the 10.3-10.5 conditions holds. "Models of this sort
+      are used for much of the analysis in the following chapters."
+    support: INT
+    refs: ["9.5", "9.4.2/delta-surf", "9.8/bulk-stiffness-applies", "10.3", "10.4", "10.5", "10.8"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 9.5.3/any-shape-buildable
+      - 9.8/bulk-stiffness-applies
+      - 10.11/stiffness-factor-0.5
+      - 10.12/smooth-sliding-conditions
+    consumed_by: ["11", "12.3.3", "13", "14"]
+    aliases: ["bounded continuum model (Part II usage)"]
+
+  - id: 10.11/stiffness-factor-0.5
+    type: parameter
+    section: "10.11"
+    statement: >
+      "degradation of stiffness by a factor no worse than 0.5, to account for less dense arrays
+      of bonds, the use of second-row elements, and the like."
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["12.3.3 (E = 5e11)", "11", "13"]
+    notes: >
+      Origin of 12.3.3/e-5e11-conservative. Asserted, not derived from 9.4.3's MM2 rod moduli
+      (which show deficits attributed to MM2 artefacts). Adjudicate at audit together with
+      9.4.3/deficit-is-mm2-artifact.
+
+  - id: 10.12/smooth-sliding-conditions
+    type: scope-condition
+    section: "10.12"
+    statement: >
+      Smooth sliding may be assumed given (1) translational or rotational symmetry in one
+      component and adequate size and design flexibility in the other (10.3), (2) suitable
+      symmetry in both (10.4-10.5), or (3) coupling to a compensating irregular potential
+      (10.8). "Energy dissipation can be estimated using the methods of Chapter 7."
+    support: INT
+    refs: ["10.3", "10.4", "10.8"]
+    polarity: "+"
+    consumed_by: ["10.11", "11", "12", "13"]
+
+  - id: 10.12/not-all-bearings-established
+    type: scope-condition
+    section: "10.12"
+    statement: >
+      "The analysis presented in this chapter does not establish that all classes of
+      sliding-interface bearing are feasible in the nanometer size range": a smoothly sliding
+      ball-and-socket joint needs smoothness in three rotational degrees of freedom, which neither
+      symmetry nor tuning guarantees "in a stiff, nanoscale device" (a Hooke joint substitutes).
+    support: BARE
+    polarity: "+"
+    notes: An author-declared limit; check that no Part II design uses a ball-and-socket.
+
+  - id: 10.12/device-list-feasible
+    type: proposition
+    section: "10.12"
+    statement: >
+      "it is feasible to construct nanomechanical rotary bearings, sliding shafts, drive shafts,
+      screws and nuts, power screws, snaps, brakes, dampers, worm gears, constant-force springs,
+      roller bearings, levers, cams, toggles, cranks, clamps, hinges, harmonic drives, bevel
+      gears, spur gears, planetary gears, detents, ratchets, escapements, indexing mechanisms,
+      chains and sprockets, differential transmissions, Clemens couplings, flywheels, clutches,
+      Stewart platforms, robotic positioning mechanisms, and suitably adapted working models of
+      the Jacquard loom, Babbage's Difference and Analytical Engines, and so forth."
+    support: INT
+    refs: ["10.3-10.9"]
+    polarity: "-"
+    priority: normal
+    notes: >
+      The chapter's headline; most listed devices have no atomic-detail example (10.12 open
+      problems: "examples specified in atomic detail are sparse").
+
+  - id: 10.12/open-problems
+    type: scope-condition
+    section: "10.12"
+    statement: >
+      Open problems are "chiefly those of design": atomic-detail examples "are sparse"; need
+      many characterised examples "considering all plausible instabilities, measuring stiffness
+      in all important degrees of freedom" and "the sensitivity of device properties to
+      variation in the assumed potential energy function"; "The particular structures used in
+      this chapter ... may prove defective in other respects, but alternatives are abundant";
+      nanomechanical CAD and a component library are needed.
+    support: BARE
+    polarity: "+"
+    notes: "-> 10.4.7/strained-shell-bearing-2808, 10.4.7/small-bearing-n-chains, 10.8/tuning-component."
+
+imports:
+
+  # --- cited
+  - from: "7.3.4/oscillator-cross-section"
+    used_for: phonon-scattering drag of a small sliding contact
+    at: ["10.3.4a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.2.3/point-force-radiation"
+    used_for: acoustic radiation from a sliding contact (Eq. 10.7) and from loaded bearings (Eq. 10.17)
+    at: ["10.3.4b", "10.4.6a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.2.4/point-torque-radiation"
+    used_for: torsional radiation from loaded bearings (Eq. 10.16)
+    at: ["10.4.6a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.2.5/pressure-in-volume-radiation"
+    used_for: balanced-force sliding geometries radiate less
+    at: ["10.3.4b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.4.1/isothermal-limit-reduction"
+    used_for: Eq. 7.50 thermoelastic estimates for contacts and bearings (Eq. 10.26)
+    at: ["10.3.4c", "10.4.6e"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: 10.4.6e names Eq. 7.54 but its constant is the Eq. 7.50 form with tau = 1e-12 s (spot check on 10.4.6/thermoelastic-negligible).
+
+  - from: "7.4.3/moving-part-drag"
+    used_for: named source of Eq. 10.26
+    at: ["10.4.6e"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: The mean-free-path hypothesis (7.4.3/mfp-shorter-than-l) is not discussed; the 0.4 nm stress region is below the ~nm mean free path 7.4.2 itself assumes.
+
+  - from: "7.3.6/shear-reflection-drag"
+    used_for: Eq. 10.21-10.22
+    at: ["10.4.6b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.3.5/transmission-coefficient"
+    used_for: Eq. 10.19-10.20 diamond specialisation of Eq. 7.41-7.42
+    at: ["10.4.6b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.3.5/planar-model-is-upper-bound"
+    used_for: "these approximations should overestimate the transmission coefficient for interfaces that are curved"
+    at: ["10.4.6b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.3.5/band-stiffness-drag"
+    used_for: Eq. 10.23-10.24
+    at: ["10.4.6c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.3.5/band-flutter-drag"
+    used_for: Eq. 10.25
+    at: ["10.4.6d"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.2.6/band-velocity-ratio"
+    used_for: R = |m/(m - n)| in the coplanar ring model
+    at: ["10.4.6c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.5.2/transverse-continuum-surface-model"
+    used_for: k_a vs separation for smooth diamondoid surfaces (Fig. 3.12)
+    at: ["10.4.5"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3/eq-3.18-nonbonded-stiffness-vs-load"
+    used_for: delta-p <= 3e-11 delta-k_a
+    at: ["10.4.6d"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3/eq-3.19-force-amplitude-vs-barrier"
+    used_for: F_max ≈ 1.7e10 delta-V_barrier (Eq. 10.6)
+    at: ["10.3.4b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3/mm2-exp-6-potential"
+    used_for: coplanar-ring barrier calculations (Eq. 3.8, Table 3.1, H|H)
+    at: ["10.4.3", "10.4.4"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.3a/morse-potential"
+    used_for: 0.187 nm positive-stiffness bond-length limit
+    at: ["10.4.7c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.6.1/permissible-bond-strain"
+    used_for: the same 0.187 nm limit as stated in Ch. 9
+    at: ["10.4.7c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.6.1/strained-shell-instability-avoided"
+    used_for: strained-shell bearings assume "considerably smaller bond strains"
+    at: ["10.4.7a", "10.4.7c"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: 0.166 nm vs the 0.187 nm limit is 11% of margin in bond length; whether that is "considerably smaller" strain is the audit question.
+
+  - from: "9.5.3/any-shape-buildable"
+    used_for: "As discussed in Section 9.5, diamondoid components can approximate any desired shape"
+    at: ["10.11", "10.12"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.4.2/delta-surf"
+    used_for: surface correction to effective component size
+    at: ["10.11"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.8/bulk-stiffness-applies"
+    used_for: diamond properties for components, with a 0.5 stiffness factor
+    at: ["10.11"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.7/contact-charging"
+    used_for: low-polarity interfaces avoid contact charging
+    at: ["10.4.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.3.2/monte-carlo-barrier-model"
+    used_for: statistics of barrier heights for irregular structures (10.3.6 induction; 10.4.8 asymmetric sleeves)
+    at: ["10.3.6", "10.4.8a"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: Same chapter, section not extracted; pending until 10.3.1-10.3.3 are.
+
+  # --- inferred
+  - from: "7.2.6/subsonic-bands-design-constraint"
+    used_for: every band-drag formula assumes subsonic bands; with R <= 10 and v <= 100 m/s band speed <= 1e3 m/s << v_s
+    at: ["10.4.6c", "10.4.6f"]
+    cited: no
+    hypotheses_discharged: yes
+    notes: Discharged for the sample parameters by inspection (R v = 10 m/s at 1 m/s). Any bearing at v > ~1000 m/s would violate it.
+
+  - from: "7.4.2/phonon-viscosity-small-except"
+    used_for: >
+      Justification (never stated) for omitting phonon viscosity from the 10.4.6 inventory. A
+      sliding interface is a shear-loaded system; the "nearly pure shear" branch of the 7.4.2
+      exception is the relevant one here, and the stress region of 10.4.6d-e (w ≈ 0.4 nm, moving
+      at R v) has cycle frequency v/d_a = 4 GHz at 1 m/s.
+    at: ["10.4.6"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      Second unevaluated use site of the 7.4.2 exception (first: 12.3.4). The 12.3.4 audit
+      bounded the omission by the relaxation-strength limit; the same bound applies here with
+      the band stress delta-p. Adjudicate at audit with nsaudit; expect the term to be
+      comparable to 10.4.6e's thermoelastic figure, i.e. small vs band-stiffness in the 0.4
+      case but not in the 0.003 case.
+
+  - from: "7.3.7/interfacial-phonon-phonon-small"
+    used_for: omission of interfacial phonon-phonon scattering from the 10.4.6 inventory
+    at: ["10.4.6"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: 7.3.7 offers only "a preliminary evaluation suggests that this effect is small".
+
+  - from: "7.4.3/mfp-shorter-than-l"
+    used_for: Eq. 7.54 (named as the source of Eq. 10.26) assumes phonon mean free paths shorter than the stress-region scale l = w ≈ 0.4 nm
+    at: ["10.4.6e"]
+    cited: no
+    hypotheses_discharged: no
+    notes: >
+      7.4.2 itself puts nanomechanical mean free paths at ~nm, above 0.4 nm. Eq. 10.26 sidesteps
+      K_T by asserting tau_therm = 1e-12 s, so the practical effect is absorbed into a
+      conservative tau; record as not discharged, impact likely nil. Adjudicate at audit.

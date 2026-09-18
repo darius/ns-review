@@ -1048,7 +1048,7 @@ imports:
     cited: yes
     hypotheses_discharged: n/a
 
-  - from: "10/delta-ka-over-ka-small-by-design"
+  - from: "10.4.6/delta-ka-over-ka-values"
     used_for: >
       "As discussed in Chapter 10, delta-k_a/k_a can be made small in properly designed
       bearings of certain classes"; likewise A/d ~ 1e-2

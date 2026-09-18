@@ -87,14 +87,18 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 
 ## Current state (2026-09-18, evening)
 
-- Ch. 7 full (58 exports). Ch. 9 full (41). Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28).
-- `nsaudit/` exists: ch07 (all worked examples of §7.2–7.6), ch12 (exemplar rod, registers,
-  CPU power), one edge audit. 46 tests pass, 1 xfail documenting a text/equation
-  contradiction in §7.4.3. Eq. 7.29 is missing a π (see DECISIONS.md).
+- Ch. 7 full (58 exports). Ch. 9 full (41). Ch. 10 §10.3.4–10.3.6, 10.4, 10.8, 10.11–10.12
+  (37). Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28). 164 exports, 0 dangling imports.
+- `nsaudit/` exists: ch07 (all worked examples of §7.2–7.6), ch10 (contacts, bearing drag
+  chain with the diamond constants re-derived from ch07), ch12 (exemplar rod, registers, CPU
+  power), one edge audit. 62 tests pass, 1 xfail documenting a text/equation contradiction
+  in §7.4.3. Eq. 7.29 is missing a π and §7.3.5e's d_n has a sign typo (see DECISIONS.md).
 - One provisional verdict: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated,
   impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
-- Next: Ch. 10 (§10.4.6 and §10.8 are pending imports of Ch. 12; Ch. 7's worked drag numbers
-  cite Ch. 10 forward for Δk_a/k_a and A/d; Prase's friction target); then reconcile 7/9/12
-  and firm up the spike verdict; then Ch. 8 and 16 (Moriarty).
+- Next: decide what `reconciled` means operationally now that 7/9/10/12 have zero dangling
+  imports among themselves (their remaining imports are from Ch. 3, 4, 5, 6, 8, 13, 14); then
+  either Ch. 3 (the modelling chapter every Part II import chain bottoms out in: 3.3 MM2,
+  3.5 surface models, Eqs. 3.18–3.19) or Ch. 8 and 16 (Moriarty's targets). The 7.4.2
+  exception now has a second unevaluated use site at 10.4.6; the 12.3.4 bound should transfer.

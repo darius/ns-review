@@ -10,7 +10,8 @@ adjudicate claims in dependency order, weighted by how much depends on them.
 
 ## Status
 
-Early. Chapters 7 and 9 in full, and the dissipation/error sections of Chapter 12, are extracted. One
+Early. Chapters 7 and 9 in full, the bearing and drag sections of Chapter 10, and the
+dissipation/error sections of Chapter 12 are extracted. One
 edge has been adjudicated end to end as a spike (the §7.4.2 phonon-viscosity exception at its
 Ch. 12 use site), with the calculation in `nsaudit/` under test. See `generated/INDEX.md` for
 coverage, verdicts, and the priority set, and `CLAUDE.md` for what to do next.

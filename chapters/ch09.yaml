@@ -628,11 +628,15 @@ imports:
     at: ["9.5"]
     hypotheses_discharged: unknown
 
-  - from: "10/friction-and-tolerances"
+  - from: "10.11/bounded-continuum-license"
     used_for: forward deferral — where tight tolerances actually bind
     at: ["9.5.3"]
     hypotheses_discharged: unknown
-    notes: Forward reference; Ch. 10 must supply the exception to 9.5.3/any-shape-buildable.
+    notes: >
+      Forward reference; Ch. 10 must supply the exception to 9.5.3/any-shape-buildable. 10.11
+      restates it ("so long as strong precision and symmetry requirements are not imposed") and
+      10.12 gives the three smooth-sliding conditions; id updated 2026-09-18 when Ch. 10 was
+      extracted.
 
   - from: "13.2/receptors"
     used_for: forward cross-reference on binding

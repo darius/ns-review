@@ -208,6 +208,37 @@ What the spike found about the *schema*:
 - Bare fraction for Ch. 7 in full: see the index. 7.4 alone was 53%; the full chapter is lower
   because §7.2–7.3 cite the dislocation literature heavily.
 
+## Ch. 10 partial extraction (2026-09-18): bearings and the drag chain
+
+Sections 10.3.4–10.3.6, 10.4, 10.8, 10.11–10.12. Every constant in §10.4.6 (2.4e-37, 1.8e-33,
+3.0e-33, 1.2e-31, 4.3e-27) is re-derived in `nsaudit/ch10.py` from the Ch. 7 functions, so the
+Ch. 7 → Ch. 10 → Ch. 12 drag chain is now executable end to end.
+
+- **§7.3.5e's d_n has the wrong sign on the exponent.** Printed d_n = n^(-1/3) M/k_a has units
+  of m²; the "atomic layers" reading and the 2.4e-37 of Eq. 10.19 both need n^(+1/3). Typo.
+- **Eq. 10.19 uses the measured Debye temperature.** The 2.4e-37 reproduces only with
+  T_D = 2230 K; the 1570 K that the printed Eq. 7.29 yields would give 1.5e-37. Together with
+  the ε ≈ 2e8 finding, the Ch. 7 worked values were computed with the right k_D and the printed
+  Eq. 7.29 is the odd one out.
+- **§10.4.6f's "< 0.06 kT per rotation" is 0.082 kT from its own inputs.** 25% low; the
+  "~1e11 W/m³" needs a volume ~4× the interface cylinder (undefined in the text).
+- **Δk_a/k_a is a 100× lever on every bearing drag number** (`10.4.6/delta-ka-over-ka-values`:
+  0.3–0.4 vs 0.001–0.003) and rests on an unshown row-row stiffness calculation plus a
+  geometric argument. Which value a design earns is decided by `10.4.7/interface-catalogue`:
+  the low value needs H- or F-terminated (111) surfaces *and* no axial load; every interlocking
+  (axially stiff) interface is high-drag. 12.3.4c uses 0.4. The book's own designed bearing
+  (10.4.7c) is stated to have higher drag than the sample calculation.
+- **The 7.4.2 exception is unevaluated at a second site.** 10.4.6's inventory omits phonon
+  viscosity too, and here the "nearly pure shear" branch is the relevant one. Recorded as an
+  inferred import, not adjudicated (the 12.3.4 bound should transfer).
+- Eq. 10.26 is Eq. 7.50 with an asserted τ_therm = 1e-12 s (40× the Eq. 7.51 value for the
+  0.4 nm stress region), not Eq. 7.54 as the text says; conservative direction. Its "negligible"
+  6e-16 W exceeds the shear-reflection term it is compared against in the 0.4 case.
+- `10.11/stiffness-factor-0.5` is where 12.3.3's E = 5e11 comes from; asserted, not derived
+  from the 9.4.3 rod moduli.
+- Two atomic-detail bearings with stated numbers (10.4.7c, 10.4.7e; the latter on self-flagged
+  sp³ nitrogen chains and ad hoc MM2 parameters) are the best reproduction targets so far.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.
