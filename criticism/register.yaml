@@ -9,10 +9,19 @@
   url: https://muireall.space/pdf/considerations.pdf
   location: appendix (Nanosystems critique)
   targets:
-    - "7.4.2/phonon-viscosity-small-except"
-    - "12/rod-logic-q-3770"            # pending: Drexler's "1/600 of mechanical energy per cycle"
-    - "12/rod-logic-error-rate"         # pending: the 1e-64 error rate claim
-    - "12.7.4/energy-per-instruction"   # pending: 1e-16 J/instr, consumed by 14.4.8
+    - "7.4.2/phonon-viscosity-small-except"      # fn. 30 concedes the special case is stated
+    - "12.3.8/energy-per-cycle-2maj"             # the ~2 maJ / 1.2 aJ -> "1/600 per cycle", Q ~3770 (derived, not a book number)
+    - "12.3.6/state-energy-1.2aj"
+    - "12.3.4/nonthermal-vibrations-by-design"   # fn. 32: collective modes cannot be designed away -> the >= 2 OOM molecular-solid argument
+    - "12.3.3/bounded-continuum-applies"         # assembly treated as bulk diamond rather than a soft vdW-coupled lattice
+    - "12.3.4/rigid-body-approximation"          # molecular relaxation: ~6 ps lag vs 100 ps switch
+    - "12.3.4/vibrational-excitation-0.56maj"
+    - "12.3.4/sliding-drag-0.052maj"             # edge friction / superlubricity, via 10.4.6
+    - "10.4.6/band-stiffness-drag"               # pending
+    - "12.3.7/positional-error-model"            # FDT: equilibrium variance is not a finite-bandwidth noise model
+    - "12.3.7/error-rate-1e-64"
+    - "12.3.8/reliability-needs-no-dissipation"
+    - "12.7.4/power-74aj-per-clock"              # 1e-16 J/instr, consumed by 14.4.8
   claim: >
     Three arguments against the GHz rod-logic computer. (1) Akhiezer/phonon-viscosity damping:
     Drexler's Q ~3770 sits at the bulk-diamond f·Q ceiling (3.7e13 Hz) evaluated at the ~10 GHz
@@ -24,14 +33,28 @@
     dissipation increase drives noise force to ~0.5 nN vs ~1 nN alignment force -> errors in
     1e-3 to 1e-2 of cycles. Also: predictions that Drexler (10-40%) vs a peer (95%) would concede.
   status: unrebutted
-  axis: omitted-channel; stated-exception-not-honoured
+  axis: omitted-channel; stated-exception-not-honoured; material-choice
   notes: >
-    Our reading (see ch07.yaml 7.4.2/phonon-viscosity-small-except): the accurate charge is not
-    "omitted" but "included in 7.4.2 with an explicit exception for very high frequency motion,
-    which Ch. 12 may not honour." Fn. 30 of the critique acknowledges the Mason special case in
-    7.4.2. Fn. 28's claim that the Landau-Rumer crossover is at ~1 THz is wrong (back out tau
-    from the cited f·Q: crossover ~20-75 GHz), but not load-bearing. Argument (2) is the
-    strongest and needs none of the phonon-gas subtleties. The critique is scoped to
+    Read in full 2026-09-18 (Appendix C, pp. 17-25 of the PDF). Our reading (see ch07.yaml
+    7.4.2/phonon-viscosity-small-except and the 7.4.2 import in ch12.yaml): the accurate charge
+    is not "omitted" but "included in 7.4.2 with an explicit exception for very high frequency
+    motion, which Ch. 12 never evaluates." Fn. 30 acknowledges the Mason special case in 7.4.2
+    and says it "can be ignored for the vibrational modes of individual components" — we
+    computed the same (spike: <= +15% on the switching budget under the book's model). Fn. 28's
+    "~1 THz" for the regime change is wrong: backing tau out of the cited f·Q = 3.7e13 Hz gives
+    5e-12 to 1.2e-11 s and a crossover of ~10-30 GHz (nsaudit/ch07.py, tests), so a 0.1 ns
+    switch is near the Akhiezer peak, not far below it; this strengthens the critique's
+    bulk-diamond case slightly but is not load-bearing. The "Q ~3770 / 1/600 per cycle" is
+    Prase's construction from 12.3.8b and 12.3.6, not a book figure; Prase calls the agreement
+    with the bulk-diamond f·Q ceiling coincidental, and within the bulk model we find the
+    book's thermoelastic bound IS the relaxation-strength × strain-energy quantity, so the two
+    agree by construction. The >= 2 OOM claim rests entirely on re-modelling the assembly as a
+    soft molecular solid (sound speed ~1 km/s, fn. 31), which attacks the bounded-continuum
+    application (12.3.3) and the design-practice deferral of collective modes (12.3.4h), not
+    7.4.2. Argument (2), molecular relaxation, is the strongest and needs none of the phonon-gas
+    subtleties; it targets 12.3.4a-b. Argument (3), FDT, targets 12.3.7's equilibrium-only error
+    model and 12.3.8's "unrelated" claim. Also raised: edge friction dominating area friction
+    (Qu et al. 2020; DWNT simulations), targeting 10.4.6 via 12.3.4c. The critique is scoped to
     nanomechanical *computers*; it grants that slower-and-larger fixes most of it, so Ch. 13-14
     mills at 1 MHz are largely insulated (our analysis: ~2 OOM margin even granting the full
     correction). The propagation into Ch. 14 runs through the control-computation term

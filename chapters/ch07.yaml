@@ -174,6 +174,19 @@ exports:
       unreferenced and unquantified. The audit question is not "is Akhiezer damping present in
       the book" (it is) but "was the author's own stated exception honoured downstream" — a
       graph question answerable only by checking out-edges. See docs/DECISIONS.md.
+      2026-09-18: grep of the full text finds no citation of 7.4.2 anywhere outside 7.4; the
+      clause has no explicit out-edges. Adjudicated on the inferred edge to 12.3.4 (spike).
+    verdict: hypothesis-violated
+    verdict_notes: >
+      SPIKE VERDICT (provisional). at: 12.3.4. The item itself is fine as far as it goes — under
+      its own tau_relax = 1e-13 s the "very high frequency" exception is not triggered at 5-10 GHz
+      (omega·tau ~3e-3). But 12.3.4 never evaluates it, and with the inelastic thermalization time
+      the modern f·Q data imply (5e-12 to 1.2e-11 s) omega·tau is 0.4-0.7 there, inside the
+      exception. Impact bounded: the omitted term is <= 0.165 maJ per transition (relaxation-
+      strength bound, tau-independent), i.e. <= +15% on 12.3.8/energy-per-cycle-2maj. Full
+      calculation and numbers in chapters/ch12.yaml (import from this id) and
+      nsaudit/audit_phonon_viscosity_rod_logic.py. The BARE tau_relax (7.4.2/tau-relax-1e-13) is
+      the input that decides whether the exception fires, but not the magnitude.
 
   # ---- 7.4.3 Moving parts and alignment bands -------------------------------
 
@@ -192,6 +205,12 @@ exports:
       - 7.4.1/isothermal-limit-reduction
       - 7.4.1/single-axis-correction-neglected
     consumed_by: ["10"]
+    spot_check: >
+      Eq. 7.54 with the stated inputs gives 3.7 W/m^2 at 1 m/s (book ~4, OK) but 3.7e-4 W/m^2 at
+      1 cm/s, since the equation is ∝ v^2; the book's "0.04 W/m^2 at 1 cm/s" is ∝ v. Text and
+      equation disagree by 100×; the equation's v^2 is the physically expected scaling for
+      omega·tau << 1. Not a verdict; check against the print edition (could be transcription).
+      (tests/test_ch07.py, xfail)
 
   - id: 7.4.3/mfp-shorter-than-l
     prepass_id: N7-11

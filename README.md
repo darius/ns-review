@@ -10,9 +10,10 @@ adjudicate claims in dependency order, weighted by how much depends on them.
 
 ## Status
 
-Early. Chapter 9 and §7.4 are extracted. Nothing has been adjudicated. See
-`generated/INDEX.md` for coverage and the current priority set, and `CLAUDE.md` for what to do
-next.
+Early. Chapter 9, §7.4, and the dissipation/error sections of Chapter 12 are extracted. One
+edge has been adjudicated end to end as a spike (the §7.4.2 phonon-viscosity exception at its
+Ch. 12 use site), with the calculation in `nsaudit/` under test. See `generated/INDEX.md` for
+coverage, verdicts, and the priority set, and `CLAUDE.md` for what to do next.
 
 ## How it works
 
@@ -35,9 +36,11 @@ next.
 ## Running
 
 ```
-pip install pyyaml
-python tools/extract_chapter.py 9        # text from the book Markdown -> source/ch09.txt
-python tools/build.py                    # validate, regenerate generated/INDEX.md
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/python tools/extract_chapter.py 9   # text from the book Markdown -> source/ch09.txt
+.venv/bin/python tools/build.py               # validate, regenerate generated/INDEX.md
+.venv/bin/python -m pytest                    # reproduce the book's published numbers
+.venv/bin/python -m nsaudit.audit_phonon_viscosity_rod_logic   # print one edge audit
 ```
 
 The text is `full_book.md` from the `Mihonarium/nanosystems` GitHub repo (a transcription of

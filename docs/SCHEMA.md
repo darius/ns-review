@@ -70,6 +70,13 @@ imports:
     notes: ...
 ```
 
+Optional import fields:
+
+| field | values / notes |
+|---|---|
+| `cited` | `yes` (default) — the text references the source section, equation, or name · `no` — the dependency is ours: the chapter uses the result (or should have) without acknowledging it. Inferred imports are listed separately in the index; a `cited: no` import whose hypotheses are not discharged is the §7.4.2 pattern. |
+| `verdict`, `verdict_notes` | audit only, same lattice as exports. Use the **import** side for `hypothesis-violated`: the export is fine, this use site is not. Mirror a one-line pointer on the export so it shows in the reverse index. |
+
 An import whose `from` chapter has not been extracted is **pending** (fine). An import whose
 `from` chapter *has* been extracted but contains no such id is **dangling** (reconciliation item).
 

@@ -14,7 +14,8 @@ criticism/register.yaml prior critiques and experiments; each imports from chapt
 source/                 full_book.md (upstream Markdown, auto-fetched) + extracted text (tools/extract_chapter.py)
 tools/build.py          validate + generate; run before every commit
 tools/extract_chapter.py
-generated/INDEX.md      reverse index, priority set, pending/dangling — never hand-edit
+nsaudit/                calculation package; tests/ reproduce published numbers (run: .venv/bin/python -m pytest)
+generated/INDEX.md      reverse index, priority set, inferred imports, verdicts — never hand-edit
 docs/SCHEMA.md          field reference and verdict lattice
 docs/DECISIONS.md       design rationale and source pointers
 ```
@@ -64,10 +65,17 @@ class is the highest-value and most easily missed.
 export ids, pending if the chapter isn't extracted. Read the source, don't summarise from
 secondary descriptions. Set `status: unread` if you haven't.
 
-**Audit an item** (only after its chapter and its imports' chapters are `reconciled`):
+**After extracting chapter N**, read `generated/INDEX.md` for `consumed_by` forward claims
+that point at N. For each, add an import to `chNN.yaml` — `cited: yes` if the text references
+it, `cited: no` if N uses (or should have used) the result silently. The inferred ones are
+where the findings are.
+
+**Audit an item** (only after its chapter and its imports' chapters are `reconciled`; the
+2026-09-18 spike is the one sanctioned exception, and its verdicts say "provisional"):
 verify each hypothesis at each import site; fill `verdict`, `verdict_notes`,
-`hypotheses_discharged` on the import side. Put reproducible calculations in a tested
-module (to be created: `nsaudit/`), not in prose.
+`hypotheses_discharged` on the import side, with a one-line mirror on the export. Put the
+calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`. A
+`hypothesis-violated` verdict must state the magnitude of the downstream impact.
 
 ## Do not
 
@@ -77,10 +85,15 @@ module (to be created: `nsaudit/`), not in prose.
 - Do not summarise the book's argument in a chapter file; record claims.
 - Do not run `memory_delete`-style cleanups on `generated/` — just rebuild it.
 
-## Current state (2026-09-18)
+## Current state (2026-09-18, evening)
 
-- Ch. 9 extracted in full (41 exports). Ch. 7 §7.4 only (13 exports).
-- Criticism register seeded with 9 entries; 4 marked unread.
-- Next: Ch. 7 in full (highest out-degree), then Ch. 12 §12.3–12.4 to close the
-  `7.4.2/phonon-viscosity-small-except` trace, then Ch. 8 and 16 (Moriarty's targets).
-- No adjudication has been done. No `nsaudit/` calculation module exists yet.
+- Ch. 9 full (41 exports). Ch. 7 §7.4 (13). Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28).
+- `nsaudit/` exists: ch07 (§7.4), ch12 (exemplar rod, registers, CPU power), one edge audit.
+  27 tests pass, 1 xfail documenting a text/equation contradiction in §7.4.3.
+- One provisional verdict: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated,
+  impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
+- Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
+  bounded-continuum application and the collective-mode deferral, not at 7.4.2.
+- Next: Ch. 7 in full (§7.3 and §7.5–7.6 are pending imports of Ch. 12); Ch. 10 §10.4.6 and
+  §10.8 (pending imports; Prase's friction target); then reconcile 7/9/12 and firm up the
+  spike verdict; then Ch. 8 and 16 (Moriarty).

@@ -65,6 +65,10 @@ def load_chapters():
         for im in d.get("imports", []):
             if "from" not in im or "used_for" not in im:
                 err(f"{p.name}: import missing 'from'/'used_for': {im}")
+            if im.get("cited", True) not in (True, False):
+                err(f"{p.name}: import {im.get('from')}: 'cited' must be yes/no")
+            if im.get("verdict") not in VERDICTS:
+                err(f"{p.name}: import {im.get('from')}: bad verdict {im.get('verdict')}")
         chapters[n] = d
     return chapters
 
@@ -108,15 +112,17 @@ def main():
             warn(f"orphan scope-condition {i}: no export lists it as a hypothesis")
 
     # --- imports: pending vs dangling; reverse index
-    importers = defaultdict(list)  # export id -> [(chapter, at)]
-    pending, dangling = [], []
+    importers = defaultdict(list)  # export id -> [(chapter, at, cited, verdict)]
+    pending, dangling, inferred = [], [], []
     for n, d in chapters.items():
         for im in d.get("imports", []):
             f = im["from"]; c = chapter_of(f)
             if c is None:
                 err(f"ch{n}: import from '{f}' is not a valid id"); continue
+            if im.get("cited", True) is False:
+                inferred.append((n, f, im.get("hypotheses_discharged", "unknown"), im.get("verdict")))
             if f in exports:
-                importers[f].append((n, im.get("at", [])))
+                importers[f].append((n, im.get("at", []), im.get("cited", True), im.get("verdict")))
             elif covered(f):
                 dangling.append((n, f, im.get("used_for", "")))
             else:
@@ -132,7 +138,7 @@ def main():
             if not m: continue
             c = int(m.group(1))
             if c in extracted and c != n and chapters[c].get("coverage","full") == "full" \
-                    and not any(k == c for k, _ in importers.get(i, [])):
+                    and not any(k == c for k, *_ in importers.get(i, [])):
                 unconfirmed.append((i, tgt))
 
     # --- criticism
@@ -170,8 +176,10 @@ def main():
     out.append("\n## Reverse index — who depends on each export\n")
     for i, (n, ex) in sorted(exports.items()):
         rows = []
-        for k, at in importers.get(i, []):
-            rows.append(f"imported by ch{k} at {', '.join(at) or '?'}")
+        for k, at, cited, verdict in importers.get(i, []):
+            tag = "" if cited else " (inferred, not cited)"
+            v = f" — verdict: {verdict}" if verdict else ""
+            rows.append(f"imported by ch{k} at {', '.join(at) or '?'}{tag}{v}")
         for dep in hyp_refs.get(i, []):
             rows.append(f"hypothesis of `{dep}`")
         for a in attackers.get(i, []):
@@ -184,6 +192,18 @@ def main():
     out.append("\n## Pending imports (source chapter not yet extracted)\n")
     for n, f, u in sorted(pending):
         out.append(f"- ch{n} <- `{f}` — {u}")
+    out.append("\n## Inferred imports (dependency not acknowledged in the text)\n")
+    for n, f, hd, v in sorted(inferred):
+        hd = {True: "yes", False: "no"}.get(hd, hd)
+        out.append(f"- ch{n} <- `{f}` — hypotheses discharged: {hd}" + (f"; verdict: {v}" if v else ""))
+    out.append("\n## Verdicts recorded\n")
+    for i, (n, ex) in sorted(exports.items()):
+        if ex.get("verdict"):
+            out.append(f"- `{i}`: **{ex['verdict']}**")
+    for n, d in sorted(chapters.items()):
+        for im in d.get("imports", []):
+            if im.get("verdict"):
+                out.append(f"- ch{n} <- `{im['from']}`: **{im['verdict']}**")
     out.append("\n## Unconfirmed forward references (book says consumed, target chapter extracted, no import found)\n")
     for i, tgt in unconfirmed:
         out.append(f"- `{i}` → {tgt}")

@@ -1,0 +1,618 @@
+chapter: 12
+title: Nanomechanical Computational Systems
+status: extracted
+coverage: partial
+sections: ["12.3.3", "12.3.4", "12.3.5", "12.3.6", "12.3.7", "12.3.8", "12.4.3", "12.7.4"]
+source: source/ch12.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Vertical-slice spike (see docs/DECISIONS.md, "Spike"): the exemplar logic rod's dissipation
+      and error analysis, the register loss summary, and CPU power, extracted to close the
+      7.4.2/phonon-viscosity-small-except trace and to test the schema end to end. Kinematics
+      (12.3.2, 12.4.1-2), transmission lines, FSMs, and 12.5-12.9 are not extracted.
+      Published numbers reproduced in nsaudit/ch12.py (tests/test_ch12.py).
+
+exports:
+
+  # ---- 12.3.3 Bounded continuum model of the exemplar rod --------------------
+
+  - id: 12.3.3/bounded-continuum-applies
+    type: design-license
+    section: "12.3.3"
+    statement: >
+      "For components of sufficient size, and for a suitable choice of material and interface
+      parameters, [the bounded continuum model] can provide a realistic description. (For smaller
+      components, it can give a preliminary indication of the performance to be expected, provided
+      that a structure can be found having the appropriate geometry and properties.)"
+    hedge: "of sufficient size ... suitable choice ... preliminary indication ... provided that a structure can be found"
+    support: INT
+    refs: ["9.3.3"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 9.3.3/bounded-continuum
+      - "the exemplar (1 nm rod cross-section) is 'of sufficient size' (no size threshold given)"
+      - "a diamondoid structure with the stated geometry and properties exists (constructibility deferred; cf. 9.5.3/brute-force-inadequate)"
+    notes: >
+      The whole of 12.3.4-12.3.8 is conditional on this. The parenthetical concedes the exemplar
+      may be in the "smaller components" class. Adjudicate at audit.
+
+  - id: 12.3.3/exemplar-parameters
+    type: parameter
+    section: "12.3.3"
+    statement: >
+      Exemplar rod: w_rod = w_knob = l_knob = d_knob/2 = 1 nm, h_knob = 0.5 nm, n_in = n_out = 16,
+      l_in = l_out = 32 nm, l_rod = 66 nm (Eq. 12.3), F_al = 1 nN, delta_surf = 0.1 nm,
+      S_eff = 0.64 nm^2 (Eq. 12.4), E = 5e11 N/m^2, rho = 3500 kg/m^3, k_s,rod = 4.85 N/m
+      (Eq. 12.5), m_rod = 1.9e-22 kg (Eq. 12.6).
+    support: INT
+    refs: ["9.4.2/delta-surf", "9.8/bulk-stiffness-applies"]
+    polarity: "+"
+    hypotheses:
+      - 12.3.3/bounded-continuum-applies
+      - 12.3.3/transverse-modes-neglected
+    spot_check: >
+      h_rod is not stated; S_eff = 0.64 nm^2 implies h_rod = 1 nm. Eq. 12.6 gives m_rod = 1.85e-22
+      (book "1.9e-22"); Eq. 12.8 in 12.3.4a gives 1.94e-22 (book "1.94e-22"). The two printed
+      mass formulas count knob mass differently. k_s,rod reproduces. (nsaudit/ch12.py)
+    consumed_by: ["12.3.4", "12.3.6", "12.3.7", "12.7"]
+
+  - id: 12.3.3/e-5e11-conservative
+    type: parameter
+    section: "12.3.3"
+    statement: >
+      "A conservative value of Young's modulus, E = 5e11 N/m^2, is used here; this is about 1/2 the
+      modulus of diamond and only moderately greater than the modulus of silicon carbide, silicon
+      nitride, or alumina." Shear modulus G ~0.5 E.
+    hedge: "conservative"
+    support: INT
+    refs: ["9.3.1/materials-table"]
+    polarity: "-"
+    hypotheses:
+      - 9.4.3/deficit-is-mm2-artifact
+    notes: >
+      Conservative for stiffness-limited quantities (error rate, positional variance). NOT
+      conservative for dissipation terms that scale inversely with E (Eq. 12.15 vibrational
+      energy ∝ 1/E) — those are worse at lower E. Direction of conservatism is claim-dependent;
+      adjudicate per consumer.
+
+  - id: 12.3.3/transverse-modes-neglected
+    type: scope-condition
+    section: "12.3.3"
+    statement: >
+      "The bending stiffness of the rod and the transverse constraint forces from the housing are
+      large enough that the effect of the transverse vibrational modes of the rod on longitudinal
+      stiffness and positional variance (Section 5.6) can be neglected."
+    support: INT
+    refs: ["5.6"]
+    polarity: "-"
+    notes: Attacked indirectly by Prase's collective-mode argument (fn. 32). Adjudicate at audit.
+
+  # ---- 12.3.4 Dynamics and energy dissipation in mobile rods -----------------
+
+  - id: 12.3.4/rigid-body-approximation
+    type: construction
+    section: "12.3.4"
+    statement: >
+      Drag neglected in computing dynamics, then reintroduced for dissipation; "accelerations and
+      kinetic energies are well approximated by a rigid-body analysis" since elastic deformation is
+      small relative to displacement. Cosine displacement profile Eq. 12.7 with t_switch = 0.1 ns.
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "F_accel <= F_al (true for the exemplar: 0.096 nN vs 1 nN)"
+      - "damping small compared to kinetic energy (12.3.4c: 0.052 maJ vs ~23 maJ)"
+      - "elastic deformation small relative to overall displacement"
+    spot_check: "F_accel = 0.096 nN, v_max = 15.7 m/s, KE = 24 maJ (book ~23) reproduce. (nsaudit/ch12.py)"
+    consumed_by: ["12.3.4b-e"]
+    notes: >
+      Prase (2026) App. C "Molecular relaxation": the alignment force reaches the centre of mass
+      with lag l_rod/v_s ~6 ps against t_switch = 100 ps, so the rigid-body work integral does
+      not vanish; claims ~0.6 × KE net work per switch. Adjudicate at audit: the book's own
+      12.3.4b treats the same physics as vibrational excitation and gets 0.56 maJ, ~40× smaller.
+
+  - id: 12.3.4/vibrational-excitation-0.56maj
+    type: parameter
+    section: "12.3.4"
+    statement: >
+      Vibrational energy per switching motion from the lowest longitudinal mode, Eq. 12.15;
+      exemplar ~0.56 maJ. v_s ~11 km/s (Eq. 12.13), omega_0 = pi v_s / 2 l_rod (Eq. 12.14).
+      "A detailed examination of the vibrational dynamics of a logic rod ... is beyond the scope of
+      the present work."
+    hedge: "beyond the scope of the present work"
+    support: INT
+    refs: ["Eq. 5.22", "Eq. 12.11-12.15"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 12.3.4/higher-modes-and-housing-negligible
+      - "sudden-acceleration harmonic-oscillator model (Eq. 12.11) bounds the smooth-profile case"
+      - "factor-of-two averaging over in-phase/cancelling deceleration"
+    spot_check: "Eq. 12.15 with exemplar parameters = 0.56 maJ. v_s = 10.7 km/s. (nsaudit/ch12.py)"
+    consumed_by: ["12.3.8"]
+
+  - id: 12.3.4/higher-modes-and-housing-negligible
+    type: proposition
+    section: "12.3.4"
+    statement: >
+      "coupling of energy from the drive system to higher-frequency modes is much lower"; "The
+      energy of vibrations excited in the housing structure should be small by comparison."
+    hedge: "should be small"
+    support: BARE
+    polarity: "-"
+    priority: high
+    notes: >
+      Prase fn. 32: rods stiffly coupled through housing form a lattice whose collective modes
+      extend below 1 GHz and are driven by the intermittent drive force. This is the specific
+      negative claim that argument attacks. Adjudicate at audit.
+
+  - id: 12.3.4/sliding-drag-0.052maj
+    type: parameter
+    section: "12.3.4"
+    statement: >
+      Sliding-interface drag from Eq. 10.23 with delta-k_a/k_a = 0.4, R = 10 (band-stiffness
+      scattering "the dominant energy dissipation mechanism"), contact area Eq. 12.16, k_a = 10
+      N/m·nm^2: Eq. 12.17, exemplar 0.052 maJ per displacement; "should yield a conservative
+      estimate."
+    hedge: "should yield a conservative estimate"
+    support: INT
+    refs: ["10.4.6", "Eq. 10.23"]
+    polarity: "+"
+    hypotheses:
+      - "rod-housing interface is analogous to the bearing interfaces of 10.4.6"
+      - "band-stiffness scattering dominates (per 10.4.6 sample calculations)"
+    spot_check: "Eq. 12.17 with k_a in SI (1e19 N/m^3) = 0.052 maJ. (nsaudit/ch12.py)"
+    consumed_by: ["12.3.8"]
+    notes: >
+      Prase (2026) "Edge friction and superlubricity": area-interior friction models omit edge
+      contributions that dominate experimentally (Qu et al. 2020) and in DWNT simulations.
+      Register, don't adopt; the target is really 10.4.6.
+
+  - id: 12.3.4/cam-drag-0.06maj
+    type: parameter
+    section: "12.3.4"
+    statement: >
+      Cam sliding speed Eq. 12.18 ~38 m/s; ~4 nm^2 cam interface per rod, k_a = 10 N/m·nm^2;
+      ~0.012 maJ per 0.1 ns, ×~5 for cam motion while the rod is stationary -> ~0.06 maJ per
+      switching event.
+    support: INT
+    refs: ["12.7.1", "Eq. 10.23"]
+    polarity: "+"
+    spot_check: "v_cam = 37.7 m/s; re-expressing Eq. 12.17 per area and mean-square speed gives 0.0119 maJ and 0.06 maJ. (nsaudit/ch12.py)"
+    consumed_by: ["12.3.8"]
+
+  - id: 12.3.4/thermoelastic-bound-0.41maj
+    type: parameter
+    section: "12.3.4"
+    statement: >
+      "A bound on the energy dissipation in this process can be derived from Eq. (7.49)": Eq. 12.19,
+      delta-E_therm < 8.2e-5 beta^2 (2F_al)^2 / S_eff · l_in, with C_vol = 1.7e6, T = 300;
+      exemplar < 0.41 maJ.
+    support: INT
+    refs: ["7.4.1/worst-case-cycle-loss", "Eq. 7.49"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 7.4.1/single-axis-correction-neglected
+      - 12.3.4/beta-5e-6-conservative
+      - "uniaxial tension 2F_al/S_eff is entered as the pressure Δp of Eq. 7.49"
+    spot_check: >
+      Reproduces 0.41 maJ. The printed coefficient 8.2e-5 should be (1/2)(T/C_vol) = 8.8e-5 for one
+      transition (Eq. 7.49 as ΔW); it is 7% low, or corresponds to C_vol ≈ 1.83e6. Note the bound
+      is the adiabatic-isothermal difference itself, i.e. it is independent of tau_therm and
+      t_cycle; the Eq. 7.50 estimate at 1 nm scale would be ~1e-3 of it. (nsaudit/ch12.py)
+    consumed_by: ["12.3.8"]
+
+  - id: 12.3.4/beta-5e-6-conservative
+    type: parameter
+    section: "12.3.4"
+    statement: >
+      "The values found in Table 7.1 suggest that beta = 5e-6 will prove conservative for many
+      diamondoid structures chosen with some attention to this parameter."
+    hedge: "will prove conservative for many ... chosen with some attention"
+    support: INT
+    refs: ["7.4.3/beta-table"]
+    polarity: "-"
+    hypotheses:
+      - 7.4.3/beta-design-control
+    notes: Table 7.1 spans 1.2 (vitreous silica) to 36 (quartz); "many" is doing work here.
+
+  - id: 12.3.4/mechanism-inventory
+    type: scope-condition
+    section: "12.3.4"
+    statement: >
+      The dissipation mechanisms accounted for in a mobile rod's switching motion are: (b)
+      vibrational excitation, (c) sliding-interface drag, (d) cam-surface drag, (e) thermoelastic
+      loss in the tensioned input segment, (f) "other": knob phonon scattering, knob-motion
+      thermoelastic effects, alignment-knob compression. Nothing else is listed.
+    support: BARE
+    polarity: "-"
+    priority: high
+    notes: >
+      This is the export the 7.4.2 trace lands on. Phonon viscosity (7.4.2) is absent; so is
+      acoustic radiation (7.2) and any collective-mode loss (12.3.4h defers those to design
+      practice). Section 7.4.2 is cited nowhere in the book outside 7.4 itself (grep of the
+      full text, 2026-09-18), so its exception clause is never evaluated at any use site.
+      See the import from 7.4.2/phonon-viscosity-small-except below for the adjudication.
+
+  - id: 12.3.4/other-mechanisms-negligible
+    type: proposition
+    section: "12.3.4"
+    statement: >
+      Knobs as phonon-scattering centres: cross sections ~1e-23 m^2, "comparatively negligible
+      power dissipation"; thermoelastic effects from knob motion "likewise small"; alignment-knob
+      compression against its stop "minimal nonisothermal losses" because the rod is a heat sink.
+    support: BARE
+    polarity: "-"
+    priority: high
+    notes: Three negative claims, no numbers beyond the cross section. Adjudicate at audit.
+
+  - id: 12.3.4/reset-doubles-losses
+    type: proposition
+    section: "12.3.4"
+    statement: >
+      Resetting approximates the time reversal of switching; "Energy losses for a switching cycle,
+      including resetting, are therefore approximately twice those that result from the switching
+      motion itself."
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "vibrational excitation of the rod is small"
+    consumed_by: ["12.3.8"]
+
+  - id: 12.3.4/nonthermal-vibrations-by-design
+    type: design-license
+    section: "12.3.4"
+    statement: >
+      Nonthermal vibrations "can render sufficiently bad designs unworkable. Good design practices
+      will include the use of stiff housing structures, vibration cancellation between different
+      components, the avoidance of structures that resonate at the major frequencies of excitation,
+      and provision for effective damping at those frequencies."
+    support: BARE
+    polarity: "-"
+    priority: high
+    notes: >
+      The collective-mode problem is acknowledged and delegated to unspecified design. Prase fn. 32
+      argues it cannot be designed away because the rods are necessarily stiffly coupled. This,
+      not 7.4.2, is where Prase's ">= 2 OOM" molecular-solid argument attaches.
+
+  # ---- 12.3.5 - 12.3.6 --------------------------------------------------------
+
+  - id: 12.3.5/blocked-rod-losses-lower
+    type: proposition
+    section: "12.3.5"
+    statement: >
+      Blocked rods: sliding losses minimal; lowest longitudinal modes >= ~4 omega_0 reduce
+      vibrational losses; tensioned length <= l_in so "thermoelastic losses are comparable to or
+      less than those for a mobile rod."
+    support: BARE
+    polarity: "-"
+
+  - id: 12.3.6/state-energy-1.2aj
+    type: parameter
+    section: "12.3.6"
+    statement: >
+      Logic-state-dependent difference in stored energy between a mobile and a blocked cycle,
+      Eq. 12.20: F_al (d_knob/2 + 2F_al l_in / E S_eff); exemplar ~1.2 aJ.
+    support: INT
+    refs: ["12.3.3/exemplar-parameters"]
+    polarity: "+"
+    spot_check: "Eq. 12.20 = 1.20 aJ. (nsaudit/ch12.py)"
+    consumed_by: ["12.6", "12.7.3", "12.7.4"]
+    notes: >
+      Prase's "Q ≈ 3770" is not a book number: it is 2π × (this 1.2 aJ) / (the ~2 maJ of
+      12.3.8b) = 2π × 600. Reproduced in nsaudit.ch12.q_implied.
+
+  # ---- 12.3.7 Thermal excitation and error rates ----------------------------
+
+  - id: 12.3.7/erroneous-blockage-transient
+    type: proposition
+    section: "12.3.7"
+    statement: >
+      Erroneous blockage is transient: given low damping the obstructing knob clears within
+      ~2 l_out / v_s ~0.006 ns, "early in the switching period."
+    support: INT
+    refs: ["12.3.4c"]
+    polarity: "-"
+
+  - id: 12.3.7/error-threshold-0.7nm
+    type: parameter
+    section: "12.3.7"
+    statement: >
+      Conservative model: error if the corner-atom centre line of the probe knob passes the
+      corner-atom centre of the gate knob; delta-x_thresh = w_knob - 2 r_eff = 0.7 nm with
+      r_eff = 0.15 nm. Gate-knob restoring forces neglected.
+    support: BARE
+    polarity: "+"
+
+  - id: 12.3.7/positional-error-model
+    type: construction
+    section: "12.3.7"
+    statement: >
+      Relative displacement = Gaussian elastic term (Eq. 12.21-12.22, sigma_el^2 = kT(1/k_s,p +
+      1/k_s,g)) plus exponential hard-stop term (Eq. 12.23, F_al/kT); P_err-disp from Eq. 12.24-25.
+      k_s,p = 10 N/m, k_s,g = 40 N/m "conservatively"; sigma_el ~0.023 nm.
+    support: INT
+    refs: ["5.3", "Eq. 12.21-12.25"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "quantum effects on positional uncertainty negligible (Section 5.3)"
+      - "hard-surface interactions between alignment knob and limit stops"
+      - "equilibrium (Boltzmann) statistics of displacement suffice — no finite-bandwidth force-noise model"
+      - 12.3.3/transverse-modes-neglected
+    spot_check: "sigma_el = 0.0228 nm; exponent gives 1.5e-67 vs book 1.3e-67 (log10 difference 0.06). (nsaudit/ch12.py)"
+    consumed_by: ["12.3.7/error-rate-1e-64"]
+    notes: >
+      Prase (2026) App. C.2: the equilibrium variance is correct but "not license to treat a given
+      degree of freedom as coupled only to the designed modes"; a fluctuation-dissipation
+      estimate of force noise in a ~100 GHz bandwidth is what the error rate should rest on.
+      Register, then check.
+
+  - id: 12.3.7/error-rate-1e-64
+    type: proposition
+    section: "12.3.7"
+    statement: >
+      P_err-disp ~1.3e-67; with < 1e3 vibrational opportunities per rod motion, error rate
+      < 1e-64. "Error rates of this order are negligible by almost any standard."
+    support: INT
+    refs: ["12.3.7/positional-error-model"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 12.3.7/positional-error-model
+      - 12.3.7/error-threshold-0.7nm
+    consumed_by: ["12.3.8", "13.3.6", "14"]
+    aliases: ["1e-64 error rate", "rod-logic error rate"]
+
+  # ---- 12.3.8 Summary observations -------------------------------------------
+
+  - id: 12.3.8/energy-per-cycle-2maj
+    type: parameter
+    section: "12.3.8"
+    statement: >
+      Mobile rod, t_switch = 0.1 ns: "the estimated energy loss in a switching cycle (including
+      reset) is ~2 maJ", ~0.013 maJ per interlock per cycle, ~0.031 kT_300. Volume ~16 nm^3 per
+      interlock.
+    support: INT
+    refs: ["12.3.4", "12.3.4/reset-doubles-losses"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 12.3.4/mechanism-inventory
+      - 12.3.4/reset-doubles-losses
+      - 12.3.3/bounded-continuum-applies
+    spot_check: >
+      2 × (0.56 + 0.052 + 0.06 + 0.41) = 2.17 maJ. Per interlock: 2 maJ / 16 switching events =
+      0.125 maJ = 0.030 kT_300, which matches the printed "~0.031 kT_300" and not the printed
+      "~0.013 maJ" (= 0.003 kT). So "0.013" is almost certainly a typo for 0.13. (nsaudit/ch12.py)
+    consumed_by: ["12.7.4", "14.4.8"]
+    aliases: ["rod-logic switching energy"]
+    notes: >
+      Arithmetic flag (not a verdict): 12.7.4 charges 0.03 maJ per interlock per operation,
+      not the 0.125 maJ this section implies (or the 0.013 it prints). At 1e6 interlocks that
+      is 30 aJ per clock; at 1e5 rods × 2 maJ it would be 200 aJ, making 12.7.4's 74 aJ ~240 aJ
+      (×3.3). Adjudicate at audit; propagates to 12.7.4 and 14.4.8's 1e-16 J/instruction.
+
+  - id: 12.3.8/reliability-needs-no-dissipation
+    type: proposition
+    section: "12.3.8"
+    statement: >
+      "the energy barriers responsible for ensuring reliable operation (Section 12.3.7) are
+      essentially unrelated to the energy dissipated in switching (Section 12.3.4), hence there is
+      no need to dissipate energy to ensure reliability."
+    support: EXT
+    refs: ["Landauer 1961", "Toffoli 1981", "Bennett 1982", "Fredkin and Toffoli 1982", "Feynman 1985"]
+    vintage: "OK — reversible-computing theory; the citations establish logical reversibility, not the independence claim as applied to this device"
+    polarity: "-"
+    priority: high
+    notes: >
+      Prase (2026) C.2: dissipation and noise are linked by fluctuation-dissipation, so "unrelated"
+      is exactly the contested step. The citations support the thermodynamic principle, not the
+      device-level independence. Adjudicate at audit.
+
+  - id: 12.3.8/identified-mechanisms-vanish-at-slow-speed
+    type: proposition
+    section: "12.3.8"
+    statement: >
+      "in the limit of slow motion all of the identified energy dissipation mechanisms in
+      combinational rod logic systems approach zero."
+    support: BARE
+    polarity: "-"
+    hypotheses:
+      - 12.3.4/mechanism-inventory
+    notes: '"identified" is load-bearing; true of the inventory, silent on what is not in it.'
+
+  - id: 12.3.8/transistor-comparison
+    type: proposition
+    section: "12.3.8"
+    statement: >
+      Interlocks vs transistors: slower (~100 ps vs ~10 ps), >1e11 denser by volume, switching
+      energy >1e6 below experimental transistors (~100 aJ) and ~1e9 below commercial CMOS.
+    support: EXT
+    refs: ["Keyes 1985", "Keyes 1989"]
+    vintage: "SUPERSEDED — 1992 transistor figures"
+    polarity: "+"
+    priority: low
+
+  # ---- 12.4.3 Register energy dissipation -------------------------------------
+
+  - id: 12.4.3/register-losses-4.5maj
+    type: parameter
+    section: "12.4.3"
+    statement: >
+      Per register cell per cycle: thermoelastic ~0.04 maJ (spring rod, ~4 GPa mean-square
+      stress), drag ~0.01 maJ, nonisothermal compression ~1.4 maJ (Eq. 7.62, alpha = 0.5) and
+      expansion ~0.14 maJ, free-expansion (well merging) ln(2) kT = 2.87 maJ "irreducible";
+      design-dependent ~1.6 maJ + irreducible 2.87 = ~4.5 maJ.
+    support: INT
+    refs: ["7.5.1", "Eq. 7.62", "7.6.3", "12.3.4"]
+    polarity: "+"
+    hypotheses:
+      - "accommodation coefficient alpha = 0.5 ('reasonably efficient energy exchange')"
+      - "state rod mass ~6e-24 kg, well stiffness ~1 N/m"
+      - 12.4.3/register-vibrational-negligible
+    spot_check: "ln(2) × 4.142e-21 = 2.87 maJ. 0.04+0.01+1.4+0.14 = 1.59. Sum 4.46. OK"
+    consumed_by: ["12.7.4"]
+
+  - id: 12.4.3/register-vibrational-negligible
+    type: proposition
+    section: "12.4.3"
+    statement: >
+      "Owing to small size and high modal frequencies, losses resulting from the excitation of
+      vibrations can be made negligible compared to those in logic rods."
+    support: BARE
+    polarity: "-"
+
+  # ---- 12.7.4 Power requirements ----------------------------------------------
+
+  - id: 12.7.4/power-74aj-per-clock
+    type: parameter
+    section: "12.7.4"
+    statement: >
+      CPU-scale model (1e6 interlocks, 1e5 logic rods, 1e4 register cells, 400 nm cube), 1.2 ns
+      clock, 0.03 maJ per switching operation per interlock and 4.4 maJ per register cycle, every
+      device every cycle: ~74 aJ per clock cycle, ~60 nW. "less than 1/100 the magnitude of the
+      power flows corresponding to fluctuations in stored energy."
+    support: INT
+    refs: ["12.3.4", "12.4.3", "12.3.6"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 12.3.8/energy-per-cycle-2maj
+      - 12.4.3/register-losses-4.5maj
+    spot_check: >
+      1e6 × 0.03e-21 + 1e4 × 4.4e-21 = 7.4e-17 J; /1.2e-9 s = 62 nW. OK. Fluctuation power
+      1e5 rods × 1.2 aJ / 1.2 ns = 1e-4 W, so the ratio is ~1/1700. Note 0.03 maJ per interlock
+      here vs 0.013 in 12.3.8b. (nsaudit/ch12.py)
+    consumed_by: ["12.8", "14.4.8"]
+    aliases: ["1e-16 J per instruction", "energy per instruction"]
+    notes: >
+      This is the number 14.4.8 imports as ~1e-16 J/instruction and multiplies by 1e6
+      instructions per block and 1e15 blocks (docs/DECISIONS.md, Ch. 14 analysis). Any correction
+      to 12.3.8/energy-per-cycle-2maj propagates here linearly for the interlock term (40% of
+      the total); the register term (60%) is dominated by the irreducible ln(2) kT.
+
+imports:
+
+  # --- explicit citations in the text
+  - from: "7.4.1/worst-case-cycle-loss"
+    used_for: Eq. 12.19 thermoelastic bound on the tensioning transition
+    at: ["12.3.4e"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: The text says "from Eq. (7.49)"; Eq. 7.49 is the adiabatic-isothermal ΔW, so the bound is worst-case, not the Eq. 7.50 estimate.
+
+  - from: "7.4.3/beta-table"
+    used_for: choice of beta = 5e-6 as conservative for diamondoid structures
+    at: ["12.3.4e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.3.3/bounded-continuum"
+    used_for: the whole exemplar analysis (12.3.3 "A bounded continuum model")
+    at: ["12.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: Cited by name, not by section number.
+
+  - from: "9.4.2/delta-surf"
+    used_for: delta_surf = 0.1 nm for stiffness, strength and mass
+    at: ["12.3.3c"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: Uses the 0.1 nm value with the Ch. 11 rationale ("a further margin for the effects of surface relaxation"), not 9.4.2's 0.07 nm.
+
+  - from: "9.8/bulk-stiffness-applies"
+    used_for: "applying a bulk-phase modulus of elasticity to component dimensions modified by a surface correction"
+    at: ["12.3.3c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/band-stiffness-drag"
+    used_for: Eq. 10.23 sliding drag, parameters delta-k_a/k_a = 0.4, R = 10
+    at: ["12.3.4c", "12.3.4d"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.8/barriers-in-extended-systems"
+    used_for: near-constant potential of a mobile rod across its range of motion
+    at: ["12.3.3b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5.3/quantum-positional-uncertainty-negligible"
+    used_for: classical treatment of positional variance in the error model
+    at: ["12.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5.6/transverse-modes"
+    used_for: neglect of transverse-mode effects on longitudinal stiffness
+    at: ["12.3.3c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5/eq-5.22"
+    used_for: segment stiffness k_s used in the vibrational-energy estimate
+    at: ["12.3.4b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.3/phonon-scattering"
+    used_for: knobs as phonon-scattering centres (cross section ~1e-23 m^2)
+    at: ["12.3.4f"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "7.5.1/nonisothermal-compression"
+    used_for: Eq. 7.62 register compression/expansion losses, alpha = 0.5
+    at: ["12.4.3b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.3/well-merging-ln2kt"
+    used_for: irreducible ln(2) kT free-expansion loss per register erasure
+    at: ["12.4.3c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  # --- inferred dependency: the text does not reference it, and that is the finding
+  - from: "7.4.1/single-axis-correction-neglected"
+    used_for: Eq. 12.19 enters uniaxial tension as the isotropic pressure of Eq. 7.49
+    at: ["12.3.4e"]
+    cited: no
+    hypotheses_discharged: yes
+    notes: The neglect is in the conservative direction per 7.4.1; inherited silently here.
+
+  - from: "7.4.2/phonon-viscosity-small-except"
+    used_for: >
+      Justification (never stated) for omitting phonon viscosity from the 12.3.4 mechanism
+      inventory. 7.4.2 is the book's only statement of when the mechanism may be ignored, and
+      its exception clause names "very high frequency motion", which a 0.1 ns switching motion
+      is a candidate for.
+    at: ["12.3.4"]
+    cited: no
+    hypotheses_discharged: no
+    verdict: hypothesis-violated
+    verdict_notes: >
+      SPIKE VERDICT (provisional: Ch. 7 and Ch. 12 are not reconciled; see DECISIONS.md).
+      The use site never evaluates the exception; the mechanism is simply absent from the
+      inventory, and Section 7.4.2 is cited nowhere in the book outside itself. Magnitude, by
+      nsaudit/audit_phonon_viscosity_rod_logic.py, applying the book's own Eq. 7.53 to the
+      tensioning transition (sigma = 3.1 GPa, max shear sigma/2, V = 20.5 nm^3, f_eff = 5 GHz):
+      (a) with the book's tau_relax = 1e-13 s, omega·tau = 3e-3 and the loss is 1.7e-4 maJ per
+      transition — the exception is NOT triggered under the book's own tau; (b) with the
+      inelastic thermalization time implied by the bulk-diamond f·Q ceiling of 3.7e13 Hz
+      (Chandorkar 2008 via Prase 2026), tau = 5e-12 to 1.2e-11 s, omega·tau = 0.37 at 5 GHz and
+      0.74 at 10 GHz, i.e. the rod IS in the "very high frequency" regime by the modern tau, and
+      the loss is 0.02 maJ per transition; (c) the tau-independent relaxation-strength bound is
+      0.165 maJ per transition. Against the 2.17 maJ switching cycle of 12.3.8b, the omitted
+      term adds 1.8% (modern tau) and at most 15% (worst case). So: exception not honoured,
+      hypothesis violated under modern inputs, downstream impact bounded at +15% on
+      12.3.8/energy-per-cycle-2maj and hence 12.7.4 — not an order of magnitude. This agrees with
+      Prase's own fn. 30 (the 7.4.2 special case "can be ignored for the vibrational modes of
+      individual components"); Prase's >= 2 OOM claim attaches instead to
+      12.3.4/nonthermal-vibrations-by-design and 12.3.3/bounded-continuum-applies (the
+      assembly as a soft molecular solid), which this edge does not adjudicate.

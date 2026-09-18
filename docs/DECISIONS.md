@@ -115,10 +115,11 @@ Sources found so far are in `criticism/register.yaml`. Marblestone (2021) explic
 ## Tooling
 
 Interface files are YAML because they must be parseable; `generated/INDEX.md` is the readable
-view. Calculations belong in a tested Python package (`nsaudit/`, not yet created) with
-pytest tests that reproduce Drexler's published figures to a stated tolerance — each such test
-is simultaneously a verification, a regression guard, and provenance. Use `pint` for units.
-Notebooks (marimo for audit, Quarto for exposition) are thin views importing the package.
+view. Calculations belong in the tested Python package `nsaudit/` with pytest tests that
+reproduce Drexler's published figures to a stated tolerance — each such test is simultaneously
+a verification, a regression guard, and provenance. Plain SI floats, unit in the docstring (see
+the spike section for why not `pint`). Notebooks (marimo for audit, Quarto for exposition) are
+thin views importing the package.
 
 Claude Code is the working environment: it cannot see the design conversation, only this repo.
 
@@ -134,11 +135,53 @@ so the existing chapter files stand. The transcription is OCR plus math recognit
 load-bearing equations against the print scan (e.g. `\text {relax }` spacing artifacts are
 common, and a mis-recognised exponent would not be flagged by anything).
 
+## Spike: one edge end to end before extracting more (2026-09-18)
+
+Rationale: the schema had been exercised for extraction only. Before spending effort on more
+chapters, one edge was pushed through extraction → import → calculation → verdict, to find out
+what the adjudication side needs. The edge: `7.4.2/phonon-viscosity-small-except` → §12.3.4.
+Ch. 12 was extracted partially (12.3.3–12.3.8, 12.4.3, 12.7.4), `nsaudit/` was created with
+tests reproducing every published number in those sections, and the edge was adjudicated.
+The verdicts are marked provisional: Ch. 7 and Ch. 12 are not reconciled and Ch. 10/5 imports
+are pending. This deliberately breaks the "audit only after reconciled" rule once.
+
+What the spike found about the *book*:
+- §7.4.2 is cited nowhere outside itself (grep of the full text). The exception clause is never
+  evaluated because the mechanism is never invoked; §12.3.4's inventory simply lacks it.
+- Under the book's own model the omission is bounded: ≤ 0.165 maJ per transition, ≤ +15% on the
+  2 maJ switching cycle, for any relaxation time. With the book's tau_relax the exception is not
+  even triggered (ω·tau ~ 3e-3); with the thermalization time implied by modern f·Q data it is
+  (ω·tau ~ 0.4–0.7). So: exception not honoured, hypothesis violated on modern inputs, impact
+  small. Prase's fn. 30 says the same, and the ≥ 2 OOM claim attaches elsewhere (the assembly as
+  a soft molecular solid: `12.3.3/bounded-continuum-applies`, `12.3.4/nonthermal-vibrations-by-design`).
+- Two arithmetic flags recorded as spot checks, not verdicts: §7.4.3's "0.04 W/m² at 1 cm/s"
+  contradicts Eq. 7.54's v² scaling by 100×; §12.3.8b's "0.013 maJ per interlock" is a typo for 0.13 (its
+  own "0.031 kT" figure matches 0.125 maJ), and §12.7.4 then uses 0.03 maJ per interlock, which
+  undercounts the interlock term ~7× (74 aJ per clock would be ~240 aJ); this feeds 14.4.8.
+- The Landau–Rumer crossover backed out of Prase's cited f·Q is ~10–30 GHz (v = 1.2–1.8e4 m/s,
+  γ = 0.9), correcting the "20–75 GHz" noted below from the design session.
+
+What the spike found about the *schema*:
+- Imports need `cited: yes|no`. The interesting edges are the ones the book does not
+  acknowledge, and they must be written by the extractor of the *consuming* chapter, who has
+  to know to look. Guidance: after extracting chapter N, read the generated index's
+  `consumed_by` forward claims pointing at N and write an import (cited or inferred) for each.
+- `hypothesis-violated` belongs on the import, with a one-line mirror on the export.
+- A `hypothesis-violated` verdict is useless without a magnitude. The notes carry it in prose;
+  the calculation module carries it in code. A structured `impact:` field may follow.
+- Free-text hypotheses ("NOT very high frequency motion") cannot be checked without the auditor
+  supplying a threshold; the threshold and its provenance go in the calculation module.
+- `pint` was dropped: the book's empirical-exponent formulas (Eq. 12.17 has k_a^1.7 with a
+  dimensional constant absorbing the units) make unit tracking noise rather than a check.
+  Plain SI floats with the unit in the docstring.
+- The index now lists inferred imports and all verdicts.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.
 - Diamond thermal conductivity cited in §7.4.1 (Gray 1972, ~700 W/m·K) is ~3× below modern
   values; low impact because worked estimates use K_T=10.
-- The Landau–Rumer crossover for diamond is ~20–75 GHz (back out tau from the cited f·Q), not
-  ~1 THz as Prase fn. 28 says; not load-bearing.
+- The Landau–Rumer crossover for diamond is ~10–30 GHz (back out tau from the cited f·Q; see
+  tests/test_ch07.py), not ~1 THz as Prase fn. 28 says; not load-bearing. (The design session
+  said 20–75 GHz; superseded by the computed range.)
 - Marblestone PDF at web.mit.edu is dead as of 2026-09; the blog repost is canonical.
