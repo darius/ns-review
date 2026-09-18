@@ -36,13 +36,14 @@ next.
 
 ```
 pip install pyyaml
-python tools/extract_chapter.py 9        # text from the EPUB -> source/ch09.txt
+python tools/extract_chapter.py 9        # text from the book Markdown -> source/ch09.txt
 python tools/build.py                    # validate, regenerate generated/INDEX.md
 ```
 
-The EPUB is from the `Mihonarium/nanosystems` GitHub release (a transcription of the book,
-also hosted at nanosyste.ms). Chapter files are located by heading, since the EPUB's internal
-numbering isn't a constant offset.
+The text is `full_book.md` from the `Mihonarium/nanosystems` GitHub repo (a transcription of
+the book, also hosted at nanosyste.ms), fetched automatically into `source/` on first use.
+Equations are kept as LaTeX with the book's equation numbers. The repo's EPUB is not used: it
+renders every equation as an SVG of glyph outlines, so no text can be recovered from it.
 
 ## Contributing
 

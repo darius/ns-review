@@ -11,7 +11,7 @@ conversation, which is not otherwise available to you.
 ```
 chapters/chNN.yaml      source of truth: one interface file per chapter (see docs/SCHEMA.md)
 criticism/register.yaml prior critiques and experiments; each imports from chapters via `targets`
-source/                 nanosystems.epub + extracted text (tools/extract_chapter.py)
+source/                 full_book.md (upstream Markdown, auto-fetched) + extracted text (tools/extract_chapter.py)
 tools/build.py          validate + generate; run before every commit
 tools/extract_chapter.py
 generated/INDEX.md      reverse index, priority set, pending/dangling — never hand-edit

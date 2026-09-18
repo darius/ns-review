@@ -122,6 +122,18 @@ Notebooks (marimo for audit, Quarto for exposition) are thin views importing the
 
 Claude Code is the working environment: it cannot see the design conversation, only this repo.
 
+## Source text: Markdown, not EPUB (2026-09-18)
+
+The design session extracted from the Mihonarium EPUB. That EPUB has no MathML: every equation
+is a MathJax SVG of glyph outlines with no text alternative, so the original extractor dropped
+every equation silently (its `[M]` placeholder never fired). The EPUB is built from
+`full_book.md` in the same repo, which has display equations as `$$ ... \tag{N.NN} $$` with the
+book's own numbering, inline math, and proper tables; `tools/extract_chapter.py` now reads that.
+Ch. 9 and §7.4 were re-extracted; the prose is word-for-word identical to the EPUB extraction,
+so the existing chapter files stand. The transcription is OCR plus math recognition: check
+load-bearing equations against the print scan (e.g. `\text {relax }` spacing artifacts are
+common, and a mis-recognised exponent would not be flagged by anything).
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

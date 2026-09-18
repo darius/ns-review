@@ -6,6 +6,10 @@ source: source/ch09.txt
 history:
   - date: 2026-09-18
     note: Initial extraction in chat session, converted from prepass doc (prepass ids N9-nn kept in prepass_id).
+  - date: 2026-09-18
+    note: >
+      source/ch09.txt re-extracted from upstream Markdown (equations and tables now present; the
+      EPUB extraction had silently dropped all equations). Prose unchanged; entries not revised.
 
 exports:
 
