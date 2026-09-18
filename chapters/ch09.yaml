@@ -617,7 +617,7 @@ imports:
     at: ["9.7.1"]
     hypotheses_discharged: unknown
 
-  - from: "6.4.4a/bond-failure-rates"
+  - from: "6.4.4/stressed-bond-cleavage"
     used_for: contrast — Ch. 9 deliberately diverges from this single-bond pure-tension model
     at: ["9.6.1"]
     hypotheses_discharged: n/a
@@ -684,4 +684,42 @@ imports:
     used_for: the license to treat diamondoid interiors as linear elastic continua
     at: ["9.3.3", "9.8"]
     cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5.8.1/classical-pdf-from-potential-alone"
+    used_for: the distance-independent thermal positional uncertainty between regions of a 3-D structure (only compliance matters classically)
+    at: ["9.2"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: 9.2 gives no cross-reference; 5.8.1 is the nearest statement of the principle. The specific 3-D saturation claim is still unproved in the book.
+
+  - from: "5.3.1/classical-variance"
+    used_for: thermal positional uncertainty of housings and components as kT/k_s
+    at: ["9.2"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "5.4.1/rod-longitudinal-variance-classical"
+    used_for: rod-end uncertainty scales with rod compliance
+    at: ["9.2"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "5.4.2/quantum-minor-above-1nm"
+    used_for: classical treatment of sub-nm to nm structural components
+    at: ["9.2", "9.4"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.4/allowable-cc-stress"
+    used_for: the tensile strength in Table 9.1 (50 GPa) vs the 1.2 nN/bond working limit and Lawn's 190 GPa; bond strain limits for shells
+    at: ["9.3.1", "9.6.1"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: Three "strengths" for diamond in the book (22, 50, 190 GPa) must be reconciled at the 9.3.1 audit.
+
+  - from: "6.4.6/chemically-reasonable-surfaces-stable"
+    used_for: metals excluded for atomic mobility; diamondoid surfaces assumed stable
+    at: ["9.3.1"]
+    cited: no
     hypotheses_discharged: unknown

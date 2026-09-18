@@ -830,7 +830,7 @@ imports:
     cited: no
     hypotheses_discharged: unknown
 
-  - from: "6.4.7/contact-charging"
+  - from: "6.4.7/thermal-ionization-negligible"
     used_for: low-polarity interfaces avoid contact charging
     at: ["10.4.7b"]
     cited: yes
@@ -945,3 +945,35 @@ imports:
     at: ["10.11"]
     cited: yes
     hypotheses_discharged: unknown
+
+  - from: "6.4.3/thermal-cleavage-rate"
+    used_for: the printed surface-surface reaction bound (barrier > 500 maJ, rate < 1e-39 per second)
+    at: ["10.4.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: Eq. 6.28 with q = 1 gives 2e-40 /s at 500 maJ, consistent with the printed bound.
+
+  - from: "6.4.1/concerted-vs-cleavage-first"
+    used_for: a surface-surface reaction "must form a bond between two low-valence atoms at the expense of cleaving two bonds to carbon", hence strongly endoergic
+    at: ["10.4.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.2/machine-phase-stability"
+    used_for: the baseline conditions (no extreme T, UV, reactive molecules, extreme loads) under which the interfaces are stable
+    at: ["10.4.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.6/chemically-reasonable-surfaces-stable"
+    used_for: terminated diamond surfaces do not reconstruct or react under baseline conditions
+    at: ["10.4.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.7.1/radiation-dominance-criterion"
+    used_for: stability for practical use, measured against the 1e-20 per second standard
+    at: ["10.4.7b"]
+    cited: no
+    hypotheses_discharged: yes
+    notes: 1e-39 /s is 19 OOM inside the criterion; discharged for the reaction considered.

@@ -278,6 +278,45 @@ strained shell on `3.3.2/mm2-known-defects`) and 26 speculative `consumed_by` gu
 trimmed. Ch. 3, 7, 9, 10, 12 now report reconcilable and are marked `reconciled`. Their remaining imports (Ch. 4, 5, 6, 8, 13,
 14) are pending; that keeps the one verdict provisional, per SCHEMA.md.
 
+## Ch. 5 and Ch. 6 full extraction (2026-09-18): the statistical-mechanics floor
+
+With these, seven chapters (3, 5, 6, 7, 9, 10, 12) are extracted and mutually reconciled: 248
+exports, 0 dangling imports, 0 unconfirmed forward claims. The remaining pending imports are
+from Ch. 1, 2, 4, 8, 11, 13, 14 and §10.3.2. Findings:
+
+- **"The irrelevance of external bombardment" (5.3.1a) is now a node**
+  (`5.3.1/bath-coupling-irrelevant`), imported by 12.3.7 as an inferred dependency. It is
+  correct for the equilibrium marginal PDF; whether a ~10 ps error window is a "statistical
+  distribution of dynamical quantities" in that sense is the whole of Prase's FDT objection,
+  and it is now a single edge to adjudicate.
+- **12.3.7 uses the total-equilibrium limit, not the model 6.3.3 recommends.** 6.3.3 says the
+  worst-case decoupling model "seems a good choice for making conservative estimates of error
+  rates"; 12.3.7's Eq. 12.22–12.25 are the equilibrium Boltzmann PDF (the least conservative
+  limit in 6.3.3's own ordering). Inferred import recorded; audit item.
+- **Eq. 6.24 is dimensionally off.** The printed t_crit = 0.2332 d²/A has no stiffness; the
+  first-barrier condition on Eq. 6.21 as printed gives 0.1166 k_s d²/A. The printed coefficient
+  matches a sinusoid of amplitude At/2. Not load-bearing (Fig. 6.8 is qualitative).
+- **Fig. 6.11's 1.2 nN/bond reproduces** from the 1-D quantum TST with Table 3.8 C–C values, as
+  does the ~6 nN concerted-pair threshold and the 5.5 nN barrier-vanishing force. This is the
+  first *design threshold* in the book reproduced from its stated inputs end to end.
+- **Three diamond "strengths" now sit in the graph**: 1.2 nN/bond × 1.8e19/m² ≈ 22 GPa (6.4.4
+  working limit), 50 GPa (Table 9.1), 190 GPa (Lawn, quoted in 6.4.4). Inferred import from
+  6.4.4 into 9.3.1 and 9.6.1 carries the note.
+- **The 1e20 s / 313 maJ threshold chain reproduces** (313/366/294/344 maJ; weakest common
+  C–X bond, C–P, at 5e-34 /s just inside "< 1e-33"). The 1e85 s diamond lifetime requires a
+  ~2e-3 /s rate at 1800 K, an unstated input. The 750 K / 1 s pyrolysis rule is at the edge
+  (740 K fails).
+- **Fig. 5.8's "major contribution only for l ≤ 1 nm"** is a 13% quantum excess at 1 nm for a
+  1 nm² diamond rod; the classical license for 12.3.7's rod is good to 1e-4, and is a ~10%
+  question only for single-atom contacts.
+- **Cross-reference slip**: both 5.4's intro and 12.3.3c cite the longitudinal-from-transverse
+  analysis as "Section 5.6"; it is 5.7. Consistent across chapters, so a late renumbering.
+- The single-point failure assumption (`6.7.1/single-point-failure-assumption`) removes wear
+  from every bearing analysis by fiat; recorded as a scope-condition with that note.
+
+Reconciliation pass for these two chapters: 51 forward claims into extracted sections, 25 made
+into inferred imports (notably into 12.3.7 and 10.4.7b), 26 speculative guesses trimmed.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

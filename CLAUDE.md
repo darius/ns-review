@@ -87,21 +87,21 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 
 ## Current state (2026-09-18, evening)
 
-- Ch. 3 full (30 exports). Ch. 7 full (58). Ch. 9 full (41). Ch. 10 §10.3.4–10.3.6, 10.4,
-  10.8, 10.11–10.12 (37). Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28). 194 exports, 0 dangling
-  imports; all five chapters `reconciled` (definition in SCHEMA.md; the build enforces it).
-- `nsaudit/` exists: ch03 (MM2 pieces, Morse, Hamaker, Fig. 3.12 reconstruction), ch07 (all
-  worked examples of §7.2–7.6), ch10 (contacts, bearing drag chain with the diamond constants
-  re-derived from ch07), ch12 (exemplar rod, registers, CPU power), one edge audit. 78 tests
-  pass, 1 xfail documenting a text/equation contradiction in §7.4.3. Printed-equation errors
-  found so far: Eq. 7.29 missing a π; §7.3.5e d_n exponent sign (see DECISIONS.md).
+- Ch. 3 (30 exports), 5 (19), 6 (35), 7 (58), 9 (41) in full; Ch. 10 §10.3.4–10.3.6, 10.4,
+  10.8, 10.11–10.12 (37); Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28). 248 exports, 0 dangling
+  imports, 0 unconfirmed forward claims; all seven `reconciled` (SCHEMA.md; build-enforced).
+- `nsaudit/` covers ch03, ch05, ch06, ch07, ch10, ch12 plus one edge audit. 109 tests pass,
+  1 xfail (§7.4.3 text/equation contradiction). Printed-equation errors found so far: Eq. 7.29
+  missing a π; §7.3.5e d_n exponent sign; Eq. 6.24 missing k_s and off by 2 (DECISIONS.md).
 - One provisional verdict: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated,
   impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
-- Next (intermediates first, per Darius 2026-09-18): Ch. 5 (positional uncertainty; imported by
-  12.3.7's error model and 9.2) and Ch. 6 (transitions, errors, damage; 6.2 TST and 6.4.4
-  bond failure are imported by 7.6 and 9.6.1), then Ch. 4 §4.4 (accuracy requirements). After
-  those, the 7.4.2 → 12.3.4 verdict can stop being provisional and the 9.4.3 MM2-artifact
-  question can be audited with nsaudit. Ch. 8 and 16 (Moriarty) after. The 7.4.2 exception has
-  a second unevaluated use site at 10.4.6; the 12.3.4 bound should transfer.
+- Next: the intermediates are in. Pending imports now come only from Ch. 1, 2, 4 (4.3–4.4),
+  8, 11, 13, 14 and §10.3.2. Two directions, in order: (a) firm up the provisional 7.4.2 → 12.3.4
+  verdict and audit the three edges the reconciliation exposed as single nodes — 12.3.7's use
+  of `5.3.1/bath-coupling-irrelevant` (Prase's FDT objection), 12.3.7's use of the equilibrium
+  limit of `6.3.3/switched-coupling-error-model`, and 9.4.3's `deficit-is-mm2-artifact` against
+  `3.3.2/mm2-known-defects` (bending, not stretching); (b) Ch. 8 and 16 for Moriarty's targets,
+  with Ch. 4 §4.3–4.4 as the last small intermediate. The 7.4.2 exception also has an
+  unevaluated use site at 10.4.6; the 12.3.4 bound should transfer.

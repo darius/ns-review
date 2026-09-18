@@ -542,19 +542,20 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "5.3/quantum-positional-uncertainty-negligible"
+  - from: "5.3.2/classical-adequate-when-kt-exceeds-hbar-omega"
     used_for: classical treatment of positional variance in the error model
     at: ["12.3.7b"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "5.6/transverse-modes"
+  - from: "5.7/longitudinal-variance-from-transverse"
     used_for: neglect of transverse-mode effects on longitudinal stiffness
     at: ["12.3.3c"]
     cited: yes
     hypotheses_discharged: unknown
+    notes: 12.3.3c cites "Section 5.6"; the longitudinal-from-transverse analysis is 5.7 (5.6 is the piston). Ch. 5's own 5.4 intro makes the same off-by-one reference.
 
-  - from: "5/eq-5.22"
+  - from: "5.4.1/rod-modal-stiffness"
     used_for: segment stiffness k_s used in the vibrational-energy estimate
     at: ["12.3.4b"]
     cited: yes
@@ -686,3 +687,43 @@ imports:
     cited: no
     hypotheses_discharged: unknown
     notes: Rod-housing interfaces here are the d_a ≈ 0.25 nm class; consistent with 10.4.7's catalogue.
+
+  - from: "5.6.1/constant-force-exponential-pdf"
+    used_for: Eq. 12.23, the exponential PDF for the alignment knob against a hard stop under F_al
+    at: ["12.3.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "5.2/error-rate-as-tail-and-no-fatigue"
+    used_for: error defined as displacement beyond the tolerance (0.7 nm threshold)
+    at: ["12.3.7"]
+    cited: no
+    hypotheses_discharged: n/a
+
+  - from: "5.3.1/classical-variance"
+    used_for: Eq. 12.21, sigma_el^2 = kT (1/k_s,p + 1/k_s,g)
+    at: ["12.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5.3.1/bath-coupling-irrelevant"
+    used_for: treating the knob displacement PDF as independent of how the rod couples to its surroundings
+    at: ["12.3.7"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: The step Prase (2026) C.2 disputes; see 5.3.1/bath-coupling-irrelevant notes.
+
+  - from: "6.3.1/time-dependent-pes-model"
+    used_for: logic-state placement as the proper-potential-well problem (6.3.1 names Ch. 12 explicitly)
+    at: ["12.3.7"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.3.3/switched-coupling-error-model"
+    used_for: the error model family; 12.3.7 uses the equilibrium PDF, i.e. the total-equilibrium limit
+    at: ["12.3.7"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      12.3.7 does not use the worst-case decoupling model that 6.3.3 recommends "for making
+      conservative estimates"; it uses the equilibrium Boltzmann PDF (12.22-12.23). Audit item.

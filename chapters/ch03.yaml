@@ -361,7 +361,7 @@ exports:
     polarity: "-"
     priority: high
     spot_check: "0.323 r_vdw0 is where Eq. 3.17's stiffness crosses zero (force peaks); the force reverses at ~0.275 and the energy at ~0.22 r_vdw0. (tests)"
-    consumed_by: ["3.3.3/stiffness-and-energy-vs-load", "5", "10"]
+    consumed_by: ["3.3.3/stiffness-and-energy-vs-load", "10"]
     notes: >
       The single validation claim behind every nonbonded stiffness in the book, made against
       noble-gas data and stated as "tens of percent". Adjudicate at audit with a modern
@@ -387,7 +387,7 @@ exports:
       - 3.3.3/mm2-repulsion-validated-to-100maj
       - "strongly repulsive regime (exponential term dominant; ~1 nN per atom and above)"
     spot_check: "12.5/0.36 nm = 3.47e10; 0.36 nm/12.5 = 2.9e-11; at 1 nN on C|C, k/F is within 15% of 12.5/r_vdw0. OK. (tests)"
-    consumed_by: ["5", "7.3.4 (Fig. 3.8 stiffness floor)", "7.5.2 (Eq. 3.18)", "10.3.4 (Eq. 3.19)", "10.4.6d (Eq. 3.18)", "12.3.7"]
+    consumed_by: ["7.3.4 (Fig. 3.8 stiffness floor)", "7.5.2 (Eq. 3.18)", "10.3.4 (Eq. 3.19)", "10.4.6d (Eq. 3.18)", "12.3.7"]
     aliases: ["Eq. 3.18", "Eq. 3.19", "Fig. 3.8"]
 
   - id: 3.3.3/loaded-contact-radii
@@ -424,7 +424,7 @@ exports:
     refs: ["Truhlar and Steckler 1987", "Singh and Kollman 1986"]
     vintage: "OK"
     polarity: "+"
-    consumed_by: ["6", "8"]
+    consumed_by: ["8"]
 
   - id: 3.4.2/homolysis-morse-anti-morse
     type: construction
@@ -439,7 +439,7 @@ exports:
     support: INT
     refs: ["3.3.3/morse-potential", "8.4.4b"]
     polarity: "+"
-    consumed_by: ["6.4.4", "8.4", "8.5"]
+    consumed_by: ["8.4", "8.5"]
 
   - id: 3.4.3/leps-potential
     type: construction
@@ -590,13 +590,13 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "5/stiffness-vs-positional-uncertainty"
+  - from: "5.3.1/classical-variance"
     used_for: "As is detailed in Chapter 5, stiff interactions are often necessary in order to minimize quantum and thermal uncertainties in position"
     at: ["3.3.3b"]
     cited: yes
     hypotheses_discharged: n/a
 
-  - from: "6/chemical-instabilities"
+  - from: "6.4.1/damage-mechanism-list"
     used_for: molecular mechanics cannot predict the instabilities Ch. 6 treats
     at: ["3.4.1"]
     cited: yes

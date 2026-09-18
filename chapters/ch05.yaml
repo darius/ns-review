@@ -1,0 +1,349 @@
+chapter: 5
+title: Positional Uncertainty
+status: reconciled
+coverage: full
+source: source/ch05.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Full extraction. Mostly derivations; the exports are the results Part II uses (Eq. 5.4,
+      5.22, 5.26, 5.59, 5.72) and the negative claims about when quantum and entropic effects may
+      be ignored. Identities, approximation accuracies and the Fig. 5.8 claim are checked in
+      nsaudit/ch05.py (tests/test_ch05.py).
+
+exports:
+
+  - id: 5.1/thermal-dominates-quantum
+    type: proposition
+    section: "5.1"
+    statement: >
+      "Positional uncertainty in compliant systems is a result of both thermal motion and
+      quantum mechanical uncertainty, but thermal motion proves more important in almost all
+      mechanical systems at room temperature." "for analyzing mechanical systems at room
+      temperature, Eq. (5.4) usually provides an adequate approximation." The entropic-spring
+      results (5.6-5.7) "are not applied to any of the specific systems described" in Part II.
+    hedge: "almost all ... usually"
+    support: INT
+    refs: ["5.3-5.5"]
+    polarity: "-"
+    consumed_by: ["10", "11"]
+
+  - id: 5.2/error-rate-as-tail-and-no-fatigue
+    type: construction
+    section: "5.2"
+    statement: >
+      Errors "occur at some finite rate owing to the finite probability mass in the tail of the
+      PDF that extends beyond the tolerance band." "Molecules are not subject to fatigue (...
+      Section 6.7.1a). Damping, which degrades mechanical energy to heat, cannot degrade the
+      vibrations of heat itself."
+    support: INT
+    refs: ["6.7.1a"]
+    polarity: "-"
+    consumed_by: ["6.3", "12.3.7"]
+
+  # ---- 5.3 -----------------------------------------------------------------------------
+
+  - id: 5.3.1/classical-variance
+    type: parameter
+    section: "5.3.1"
+    statement: >
+      Boltzmann PDF (Eq. 5.1, from Eq. 4.10); for a harmonic potential the PDF is Gaussian with
+      sigma_class^2 = kT / k_s (Eq. 5.4). "This relationship has broader applicability than its
+      derivation may suggest."
+    support: INT
+    refs: ["Eq. 4.10"]
+    polarity: "+"
+    priority: high
+    consumed_by: ["3.3.3b", "6.2.2", "9.2", "12.3.7", "13", "14"]
+    aliases: ["Eq. 5.4", "kT/k_s", "Chapter 5 stiffness-uncertainty relation"]
+
+  - id: 5.3.1/bath-coupling-irrelevant
+    type: proposition
+    section: "5.3.1"
+    statement: >
+      "The probability density function for the position and velocity of a harmonic oscillator
+      is independent of the nature of its coupling to the surrounding thermal bath." "At
+      equilibrium, however, an impinging gas molecule is as likely to absorb energy as to
+      deliver it ... How a system is coupled to a thermal bath can affect its detailed dynamics
+      ... but not the statistical distribution of dynamical quantities. This principle holds true
+      for systems in general, and makes the study of positional uncertainty dependent only on
+      potential energy functions."
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["12.3.7"]
+    aliases: ["The irrelevance of external bombardment", "5.3.1a"]
+    notes: >
+      The passage Prase (2026) App. C.2 quotes (fn. 38). Correct for the equilibrium marginal
+      PDF; the audit question is whether an error criterion defined on a ~10 ps window
+      (12.3.7's probe passage) is a "statistical distribution of dynamical quantities" in this
+      sense or a finite-bandwidth property that depends on the coupling. Adjudicate at 12.3.7.
+
+  - id: 5.3.2/classical-adequate-when-kt-exceeds-hbar-omega
+    type: proposition
+    section: "5.3.2"
+    statement: >
+      Quantum variance sigma^2 = (hbar omega/k_s){1/2 + [exp(hbar omega/kT) - 1]^-1} (Eq. 5.16);
+      the ratio to classical equals E_mean/kT (Eq. 5.18); "where kT/hbar omega substantially
+      exceeds unity, the classical variance provides a good approximation."
+    support: EXT
+    refs: ["elementary quantum statistical mechanics (uncited)"]
+    vintage: "OK"
+    polarity: "-"
+    hypotheses:
+      - "kT / hbar omega >> 1 for the mode in question"
+    spot_check: >
+      For 12.3.7's use: rod mass 1.9e-22 kg at 40 N/m gives hbar omega/kT = 0.011 (classical to
+      1e-4); a single carbon atom at 40 N/m gives 1.1 and an 11% quantum excess. (tests)
+    consumed_by: ["12.3.7b", "10"]
+    aliases: ["Section 5.3 (as cited by 12.3.7)"]
+
+  - id: 5.3.2/typical-stiffnesses
+    type: parameter
+    section: "5.3.2"
+    statement: >
+      "the stiffness of nonbonded interactions between atoms at their equilibrium separation
+      typically is about 0.1 N/m; that of covalent bond angle-bending, about 30 N/m; and that
+      of covalent bond stretching, about 400 N/m. Many small components in nanomechanisms have
+      masses in the hundreds to thousands of daltons."
+    support: BARE
+    polarity: "+"
+    notes: Consistent with 3.3.2 (19.4 N/m in-plane, x1.5 tetrahedral; 440 N/m C-C).
+
+  # ---- 5.4 -----------------------------------------------------------------------------
+
+  - id: 5.4.1/rod-modal-stiffness
+    type: parameter
+    section: "5.4.1"
+    statement: >
+      Clamped-free rod: lambda_n = 4l/(2n+1), v_s = sqrt(E_l/rho_l), omega_0 = (pi/2l) v_s,
+      omega_n = (2n+1) omega_0 (Eq. 5.19-5.20); modal effective stiffness at the free end
+      k_n = (E_l/l)(pi^2/8)(2n+1)^2 (Eq. 5.22).
+    support: INT
+    refs: ["Eq. 5.21"]
+    polarity: "+"
+    spot_check: "sum_n kT/k_n = kT l/E_l to 1e-4 (Eq. 5.25 identity). (tests)"
+    consumed_by: ["5.4.2", "12.3.4b (Eq. 5.22, omega_0)"]
+    aliases: ["Eq. 5.22", "Eq. 5.20"]
+
+  - id: 5.4.1/rod-longitudinal-variance-classical
+    type: parameter
+    section: "5.4.1"
+    statement: >
+      Total classical variance of the free end sigma^2 = kT l/E_l (Eq. 5.26), "exactly kT/k_s,
+      where k_s is the stretching stiffness of the rod as a whole"; the modal decomposition is
+      irrelevant classically (5.8.1).
+    support: INT
+    refs: ["5.4.1/rod-modal-stiffness", "Eq. 5.25"]
+    polarity: "+"
+    consumed_by: ["9.2", "11", "13"]
+
+  - id: 5.4.2/discrete-rod-quantum-model
+    type: construction
+    section: "5.4.2"
+    statement: >
+      A continuum rod's quantum variance diverges (zero-point of infinitely many modes); use N
+      lumped planes with N = 1e10 l "a conservatively generous estimate"; bundle argument shows
+      lumping is exact in both coupling limits (Eq. 5.27, 5.38-5.40); exact dispersive sum
+      Eq. 5.37; engineering approximations Eq. 5.43 ("strictly in a conservative direction ...
+      but can amount to tens of percent for kT/hbar omega_0 ≈ 1") and Eq. 5.44 ("within a few
+      percent").
+    support: EXT
+    refs: ["Ashcroft and Mermin 1976 (dispersion relation)"]
+    vintage: "OK"
+    polarity: "+"
+    hypotheses:
+      - "atomic planes perpendicular to the axis move as single masses"
+      - "N = 1e10 l (interatomic spacing >= 0.1 nm)"
+    spot_check: "Eq. 5.44 within 6% of Eq. 5.37 and never low for a 1 nm^2 diamond rod at 1-30 nm; Eq. 5.43 never low. (tests)"
+    consumed_by: ["5.4.2d", "Figs. 5.8-5.9", "12"]
+
+  - id: 5.4.2/quantum-minor-above-1nm
+    type: proposition
+    section: "5.4.2"
+    statement: >
+      Fig. 5.8 (diamond-like rods, 300 K, N/l = 1e10): "quantum effects make a major
+      contribution to the positional uncertainty only for l <= 1 nm"; Fig. 5.9's last panel at
+      40 km/s "represents an upper bound on the magnitude of quantum effects in real structures
+      under familiar physical conditions."
+    support: INT
+    refs: ["5.4.2/discrete-rod-quantum-model", "Fig. 5.8", "Fig. 5.9"]
+    polarity: "-"
+    priority: high
+    spot_check: "exact/classical variance for a 1 nm^2 diamond rod: 1.13 at 1 nm, ~1.02 at 10 nm; 'major' at 1 nm is a 13% excess. (tests)"
+    consumed_by: ["9.2", "9.4", "10"]
+
+  # ---- 5.5 -----------------------------------------------------------------------------
+
+  - id: 5.5.1/cantilever-variance-classical
+    type: parameter
+    section: "5.5.1"
+    statement: >
+      Cantilever modes (Timoshenko et al. 1974): cos R cosh R = -1, R_n ≈ (n+1/2) pi (Eq. 5.46);
+      modal effective mass rho_l l/4 for all n (Eq. 5.49); classical transverse variance
+      kT l^3/3k_b = kT/k_t,b (Eq. 5.53-5.54); tube k_b = E (pi/4)(r_2^4 - r_1^4) (Eq. 5.55).
+    support: EXT
+    refs: ["Timoshenko et al. 1974"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "R_0 = 1.8751; sum 1/R_n^4 = 1/12 (Eq. 5.52). (tests)"
+    consumed_by: ["5.5.2", "11", "13"]
+
+  - id: 5.5.1/shear-and-discreteness-corrections
+    type: parameter
+    section: "5.5.1"
+    statement: >
+      Discrete rod: k_b = k_theta d_a (Eq. 5.57); compliance factor (3N+4)/(9N-2) (Eq. 5.58,
+      "exact for N = 1, 2, and infinity; for intermediate values it is always high (i.e.,
+      conservative) and in error by less than 1%"); shear compliance l/G_l added independently
+      (Eq. 5.59). "this approximation breaks down when l/d becomes small ... To treat objects of
+      such low aspect-ratio as rods is, at best, a crude approximation."
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "aspect ratio l/d not small"
+      - "plane cross sections remain plane under shear"
+    spot_check: "Eq. 5.58 approximation exact at N = 1, 2, inf and high by < 1% for N = 3..59. (tests)"
+    consumed_by: ["11"]
+
+  - id: 5.5.4/transverse-quantum-minor-above-1nm
+    type: proposition
+    section: "5.5.4"
+    statement: >
+      Quantum bending term 0.76 hbar l/sqrt(k_b rho_l) (Eq. 5.63-5.65; Eq. 5.65 "always high, but
+      never by more than 1%"); shear analogue Eq. 5.66; summing bending and shear variances
+      overestimates by at most sqrt 2 (Eq. 5.70). Fig. 5.13: "quantum effects on positional
+      uncertainty are minor for rods of nanometer or greater size; accordingly, Eq. (5.59)
+      provides a good approximation."
+    support: INT
+    refs: ["5.5.1", "5.5.2"]
+    polarity: "-"
+    spot_check: "sum 2/R_n^2 = 0.7588 (Eq. 5.63); Eq. 5.70 bounded by sqrt 2. (tests)"
+    consumed_by: ["11"]
+
+  # ---- 5.6 - 5.7 entropic springs ------------------------------------------------------------
+
+  - id: 5.6.1/constant-force-exponential-pdf
+    type: parameter
+    section: "5.6.1"
+    statement: >
+      A piston under constant force F_c with no gas has the exponential PDF f(x) = (F_c/kT)
+      exp(-F_c x/kT), x >= 0 (Eq. 5.72).
+    support: INT
+    refs: ["Eq. 4.10"]
+    polarity: "+"
+    consumed_by: ["12.3.7b (Eq. 12.23: alignment knob against a hard stop)"]
+
+  - id: 5.6/entropic-piston
+    type: construction
+    section: "5.6"
+    statement: >
+      N ideal-gas molecules give the Erlang PDF (Eq. 5.73) with mean (N+1) kT/F_c and variance
+      (N+1)(kT/F_c)^2 (Eq. 5.74); three perspectives (state counting, mean-force potential,
+      Helmholtz free energy) agree; "the nonlinearity of the stiffness invalidates the simple
+      relationship sigma^2 = kT/k_s" except at large N. Entropic springs have "(kT)^2 dependence
+      of positional uncertainty in the classical regime".
+    support: EXT
+    refs: ["Knox 1971 (translational entropy)"]
+    vintage: "OK"
+    polarity: "+"
+    hypotheses:
+      - "ideal gas, hard-sphere hard-surface model"
+    consumed_by: ["7.5.1", "13"]
+
+  - id: 5.7/longitudinal-variance-from-transverse
+    type: construction
+    section: "5.7"
+    statement: >
+      Transverse modes of a tensioned, channel-constrained rod shorten it; modal variance
+      (1/2)(C_n kT)^2 (Eq. 5.89) with C_n from bending k_b, tension gamma_l and channel stiffness
+      k_l (Eq. 5.93-5.94, one polarization; double for two); semicontinuum, shear neglected;
+      correction up to (pi/2)^4 = 6.09 where bending dominates at lambda_min; free-end,
+      unconstrained bound Eq. 5.98 with zeta(4) = 1.082. "Although the following analysis is not
+      used in this volume, sheathed flexible rods like those described have applications."
+    support: INT
+    refs: ["5.5.1", "Eq. 5.85-5.98"]
+    polarity: "+"
+    hypotheses:
+      - "shear neglected; constant channel stiffness k_l (conservative: nonlinear repulsion stiffens)"
+      - "quantum effects on longitudinal variance neglected"
+    consumed_by: ["12.2 (signal rods)", "12.3.3c (cited as 'Section 5.6')"]
+    aliases: ["Section 5.6 (as mis-cited by 5.4 and 12.3.3)"]
+    notes: >
+      Both 5.4's intro ("analyzed in Section 5.6") and 12.3.3c cite this analysis as Section
+      5.6; it is 5.7 (5.6 is the piston). Cross-reference slip in the book, consistent across
+      chapters, so probably a late renumbering.
+
+  # ---- 5.8 - 5.9 -------------------------------------------------------------------------
+
+  - id: 5.8.1/classical-pdf-from-potential-alone
+    type: proposition
+    section: "5.8.1"
+    statement: >
+      "for purely elastic systems in the classical limit, the PDF associated with a set of
+      coordinates can be evaluated by applying a Boltzmann weighting to the potential energy as
+      a function of those coordinates"; modal analysis is "merely a form of entropic
+      bookkeeping"; inertial mass "plays no role in determining equilibrium PDFs"; variance
+      "scales linearly with temperature and compliance; accordingly, variance is inversely
+      proportional to linear dimensions, given uniform scaling."
+    support: INT
+    refs: ["5.4.1", "5.5.1"]
+    polarity: "+"
+    priority: high
+    consumed_by: ["9.2 (positional uncertainty between regions)", "10"]
+    notes: The nearest statement in the book to 9.2's "distance-independent constant at large separations"; the 3-D result itself is not derived anywhere.
+
+  - id: 5.8.2/conservative-scaling
+    type: proposition
+    section: "5.8.2"
+    statement: >
+      "it is always conservative to scale up an accurate (or conservative) variance in proportion
+      to temperature or compliance; it is not conservative to scale down in the same manner. At
+      room temperature, objects made of materials as stiff and light as diamond have positional
+      uncertainties dominated by classical effects so long as dimensions exceed one nanometer."
+      Entropic effects "become important as aspect ratios become large."
+    support: INT
+    refs: ["Fig. 5.8", "Fig. 5.16"]
+    polarity: "-"
+    consumed_by: ["10", "12"]
+
+  - id: 5.9/classical-adequate
+    type: proposition
+    section: "5.9"
+    statement: >
+      "At ordinary temperatures in all but very light, stiff systems (e.g., single atomic masses
+      and bond-stretching displacements), the classical value for the positional variance given
+      by Eq. (5.4) is accurate enough for all but the most precise work. Elsewhere in this
+      volume, the greater size of components and the uncertainties in their stiffness values
+      render the use of more elaborate expressions pointless."
+    support: INT
+    refs: ["5.3-5.5"]
+    polarity: "-"
+    priority: high
+    consumed_by: ["10", "11", "12", "13"]
+    notes: >
+      The second sentence concedes that stiffness-value uncertainty (cf. 3.3.2/mm3-softer-nonbonded)
+      dominates the quantum correction. Adjudicate: does any Part II error-rate calculation use
+      a stiffness known to better than the ~10% the quantum term would add?
+
+imports:
+
+  - from: "4/eq-4.10-boltzmann-pdf"
+    used_for: classical positional PDF
+    at: ["5.3.1"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "4.3.7/mean-force-potential"
+    used_for: treating the gas as an external spring
+    at: ["5.6.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "6.7.1/single-point-failure-assumption"
+    used_for: the claim that molecules are not subject to fatigue (6.7.1a)
+    at: ["5.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  # --- added at reconciliation 2026-09-18

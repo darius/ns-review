@@ -1,0 +1,733 @@
+chapter: 6
+title: Transitions, Errors, and Damage
+status: reconciled
+coverage: full
+source: source/ch06.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Full extraction. Transition state theory (6.2), placement-error models (6.3), the
+      thermomechanical damage argument (6.4), shielding (6.5), radiation (6.6) and the two
+      design rules of 6.7. Thresholds and worked numbers reproduced in nsaudit/ch06.py
+      (tests/test_ch06.py), including the Fig. 6.11 C-C allowable-stress curve.
+
+exports:
+
+  # ---- 6.1 ---------------------------------------------------------------------------
+
+  - id: 6.1/error-and-damage-defined
+    type: construction
+    section: "6.1"
+    statement: >
+      "Errors occur when a system executing a pattern of motion transiently enters an undesired
+      potential well; damage occurs when a system permanently exits the set of desired potential
+      wells." Damage sources are internal (thermal, stress, fields) or external (fields,
+      photons, charged particles).
+    support: BARE
+    polarity: "+"
+    consumed_by: ["6.3", "6.4", "12", "13", "14"]
+
+  - id: 6.1/magnetic-fields-harmless
+    type: proposition
+    section: "6.1"
+    statement: >
+      "In typical molecular structures, even the most intense magnetic fields generated in
+      terrestrial physics laboratories cause no damaging transitions; further discussion of
+      chemical effects of magnetic fields is accordingly omitted here."
+    support: BARE
+    polarity: "-"
+    priority: low
+
+  # ---- 6.2 Transition state theory ----------------------------------------------------
+
+  - id: 6.2.1/approximate-rates-suffice
+    type: proposition
+    section: "6.2.1"
+    statement: >
+      "Since transition rates at 300 K commonly vary from > 1e12 /s to < 1e-50 /s, an approximate
+      value frequently suffices to distinguish a workable from an unworkable design. The
+      solution-chemist's concern with 10-fold differences in the rates of competing reactions
+      seldom arises." TST "of little value where conditions are far from microscopic
+      equilibrium".
+    hedge: "frequently ... seldom"
+    support: BARE
+    polarity: "-"
+    consumed_by: ["6.4", "8", "13"]
+
+  - id: 6.2.2/classical-tst
+    type: construction
+    section: "6.2.2"
+    statement: >
+      k_12 = (kT/2 pi hbar)(q_trans/q_1) exp(-dV_trans/kT) (Eq. 6.1), restricted to localised
+      wells with vibrational motion only; probability-gas derivation (Eq. 6.2-6.8, v_mean =
+      sqrt(kT/2pi)); one-dimensional reading: attempt frequency f_rc times exp(-dV/kT).
+      "classical TSTs provide only an upper bound to the (classical) transition rate of
+      practical interest"; variational TSTs lower it, "still upper bounds". "Standard transition
+      state theory usually fits exact classical calculations with reasonable accuracy."
+    support: EXT
+    refs: ["Knox 1971", "Bérces and Márta 1988"]
+    vintage: "OK"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "microscopic equilibrium within each well"
+      - "wells localised and distinctly bounded (no translation/rotation)"
+      - "quadratic col"
+    consumed_by: ["6.3", "6.4.3", "6.4.4", "7.6.2", "8", "13"]
+    aliases: ["TST", "Section 6.2", "Eq. 6.1"]
+    spot_check: "kT/2 pi hbar = 6.25e12 /s at 300 K. (tests)"
+
+  - id: 6.2.2/effective-volume
+    type: parameter
+    section: "6.2.2"
+    statement: >
+      Effective width of a harmonic well sqrt(2 pi kT/k_s) (Eq. 6.5), mass-weighted sqrt(kT/2pi)/f
+      (Eq. 6.6); effective volume (kT/2pi)^{N/2} prod 1/f_i (Eq. 6.7).
+    support: INT
+    refs: ["5.3.1/classical-variance"]
+    polarity: "+"
+    consumed_by: ["6.2.2 (Eq. 6.8)", "7.5.2", "7.6.2"]
+    aliases: ["Section 6.2.2b", "effective volume"]
+
+  - id: 6.2.3/quantum-tst
+    type: construction
+    section: "6.2.3"
+    statement: >
+      Zero-point-corrected barriers (Eq. 6.10), quantum partition functions (Eq. 6.11-6.13),
+      Wigner tunnelling factor Gamma* = 1 + (1/24)|hbar omega_rc/kT|^2 (Eq. 6.14-6.15; "Section
+      6.4.4b notes the inapplicability of Gamma* at low temperatures"); combined Eq. 6.16.
+      Fig. 6.4: quantum/classical rate ratios for H and C motion, well stiffness 500 N/m.
+    support: EXT
+    refs: ["Bérces and Márta 1988", "Bell 1959", "Bigeleisen 1949"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["6.4.3", "6.4.4", "8"]
+
+  - id: 6.2.4/wkb-tunnelling
+    type: construction
+    section: "6.2.4"
+    statement: >
+      Tunnelling dominates "at sufficiently low temperatures and in many electronic systems at
+      room temperature"; rate ≈ frequency factor × WKB transmittance Eq. 6.17, valid for T << 1
+      and tunnelling into a continuum; resonances complicate multiple barriers.
+    support: EXT
+    refs: ["standard WKB (uncited)"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["6.4.4b", "11.6 (tunnelling contacts)"]
+
+  # ---- 6.3 Placement errors ------------------------------------------------------------
+
+  - id: 6.3.1/time-dependent-pes-model
+    type: construction
+    section: "6.3.1"
+    statement: >
+      Placement (measurement in Ch. 11, logic states in Ch. 12, assembly in Ch. 13-14) modelled
+      as thermal displacement of a probe in 1-2 dimensions under a growing constraint from a
+      third; effective 2-D potential V-dagger(x, y, z') (Eq. 6.18-6.19) valid if the probe
+      "is mechanically stable in z".
+    support: EXT
+    refs: ["Landman et al. 1990 (contrast: explicit MD)"]
+    vintage: "OK"
+    polarity: "+"
+    hypotheses:
+      - "z stiffness (beam + interaction) remains positive"
+      - "harmonic vibrations about z_e; classical partition function"
+    consumed_by: ["6.3.3", "11", "12.3.7", "13.3", "14"]
+
+  - id: 6.3.3/switched-coupling-error-model
+    type: construction
+    section: "6.3.3"
+    statement: >
+      Kinetic decoupling when f_TST exp(-dV/kT) ≈ (1/kT) d(dV)/dt (Eq. 6.20); sinusoidal-well
+      model Eq. 6.21; total-equilibrium limit Eq. 6.22 (Boltzmann over well depths);
+      instantaneous-onset limit Eq. 6.23 (Gaussian tail beyond d_err/2, "maximizes error
+      rates", "unlikely to be a common case"); worst-case decoupling model with first barrier at
+      t_crit = 0.2332 d_err^2/A (Eq. 6.24) "seems a good choice for making conservative
+      estimates of error rates in many circumstances. The conservatism breaks down when ...
+      d_err < ~2 (kT/k_s)^1/2"; "A more common failure is excessive conservatism".
+    hedge: "seems a good choice ... in many circumstances"
+    support: BARE
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "barrier height and equilibrium probability ratio both smoothly increasing"
+      - "d_err > ~2 sigma (error rates not large)"
+    spot_check: >
+      Eq. 6.24 as printed (0.2332 d^2/A) has no k_s and is dimensionally a time only if k_s = 1 N/m.
+      The first-barrier condition on Eq. 6.21 as printed gives t_crit = 0.1166 k_s d^2/A; the
+      printed coefficient is twice that, i.e. it corresponds to a sinusoid of amplitude At/2.
+      Eq. 6.23 >= Eq. 6.22 as the text says. (tests)
+    consumed_by: ["7.6.2c", "11", "12.3.7", "13.3.6", "14"]
+    aliases: ["switched-coupling model", "Section 6.3", "worst-case decoupling"]
+    notes: >
+      13.3.6's error rates (Moriarty's flagged thread) and 12.3.7 rest on this family of models.
+      The general conclusion (6.8): "Placement errors can be made rare either by increasing the
+      spacing between alternative wells, or by increasing the stiffness of the placement
+      mechanism."
+
+  # ---- 6.4 Thermomechanical damage -----------------------------------------------------
+
+  - id: 6.4.1/damage-mechanism-list
+    type: scope-condition
+    section: "6.4.1"
+    statement: >
+      Causes of thermomechanical damage: reactions like those between small molecules;
+      rearrangements like those within small molecules; reactions like those at solid surfaces;
+      rearrangements like those within solid objects; bond cleavage accelerated by mechanical
+      stress. "The first four points can be approached via analogies to known chemical systems."
+    support: BARE
+    polarity: "+"
+    consumed_by: ["3.4.1", "6.4.2-6.4.6", "8", "11", "13"]
+    aliases: ["the instabilities Ch. 6 treats"]
+
+  - id: 6.4.1/lifetime-1e20s-standard
+    type: parameter
+    section: "6.4.1"
+    statement: >
+      "damage caused by a process with a transition lifetime >= 1e20 s (≈ 3e12 years) is small
+      compared to that caused by ionizing radiation under typical conditions (assuming, as
+      usual, that complete device failure will result from a single damaging transition). This
+      rate can accordingly be regarded as small in practical terms, and is used here as a
+      standard of comparison."
+    support: INT
+    refs: ["6.6", "6.7.1"]
+    polarity: "+"
+    priority: high
+    consumed_by: ["6.4.3-6.4.5", "6.7.1", "11", "13"]
+    aliases: ["1e20 s criterion", "1e-20 /s per bond"]
+
+  - id: 6.4.1/concerted-vs-cleavage-first
+    type: proposition
+    section: "6.4.1"
+    statement: >
+      At room temperature "only low-energy (or highly strained) bonds can break at high rates ...
+      and the dominant chemical processes therefore involve simultaneous bond breakage and
+      formation. Many organic molecules have no available reaction pathways that permit this;
+      they can accordingly be quite stable at ordinary temperatures when surrounded by similarly
+      stable structures or vacuum."
+    support: BARE
+    polarity: "-"
+    consumed_by: ["6.4.5", "8", "10.4.7b"]
+
+  - id: 6.4.2/machine-phase-stability
+    type: proposition
+    section: "6.4.2"
+    statement: >
+      In eutactic systems "potentially reactive moieties follow controlled trajectories":
+      structures unstable in solution "can be stable in eutactic systems because collisions do
+      not occur"; structures that react on collision "can fail to react on collision in eutactic
+      systems owing to constraints on orientation" (Diels-Alder example, structures 6.1-6.6);
+      "Where no mechanical function is served, no contact is necessary, and intermolecular
+      reactions can be excluded from possibility." Stress-induced reactions are "little affected
+      by control of trajectories."
+    support: EXT
+    refs: ["Drexler 1988b (structure 6.1 in a computer design)"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "no stray reactive molecules in the environment (assumed throughout; 6.8)"
+      - "trajectories and orientations actually controlled to the required precision"
+    consumed_by: ["8", "10.4.7b", "11", "13", "14"]
+    aliases: ["eutactic stability", "machine-phase chemistry"]
+    notes: >
+      The reasoning that lets 10.4.7b assert interface stability and Ch. 8 use "nonisolable"
+      reactive intermediates. Its second hypothesis is where a positional-error rate (12.3.7,
+      13.3.6) feeds back into chemical stability. Adjudicate at audit.
+
+  - id: 6.4.2/design-excludes-intramolecular-reactions
+    type: design-license
+    section: "6.4.2"
+    statement: >
+      Engineering objectives "usually favor designs in which structures are either intrinsically
+      stiff or held in an extended conformation ... Designs with these characteristics can exclude
+      this class of reactions." "Errors in discriminating between stable and unstable structures
+      during the preliminary phases of nanomechanical engineering will later be eliminated by
+      more thorough analysis and (eventually) experimental testing." A cognitive bias: "A
+      superficial reading of the chemical literature can thus foster the illusion that almost any
+      set of molecules is likely to react at an appreciable rate."
+    hedge: "usually favor ... can exclude ... will later be eliminated"
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["8", "13"]
+    notes: The stability of every specific structure in the book is deferred to "later" analysis and experiment by this sentence.
+
+  - id: 6.4.3/thermal-cleavage-rate
+    type: parameter
+    section: "6.4.3"
+    statement: >
+      One-dimensional theory k_cl = (kT/2 pi hbar)(1/q_long) exp(-dV/kT) (Eq. 6.28-6.30; "low by a
+      small factor" vs variational; Gamma* = 1; channel-area growth neglected). Fig. 6.9. "of the
+      bonds selected for listing in Table 3.8, only the O-O bond of organic peroxides falls short
+      of this lifetime [1e20 s] without strain or other adverse influences."
+    support: INT
+    refs: ["6.2.2/classical-tst", "6.2.3/quantum-tst", "3.3.3/morse-potential (Table 3.8)"]
+    polarity: "+"
+    priority: high
+    spot_check: "C-{H,N,O,F,Si,P,S,Cl} all below 1e-33 /s at 300 K with Table 3.8 D_0 (weakest C-P: 5e-34); O-O (259 maJ) above 1e-20. (tests)"
+    consumed_by: ["6.4.4", "6.4.5", "6.7.1", "10.4.7b"]
+
+  - id: 6.4.3/solid-cage-effect
+    type: proposition
+    section: "6.4.3"
+    statement: >
+      "In the interior of a stiff diamondoid solid, and in the absence of intense stress,
+      separation of radicals commonly requires the simultaneous cleavage of additional bonds,
+      multiplying the effective magnitude of the barrier height and drastically reducing failure
+      rates; this can be termed a solid-cage effect." A peroxide attached to a rigid structure
+      "will (in the absence of neighboring reactive moieties) reliably recombine on a 1e-13 s
+      time scale". Vacancy-diffusion activation energies in Ge and Si (503, 745 maJ) are 1.6-2.0
+      times the crystal bond energies; new-vacancy creation "far greater".
+    hedge: "commonly ... drastically"
+    support: EXT
+    refs: ["Reiss and Fuller 1959", "Lide 1990"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "stiff diamondoid interior; no intense stress; no neighbouring reactive moieties"
+    consumed_by: ["6.4.4a", "6.4.5d", "6.5.2", "6.6.2", "8"]
+    notes: >
+      Invoked qualitatively in 6.4.4 ("grossly overestimates cleavage rates" without it), 6.5,
+      6.6. No quantitative cage factor is given anywhere; the 1e-13 s recombination is asserted.
+      Note "bond energies" here are crystal cohesive energies per bond (~310, ~370 maJ), not
+      Table 3.8's Si-Si 555 maJ.
+
+  - id: 6.4.4/stressed-bond-cleavage
+    type: construction
+    section: "6.4.4"
+    statement: >
+      Morse bond under constant force (Eq. 6.33; Fig. 6.10); barrier Eq. 6.34 (Kauzmann and
+      Eyring 1940); 1-D quantum TST with well and barrier-top frequencies Eq. 6.35-6.37 and the
+      Wigner factor; WKB at 0 K. Morse "is thus conservative for engineering analyses where bond
+      stability is required"; constant force ignores the solid-cage effect and so "grossly
+      overestimates cleavage rates" for bonds in diamondoid structures; harmonic zero-point
+      "(conservative) underestimate of the barrier height"; masses/stiffnesses of other atoms
+      neglected.
+    support: EXT
+    refs: ["Kauzmann and Eyring 1940", "3.3.3/morse-potential", "6.2.3/quantum-tst"]
+    vintage: "OK — the classic Kauzmann-Eyring/Bell model; modern single-molecule force spectroscopy tests it"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 3.3.3/morse-potential
+      - "position-independent applied force (no cage; conservative)"
+      - "single bond, pure tension (9.6.1 explicitly diverges from this for shells)"
+    consumed_by: ["6.4.4c", "8.3", "9.6.1 (contrast)", "11", "13"]
+    aliases: ["Section 6.4.4a", "bond failure rates under tension"]
+
+  - id: 6.4.4/allowable-cc-stress
+    type: parameter
+    section: "6.4.4"
+    statement: >
+      Fig. 6.11: "the criterion tau_cl > 1e20 s is met for a C-C bond at 300 K if the stress is
+      <= ~1.2 nN/bond"; a mechanically concerted pair of C-C bonds (mass, energy, stiffness
+      doubled) has threshold "~6 nN, substantially more than twice"; "In diamondoid structures,
+      failure commonly requires the simultaneous cleavage of several bonds, hence the acceptable
+      working stress per bond can be substantially higher." Lawn's theoretical tensile strength
+      of diamond 1.9e11 N/m^2 = ~10.6 nN/bond on (111) (1.8e19 bonds/m^2), "roughly twice the
+      theoretical limiting strength implied by the more conservative calculations of this
+      section"; shear 1.2e11 = 6.7 nN/bond; plastic flow at ~1300 K from 0.18 nN/bond mean
+      shear (Brookes et al. 1988).
+    support: EXT
+    refs: ["Field 1979 (Lawn)", "Brookes et al. 1988", "6.4.4/stressed-bond-cleavage"]
+    vintage: "CHECK — modern ideal-strength DFT for diamond ~90-95 GPa (111) tension, ~half Lawn's value"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 6.4.4/stressed-bond-cleavage
+      - 6.4.1/lifetime-1e20s-standard
+    spot_check: "Quantum 1-D TST with Table 3.8 C-C: barrier vanishes at 5.5 nN; tau = 1e20 s at F = 1.2 nN (300 K); doubled bond ~6 nN. 10.6 and 6.7 nN/bond reproduce. (tests)"
+    consumed_by: ["9.3.1 (strength 50 GPa)", "9.6.1", "11", "13", "14"]
+    aliases: ["1.2 nN per bond", "Fig. 6.11"]
+    notes: >
+      9.3.1's Table 9.1 diamond strength 50 GPa vs Lawn's 190 GPa theoretical and this section's
+      ~1.2 nN x 1.8e19 = 22 GPa single-bond working limit: three numbers for "strength" that the
+      9.3.1 audit must reconcile.
+
+  - id: 6.4.5/pyrolysis-evidence
+    type: proposition
+    section: "6.4.5"
+    statement: >
+      Scaling Eq. 6.28 (constant partition ratio): "a species requiring >= 1 s at >= 750 K to
+      undergo thorough pyrolysis has a transformation lifetime >= 1e20 s/molecule at 300 K";
+      polymers with 50% loss in 30 min at 610 K imply <= 1e-20 /s per monomer (Table 6.1;
+      PTFE 780 K ... PVC 530 K; "better for establishing lower bounds on achievable stability
+      than ... upper bounds"); of Brown (1980)'s pyrolytic reactions "roughly half" run > 500 C;
+      unimolecular rearrangements need > 480 C unless (1) two or more pi bonds, (2) strained
+      three-ring plus pi bond, or (3) strained four-ring with a pi bond; petroleum reforming at
+      780-840 K for seconds implies tau > 1e20 s; "Diamond itself is stable to 1800 K in an inert
+      atmosphere (tau_trans > 1e85 s at 300 K)".
+    support: EXT
+    refs: ["Schnabel 1981", "Critchley et al. 1983", "Brown 1980", "Carey and Sundberg 1983b", "Thyagarajan 1968-1971"]
+    vintage: "OK — empirical chemistry; the extrapolation is the claim"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "partition-function ratio constant between the pyrolysis temperature and 300 K (classical harmonic)"
+      - "no low-barrier pathway opened by stress or by the specific structure"
+    spot_check: >
+      1 s at 750 K -> 6e-21 /s at 300 K (740 K would fail); 30 min at 610 K -> 3e-21 /s. The
+      diamond 1e85 s figure needs ~2e-3 /s at 1800 K, i.e. minutes-scale stability; 1 /s would
+      give 1e68 s. (tests)
+    consumed_by: ["6.7.1", "8", "13"]
+
+  - id: 6.4.5/pyrolysis-misses-stress-and-cage
+    type: proposition
+    section: "6.4.5"
+    statement: >
+      Pyrolysis data "fails to account for two expected differences": imposed tensile and shear
+      stresses ("destabilizing and are, at best, only partially modeled by the methods of Section
+      6.4.4"), and diamondoid-matrix constraint (cage effect; rearrangements "feasible in flexible
+      structures, but not in more diamondlike structures", cyclobutene example). "Since activation
+      energies for rearrangements frequently fall within the range of activation energies for the
+      cleavage of structurally useful bonds, it seem safe to assume that failure from
+      rearrangement under moderate applied stresses will in these instances meet the tau_trans >
+      1e20 s at 300 K criterion."
+    hedge: "it seem safe to assume ... moderate applied stresses"
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["8", "13"]
+    notes: The stress side is conceded to be under-modelled and then assumed away for "moderate" stresses, undefined. Adjudicate at audit.
+
+  - id: 6.4.5/design-strategy-false-negatives
+    type: design-license
+    section: "6.4.5"
+    statement: >
+      Lacking an automated stability classifier, "The strategy pursued in the present work is to
+      favor structures in which strong bonds form frameworks of diamondlike rigidity that lack
+      substructures of known instability. This strategy is more likely to exclude workable
+      designs (yielding false negatives) than to include unworkable designs (yielding false
+      positives)."
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["8", "10", "13"]
+    notes: A conservatism claim about the whole design methodology; 10.4.7e's sp3 nitrogen chains are a test case.
+
+  - id: 6.4.5/reagent-devices-case-by-case
+    type: scope-condition
+    section: "6.4.5"
+    statement: >
+      Reagent moieties "evidently cannot be designed for high stability in a general sense,
+      hence their stability against unwanted chemical transformations must in practice be
+      examined on a case-by-case basis"; they are "10^-3 to 10^-6 of the mass", cycled rapidly,
+      and selectable from many candidates.
+    support: BARE
+    polarity: "+"
+    consumed_by: ["8", "13"]
+
+  - id: 6.4.6/chemically-reasonable-surfaces-stable
+    type: proposition
+    section: "6.4.6"
+    statement: >
+      Small molecules "are, in effect, all surface", so the models need no modification for
+      surfaces. Metals show surface diffusion (gold pits refill in minutes-hours, Emch et al.
+      1988) and are not used structurally; clean semiconductor surfaces reconstruct but "a
+      chemist would regard [them] as dense arrays of free radicals"; hydrogenated diamond does
+      not reconstruct below ~1275 K (Hamza et al. 1988). "A wide range of other diamondoid
+      structures with chemically reasonable surfaces should likewise exhibit excellent stability."
+    hedge: "should likewise"
+    support: EXT
+    refs: ["Emch et al. 1988", "Hamza et al. 1988"]
+    vintage: "OK — H:C(111) desorption ~1250-1300 K stands"
+    polarity: "-"
+    priority: high
+    consumed_by: ["8", "9.3.1", "10.4.7b", "11"]
+
+  - id: 6.4.7/thermal-ionization-negligible
+    type: proposition
+    section: "6.4.7"
+    statement: >
+      Ionisation of a typical organic molecule in vacuum needs > 1.3 aJ; an electron-hole pair in
+      diamond ~0.864 aJ: "negligible rates at ordinary temperatures". Polar arrangements can make
+      ionisation "spontaneous and stable"; if polar bearing interfaces (Fig. 10.15d) were a
+      problem, "redesigned bearings with less-polar surfaces (e.g., Figure 10.15(a)) could in most
+      instances be substituted with little loss of system-level performance. Unwanted
+      thermomechanical ionization can be limited to negligible rates in well-designed
+      nanomechanical systems at 300 K."
+    hedge: "in most instances ... well-designed"
+    support: BARE
+    polarity: "-"
+    spot_check: "0.864 aJ = 5.4 eV (diamond gap 5.47 eV); corresponds to 230 nm (6.5.2). (tests)"
+    consumed_by: ["10.4.7b (contact charging)", "11.6", "13"]
+    aliases: ["contact charging", "Section 6.4.7"]
+
+  # ---- 6.5 Photochemical damage --------------------------------------------------------
+
+  - id: 6.5.2/photochemistry-thresholds
+    type: parameter
+    section: "6.5.2"
+    statement: >
+      Table 6.2 band energies (UV-A max 0.62 aJ, UV-B 0.71, UV-C 1.00); alkanes, alcohols, ethers,
+      amines absorb only below 230 nm (Robinson 1974); "Many bonds of interest ... including
+      carbon-carbon bonds—are subject to cleavage at UV-A and UV-B energies"; quantum yields
+      0.22 (carbonyl-rich polymer) to 9e-5 (polystyrene) at 253.7 nm (Ranby and Rabek 1975).
+    support: EXT
+    refs: ["Robinson 1974", "Ranby and Rabek 1975"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["6.5.3", "6.5.4"]
+
+  - id: 6.5.3/shielding-assumed
+    type: scope-condition
+    section: "6.5.3"
+    statement: >
+      Three options: keep systems from UV, a UV-opaque surface layer, or all-components
+      photostable. "The discussion in the present work assumes the use of approach (1) or (2),
+      thereby avoiding photochemical stability constraints in device structures." Approach (3)
+      "may prove possible ... but for the present it is easier to assume the use of shielding."
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["11", "13", "14", "16"]
+    notes: A scope condition on every Part II/III design (none is claimed photostable).
+
+  - id: 6.5.4/aluminum-shield-250nm
+    type: parameter
+    section: "6.5.4"
+    statement: >
+      Single-path transmittance Eq. 6.52 with Table 6.3 (Gray 1972) aluminium constants; for a
+      1 um^2 system in terrestrial sunlight (5 W/m^2 effective, ~1e19 photons/m^2 s, all
+      absorbed, one cleavage fatal, quantum efficiency 1e-2) a 30-year MTBF needs T <= 1e-14,
+      "achieved with a shield thickness of just under 250 nm" — "a large volumetric penalty" at
+      2 um diameter, "modest" at 10 um.
+    support: EXT
+    refs: ["Gray 1972"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "1e19 photons/m^2 s; 1e16 dose; T <= 1e-14 at 320 nm needs 220-250 nm of Al by Eq. 6.52. (tests)"
+    consumed_by: ["6.7.1", "14", "16"]
+
+  # ---- 6.6 Radiation damage ---------------------------------------------------------------
+
+  - id: 6.6.2/radiation-hits-1e15-per-kg-rad
+    type: parameter
+    section: "6.6.2"
+    statement: >
+      Classical target theory on dried enzymes: ~10.6 aJ absorbed per inactivating hit (Kepner
+      and Macey 1968), ~1e15 hits/kg·rad; "it seems reasonable to assume that diamondoid
+      nanomachines, like proteins, suffer ~1e15 inactivating hits per kilogram per rad" (proteins
+      tolerate side-chain changes; diamondoid favours geminate recombination: the two effects
+      argued to offset); P_func ≈ exp(-1e15 D m) (Eq. 6.53).
+    hedge: "it seems reasonable to assume"
+    support: EXT
+    refs: ["Lea 1946", "Kepner and Macey 1968", "Beauregard and Potier 1985", "Ponder and Richards 1987b", "Bowie et al. 1990"]
+    vintage: "CHECK — target-theory hit energy; radiation hardness of diamond/DLC is now directly measured"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - "single hit inactivates (single-point failure)"
+      - "protein-to-diamondoid transfer of the hit energy"
+    spot_check: "1e-2 J/kg / 10.6e-18 J = 9.4e14 hits/kg rad; 0.5 rad/yr = 1.5e7 hits/kg s. (tests)"
+    consumed_by: ["6.6.3", "6.7", "14.3", "16"]
+
+  - id: 6.6.3/track-structure-scaling
+    type: parameter
+    section: "6.6.3"
+    statement: >
+      For components large compared with the excitation spacing along tracks, damage scales as
+      m^2/3; interpolating model Eq. 6.54 with crossover near 100 nm diameter, "an arbitrary
+      functional form ... only a rough guide to damage rates for large components." Fig. 6.13.
+    support: EXT
+    refs: ["Williams 1972 (track structure)"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["6.7.2", "14.3"]
+
+  - id: 6.6.4/radiation-inescapable
+    type: proposition
+    section: "6.6.4"
+    statement: >
+      "Any nonzero exposure to ionizing radiation adversely affects either the reliability or
+      the feasible performance of nanoscale systems, yet even with extensive macroscale
+      engineering, radiation exposure seems inescapable" (cosmic-ray neutrino secondaries in
+      deep mines).
+    support: EXT
+    refs: ["Hendricks et al. 1969", "Krishnaswamy et al. 1969"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["6.7", "14"]
+
+  # ---- 6.7 Lifetimes ------------------------------------------------------------------------
+
+  - id: 6.7.1/single-point-failure-assumption
+    type: scope-condition
+    section: "6.7.1"
+    statement: >
+      "the present work in most instances assumes that components fail if they experience a
+      single chemical transformation anywhere in their structures. This is the single-point
+      failure assumption." Consequently "cumulative wear and fatigue play no role"; "Failure
+      rates in as-yet undamaged components are accordingly independent of age." (Ch. 14
+      discusses damage-tolerant structures.) "any degree of plastic deformation is counted as
+      catastrophic damage" (as restated in 7.1).
+    support: BARE
+    polarity: "+"
+    priority: high
+    consumed_by: ["5.2", "6.4.1", "6.6.2", "6.7.2", "7.1", "10", "13", "14.3"]
+    aliases: ["single-point failure", "no wear or fatigue", "Section 6.7.1a"]
+    notes: >
+      Conservative for lifetime, but it also removes wear from every bearing analysis (10.4) by
+      fiat: a bearing either suffers zero chemical change or fails. Adjudicate whether sub-failure
+      surface changes (e.g. a single H abstraction at an interface) are excluded or merely unmodelled.
+
+  - id: 6.7.1/radiation-dominance-criterion
+    type: design-license
+    section: "6.7.1"
+    statement: >
+      "The present work assumes that ambient terrestrial radiation sets a practical lower bound
+      on molecular damage rates" and constrains controllable mechanisms to be "comparatively
+      small": with ~0.5 rad/year (~1.5e7 hits/kg·s) and an order of magnitude margin, "an
+      acceptable mean failure rate per bond in small structures (100 nm diameter or less) is
+      ~1e-20 /s"; barriers must exceed ~313 maJ at 300 K (366 at 350 K), or 294/344 maJ for a 1%
+      subpopulation; most C-X bonds give < 1e-33 /s; the 250 nm shield meets the criterion in
+      full sunlight.
+    support: INT
+    refs: ["6.6.2/radiation-hits-1e15-per-kg-rad", "6.4.3/thermal-cleavage-rate", "6.5.4/aluminum-shield-250nm"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 6.7.1/single-point-failure-assumption
+      - 6.6.2/radiation-hits-1e15-per-kg-rad
+    spot_check: "313/366/294/344 maJ reproduce; 1e-20 /bond s x 1e26 bonds/kg = 1e6 /kg s, ~1/15 of 1.5e7. (tests)"
+    consumed_by: ["8", "10.4.7b", "11", "13", "14", "16"]
+    aliases: ["313 maJ barrier", "1e-20 per bond-second"]
+
+  - id: 6.7.1/criteria-not-hypotheses
+    type: proposition
+    section: "6.7.1"
+    statement: >
+      "The single-point failure assumption and the radiation-damage dominance criterion are both
+      subject to criticism and improvement, but neither is a hypothesis. Single-point failure is
+      the most conservative rule of calculation, and can be relaxed ... Radiation-damage dominance
+      is a design objective that can be discarded whenever alternative objectives prove
+      superior."
+    support: BARE
+    polarity: "+"
+    notes: An author's classification of his own assumptions; in this audit's schema both are scope-conditions regardless.
+
+  - id: 6.7.2/redundancy-model
+    type: construction
+    section: "6.7.2"
+    statement: >
+      Random-damage redundancy: P(system) = prod {1 - [1 - exp(-1e15 D m_i)]^n_i} (Eq. 6.57-6.59).
+      With 1e15 D m = 0.1 and N = 1000 sets: n = 1 gives ~1e-44, n = 5 gives ~0.992, n = 10 gives
+      failure < 1e-7; 1e-18 kg components reach 0.1 after > 100 years of background; a 1000 kg
+      system of N = 4e19 sets with n = 25 has failure probability ~1e-6. Track structure
+      "violates the assumption that component failures are randomly distributed in space".
+    support: INT
+    refs: ["6.6.2/radiation-hits-1e15-per-kg-rad", "6.6.3/track-structure-scaling"]
+    polarity: "+"
+    hypotheses:
+      - "component failures spatially random (tracks ignored)"
+      - "any component substitutes for any other in its set"
+    spot_check: "3.7e-44, 0.992, 6e-8, 1.1e-6, 200 years reproduce. (tests)"
+    consumed_by: ["14.3", "14.4", "16"]
+
+  - id: 6.8/open-problems
+    type: scope-condition
+    section: "6.8"
+    statement: >
+      Open problems: software "able to check nanomechanical structures for instability"
+      including "rates of cleavage of sets of strained bonds (including shear forces not
+      considered in Section 6.4.4a) ... reflect[ing] nonlocal elastic deformation"; and "What
+      structures of nanomechanical interest are compatible with what ranges of photon energies?"
+    support: BARE
+    polarity: "+"
+    notes: "-> 6.4.4/stressed-bond-cleavage (shear, nonlocal), 6.5.3/shielding-assumed."
+
+imports:
+
+  - from: "4.3.2/classical-partition-function"
+    used_for: q_1 and q_trans in Eq. 6.1
+    at: ["6.2.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "4.3.3/probability-gas-and-mass-weighted-coordinates"
+    used_for: the probability-gas visualisation of TST
+    at: ["6.2.2b"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "4.3.4/equilibrium-methods-in-nonequilibrium-systems"
+    used_for: applicability of TST away from macroscopic equilibrium
+    at: ["6.2.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "4.3.7/mean-force-potential"
+    used_for: entropic term in the time-dependent potential (Eq. 6.19) and 1-D TST
+    at: ["6.2.2b", "6.3.1"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "4/eq-4.2-and-4.8"
+    used_for: quantum partition function and classical phase-space integral
+    at: ["6.2.2a", "6.2.3"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "5.3.1/classical-variance"
+    used_for: effective well width sqrt(2 pi) sigma
+    at: ["6.2.2b"]
+    cited: no
+    hypotheses_discharged: yes
+
+  - from: "3.3.3/morse-potential"
+    used_for: stressed-bond potential (Eq. 6.33) and Table 3.8 parameters for Fig. 6.11
+    at: ["6.4.3", "6.4.4"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "2/scaling-laws-magnetic-fields"
+    used_for: magnetic fields in nanoscale systems are modest
+    at: ["6.1"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "1.2.2a/machine-phase-chemistry"
+    used_for: definition of eutactic / machine-phase systems
+    at: ["6.4.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "8.3.3c/stress-facilitated-reactions"
+    used_for: forward reference to stresses used to drive desired reactions
+    at: ["6.4.2b"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "11.6.2/electrical-breakdown"
+    used_for: forward reference on electric-field damage
+    at: ["6.1"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "14.3/damage-tolerant-architecture"
+    used_for: forward reference to larger, damage-tolerant structures
+    at: ["6.7.1a", "6.7.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  # --- added at reconciliation 2026-09-18
+  - from: "3.1/well-to-well-design-principle"
+    used_for: the well-to-well picture of transitions, errors and damage
+    at: ["6.1"]
+    cited: no
+    hypotheses_discharged: n/a
+
+  - from: "3.3.2/mm2-bond-stretch"
+    used_for: bond stiffnesses k_s (Table 3.8 takes them from Table 3.2) in Eq. 6.29 and Fig. 6.11
+    at: ["6.4.3", "6.4.4"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5.2/error-rate-as-tail-and-no-fatigue"
+    used_for: error rate as the probability mass outside the target well
+    at: ["6.3.1", "6.3.3"]
+    cited: no
+    hypotheses_discharged: n/a

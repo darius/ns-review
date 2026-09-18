@@ -994,7 +994,7 @@ exports:
 
 imports:
 
-  - from: "6/plastic-deformation-is-damage"
+  - from: "6.7.1/single-point-failure-assumption"
     used_for: excluding plastic-deformation dissipation mechanisms by scope
     at: ["7.1"]
     cited: yes
@@ -1024,13 +1024,13 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "6.2/transition-state-theory"
+  - from: "6.2.2/classical-tst"
     used_for: unidirectional rates k_12, k_21 in Eq. 7.75
     at: ["7.6.2"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "6.3/switched-rate-approximation"
+  - from: "6.3.3/switched-coupling-error-model"
     used_for: switched-coupling model of well merging
     at: ["7.6.2c"]
     cited: yes
@@ -1063,3 +1063,10 @@ imports:
     cited: no
     hypotheses_discharged: unknown
     notes: Reconciliation 2026-09-18. R = 10 is asserted here and justified only in 10.4.6c.
+
+  - from: "5.6/entropic-piston"
+    used_for: the one-molecule gas between pistons is the entropic-spring system of 5.6, here compressed at finite speed
+    at: ["7.5.1"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: Reconciliation 2026-09-18.
