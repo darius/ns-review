@@ -25,7 +25,7 @@ exports:
       photons, charged particles).
     support: BARE
     polarity: "+"
-    consumed_by: ["6.3", "6.4", "12", "13", "14"]
+    consumed_by: ["6.3", "6.4", "12", "13"]
 
   - id: 6.1/magnetic-fields-harmless
     type: proposition
@@ -133,7 +133,7 @@ exports:
     hypotheses:
       - "z stiffness (beam + interaction) remains positive"
       - "harmonic vibrations about z_e; classical partition function"
-    consumed_by: ["6.3.3", "11", "12.3.7", "13.3", "14"]
+    consumed_by: ["6.3.3", "11", "12.3.7", "13.3"]
 
   - id: 6.3.3/switched-coupling-error-model
     type: construction
@@ -158,7 +158,7 @@ exports:
       The first-barrier condition on Eq. 6.21 as printed gives t_crit = 0.1166 k_s d^2/A; the
       printed coefficient is twice that, i.e. it corresponds to a sinusoid of amplitude At/2.
       Eq. 6.23 >= Eq. 6.22 as the text says. (tests)
-    consumed_by: ["7.6.2c", "11", "12.3.7", "13.3.6", "14"]
+    consumed_by: ["7.6.2c", "11", "12.3.7", "13.3.6"]
     aliases: ["switched-coupling model", "Section 6.3", "worst-case decoupling"]
     notes: >
       13.3.6's error rates (Moriarty's flagged thread) and 12.3.7 rest on this family of models.
@@ -229,7 +229,7 @@ exports:
     hypotheses:
       - "no stray reactive molecules in the environment (assumed throughout; 6.8)"
       - "trajectories and orientations actually controlled to the required precision"
-    consumed_by: ["8", "10.4.7b", "11", "13", "14"]
+    consumed_by: ["8", "10.4.7b", "11", "13"]
     aliases: ["eutactic stability", "machine-phase chemistry"]
     notes: >
       The reasoning that lets 10.4.7b assert interface stability and Ch. 8 use "nonisolable"
@@ -340,7 +340,7 @@ exports:
       - 6.4.4/stressed-bond-cleavage
       - 6.4.1/lifetime-1e20s-standard
     spot_check: "Quantum 1-D TST with Table 3.8 C-C: barrier vanishes at 5.5 nN; tau = 1e20 s at F = 1.2 nN (300 K); doubled bond ~6 nN. 10.6 and 6.7 nN/bond reproduce. (tests)"
-    consumed_by: ["9.3.1 (strength 50 GPa)", "9.6.1", "11", "13", "14"]
+    consumed_by: ["9.3.1 (strength 50 GPa)", "9.6.1", "11", "13"]
     aliases: ["1.2 nN per bond", "Fig. 6.11"]
     notes: >
       9.3.1's Table 9.1 diamond strength 50 GPa vs Lawn's 190 GPa theoretical and this section's
@@ -707,7 +707,7 @@ imports:
     cited: yes
     hypotheses_discharged: n/a
 
-  - from: "14.3/damage-tolerant-architecture"
+  - from: "14.2.2/damage-tolerance-above-10nm"
     used_for: forward reference to larger, damage-tolerant structures
     at: ["6.7.1a", "6.7.2"]
     cited: yes

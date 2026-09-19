@@ -643,7 +643,7 @@ imports:
     at: ["9.5.4"]
     hypotheses_discharged: n/a
 
-  - from: "14.2/block-assembly"
+  - from: "14.2.1/blocks-join-without-strength-loss"
     used_for: forward cross-reference on adhesive interfaces in assembly
     at: ["9.7"]
     hypotheses_discharged: n/a

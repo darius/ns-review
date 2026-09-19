@@ -1,0 +1,806 @@
+chapter: 14
+title: Molecular Manufacturing Systems
+status: reconciled
+coverage: full
+source: source/ch14.txt
+history:
+  - date: 2026-09-18
+    note: >
+      Full extraction of the target chapter. The chapter is architecture plus bookkeeping; the
+      load-bearing numbers are Table 14.1 and the §14.4.8 energy budget, all of which import
+      from Ch. 6, 9, 12, 13. Budget arithmetic reproduced in nsaudit/ch14.py (tests/test_ch14.py).
+      The design-session analysis recorded in docs/DECISIONS.md ("What the Ch. 14 analysis
+      established") is now carried by these entries.
+
+exports:
+
+  # ---- 14.2 Assembly operations at intermediate scales -------------------------------
+
+  - id: 14.2/convergent-assembly
+    type: construction
+    section: "14.2"
+    statement: >
+      "Several considerations (assembly speed, the mass of products in transit, the size of
+      assembly units in fault-tolerant architectures) favor the use of convergent assembly over
+      moiety-by-moiety assembly": small parts combined into larger in a hierarchy, as in
+      macroscale manufacturing.
+    support: BARE
+    polarity: "+"
+    consumed_by: ["14.3", "14.4"]
+
+  - id: 14.2.1/blocks-join-without-strength-loss
+    type: proposition
+    section: "14.2.1"
+    statement: >
+      "some adhesive interfaces can join to form a dense, continuous diamondoid structure (or
+      diamond itself). As a consequence, designing systems to be built as compositions of many
+      small parts need not entail any great sacrifice in structural strength and stiffness."
+      Free-standing parts by cleavage from a substrate; nonbonding grippers; surface forces
+      "present no great difficulty where diamondoid structures with nonreactive surfaces are
+      concerned, given assembly adhesion."
+    hedge: "need not ... present no great difficulty"
+    support: INT
+    refs: ["9.7.3/covalent-interfaces-lossless", "8.6.6"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 9.7.3/covalent-interfaces-lossless
+    consumed_by: ["14.4.2", "14.5.5b", "14.5.5c"]
+
+  - id: 14.2.1/block-assembly-energy-5e5
+    type: parameter
+    section: "14.2.1"
+    statement: >
+      "Energy dissipation is accordingly dominated by assembly of the smallest blocks" (~1 nm
+      cubes). "If the energy dissipated in joining surfaces were equal to the theoretical
+      surface energy of diamond [~5 J/m^2 (Field, 1979)], this would amount to ~9e6 J/kg. It is
+      reasonable to expect, however, that much or almost all of the potential energy of bonding
+      can be recovered as mechanical work, reducing dissipation to a small fraction of this
+      value." Ethene-polymerisation-matched exoergicity "~1e6 J/kg. This value probably
+      overestimates the total ... the estimate used here is 5e5 J/kg."
+    hedge: "It is reasonable to expect ... much or almost all ... probably overestimates"
+    support: EXT
+    refs: ["Field 1979 (surface energy)", "9.7.3/energy-release-controllable", "9.7.3/diamond-111-surface-energy"]
+    vintage: "OK — diamond (111) surface energy ~5-6 J/m^2 stands"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 9.7.3/energy-release-controllable
+      - "interfaces designed to C-C exoergicity comparable to ethene polymerisation (no such design shown)"
+      - "block assembly at ~1 nm scale dominates; larger blocks amortise"
+    spot_check: >
+      6 gamma a^2 / (rho a^3) = 8.6e6 J/kg at a = 1 nm. Ethene-matched: (111) bond density x 3 owned
+      faces x 93 kJ/mol per bond -> 2.4e6 J/kg, 2.4x the book's ~1e6 (which needs ~23 bonds per
+      cube). The step from 9e6 to 5e5 (x18) is the recovery hypothesis
+      inherited from 9.7.3, which states four qualitative mechanisms and no efficiency. (tests)
+    consumed_by: ["14.4.8"]
+    aliases: ["block assembly allowance", "5e5 J/kg"]
+    notes: KEY IMPORT WITH A GAP (see 9.7.3/energy-release-controllable notes). 18x on a budget line.
+
+  - id: 14.2.2/intermediate-scale-reliability
+    type: proposition
+    section: "14.2.2"
+    statement: >
+      At intermediate scales "ample exoergicity for stable, reliable assembly is no problem;
+      even van der Waals attractions yield > 150 maJ for typical interfaces of >= 1 nm^2";
+      stiffness makes thermal positional uncertainty easy to limit; "The special problems
+      arising on a larger scale are greater sensitivity to nonthermal vibration ... and greater
+      radiation damage rates".
+    support: INT
+    refs: ["3.5.1/vdw-between-objects", "5"]
+    polarity: "-"
+    consumed_by: ["14.4"]
+
+  - id: 14.2.2/vibration-isolation-feasible
+    type: proposition
+    section: "14.2.2"
+    statement: >
+      A 10 cm manipulator scaled from 13.4 "deforms by ~10 nm under terrestrial gravity, and its
+      lowest resonant frequency is > 1e4 Hz"; tolerances, measurement/control and precomputed
+      corrections handle statics; STM experience shows "atomic-scale positional stability in
+      centimeter-scale mechanisms" with ordinary isolation. "Engineering molecular
+      manufacturing systems for isolation from external vibrations and for control of internal
+      vibrations should be feasible." Tapered alignment pegs (Fig. 14.1) give tolerance then
+      stiff alignment; interface edges in compression against crack initiation.
+    hedge: "should be feasible"
+    support: BARE
+    polarity: "-"
+    spot_check: "Diamond cantilever L = 0.1 m, L/t = 10: sag 50 nm, f_0 = 2.7 kHz; > 1e4 Hz needs L/t < ~4. Order-of-magnitude. (tests)"
+    consumed_by: ["14.4.1", "14.4.4"]
+
+  - id: 14.2.2/damage-tolerance-above-10nm
+    type: design-license
+    section: "14.2.2"
+    statement: >
+      Beyond single-point failure: a point defect's radial strain falls as r^-2 (< 0.2 nm at
+      0.2 nm, < 0.002 nm at 2 nm); "Since geometrical errors of ~0.01 nm are tolerable in most
+      mechanosynthetic systems, components having features of multinanometer or larger scale
+      should usually prove able to tolerate radiation-induced defects in their interiors";
+      bearings made tolerant by layered, strip-subdivided interfaces of several nm thickness;
+      "it will be assumed that when the scale of all components and building blocks in a
+      manufacturing process is > 10 nm, a moderate density of point defects can be tolerated
+      without causing failure of the process."
+    hedge: "should usually prove ... it will be assumed"
+    support: INT
+    refs: ["6.6.2/radiation-hits-1e15-per-kg-rad", "6.7.1/single-point-failure-assumption", "13.4"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "isotropic elastic continuum around a point defect; ~0.01 nm geometric tolerance"
+      - "damage at a mobile interface does not cause adhesion/static friction, or is bypassed by internal redundancy"
+      - "product functionality after assembly with defects 'is a separate question'"
+    consumed_by: ["14.4.1 (Table 14.1 stages 3-5)", "14.4.5"]
+    notes: >
+      Relaxes the Ch. 6 single-point-failure rule for everything above 10 nm; Table 14.1
+      stages 3-5 and all manipulators rely on it. No calculation of interfacial damage rates.
+
+  # ---- 14.3 Architectural issues ---------------------------------------------------------
+
+  - id: 14.3.1/serial-assembly-impossible
+    type: proposition
+    section: "14.3.1"
+    statement: >
+      "Present manufacturing practice provides no precedent for processes that combine ~1e25
+      distinct parts to form a single object" — one at a time at 1e6/s "would take a time longer
+      than ... the age of the universe"; construction-style at (100 nm)^2 per mechanism, 1e6
+      moieties/s, 0.1 m thick product: ~1e8 s; 10 nm blocks: 1000 s.
+    support: BARE
+    polarity: "+"
+    spot_check: "1e19 s vs 4e17 s; 1e8 s with 1e-29 m^3 moieties; 1e3 s with 10 nm blocks. (tests)"
+    consumed_by: ["14.4"]
+
+  - id: 14.3.1/convergent-layout-feasible
+    type: construction
+    section: "14.3.1"
+    statement: >
+      Fig. 14.4: a branching layout with equal volume per level, extendable "though > 30
+      generations, enabling the assembly of objects from > 1e27 pieces"; "demonstrates that
+      certain geometrical constraints can be met, but does not represent a proposed system."
+      Mill/manipulator boundary at ~1 um blocks; ~1e6 block kinds; a 1 kg structure contains
+      ~1e15 blocks.
+    support: BARE
+    polarity: "-"
+    consumed_by: ["14.4.1", "14.4.4"]
+
+  - id: 14.3.2/product-delivery
+    type: construction
+    section: "14.3.2"
+    statement: >
+      Delivery without back-contamination via boxed products with multiple sealing rings and
+      pistons in an exit tube, scavenging pumps between seals (11.4.2-11.4.3); expandable
+      pleated enclosures (Fig. 14.5-14.6) allow products larger than the system. "These will not
+      be pursued further at present."
+    support: INT
+    refs: ["11.4.2", "11.4.3"]
+    polarity: "+"
+    consumed_by: ["14.4.1", "14.4.10"]
+
+  - id: 14.3.3/radiation-dominated-lifetime-model
+    type: construction
+    section: "14.3.3"
+    statement: >
+      "With a judicious choice of structures and reactions, damage ... is dominated by damage
+      caused by ionizing radiation. Accordingly, Eq. (6.54) can be taken as a damage model."
+      13.3.6c: units of <= 2e-18 kg fail with P <= 0.01 in 10 years; a step with failure rate
+      1e-15 at 1e4 /s per unit contributes ~0.003 in 10 years; fail-stop units (13.3.6b) on
+      redundant fair nonblocking transport (13.3.2b, Fig. 14.7); P_syst = [1 - (1 -
+      P_unit)^N_unit]^N_set (Eq. 14.1-14.2), unit failures assumed independent.
+    support: INT
+    refs: ["6.6.3/track-structure-scaling", "6.7.1/radiation-dominance-criterion", "6.7.2/redundancy-model", "13.3.6", "13.3.2b"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 6.7.1/radiation-dominance-criterion
+      - 6.6.2/radiation-hits-1e15-per-kg-rad
+      - "mechanosynthetic units are fail-stop (13.3.6b)"
+      - "unit failures independent (spatial separation)"
+      - "transport network failures negligible vs unit failures"
+    spot_check: "exp(-1e15 x 5 rad x 2e-18) = 0.99; 1e-15 x 1e4 x 3.16e8 = 0.003. (tests)"
+    consumed_by: ["14.4.5"]
+
+  # ---- 14.4 The exemplar architecture ----------------------------------------------------
+
+  - id: 14.4.1/table-14-1
+    type: parameter
+    section: "14.4.1"
+    statement: >
+      Table 14.1: input ordering 1e17 units at 1e6 Hz (0.02 fg each, 0.002 kg); reagent prep 1e17
+      at 1e6 Hz (0.06 fg, 0.006 kg); mill stages 1-5: 1e15/1e13/1e11/1e9/1e6 sets x 100 units,
+      100 (stage 5: 1000) inputs per product, <= 1e6 Hz (stages 4-5: 1e4 Hz), product scale
+      1/5/20/100/1000 nm, mechanism scale 20/20/100/500/5000 nm, radiation-sensitive mass
+      0.6/0.6/0.5 fg (stages 4-5 damage tolerant), masses 0.06/<0.01/<0.01/<0.001/<0.001 kg;
+      manipulator stages 1-3: 1e9/1e4/1 sets x 2 units, 1e6/1e5/1e4 inputs, 500/50/5 Hz, product
+      0.1 mm/5 mm/0.1 m, mechanism 0.2 mm/1 cm/0.2 m, masses <0.001/<0.001/0.020 kg. 1 g/s
+      throughput; arms with stiffness > 100 N/m and bending modes > 100x operating frequency,
+      supports 10x arm mass.
+    support: INT
+    refs: ["13.2.2 (input ordering mass)", "13.3.5 (reagent prep mass)", "13.4 (manipulators)", "14.2.2/damage-tolerance-above-10nm"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 14.2.2/damage-tolerance-above-10nm
+      - "stage 1-2 mill mass per encounter mechanism equals reagent-prep's"
+      - "stage 3 radiation-sensitive mass is the product in transit only"
+    spot_check: "Unit masses x counts reproduce 0.002, 0.006, 0.06 kg; stages 2-3 give 6e-4 and 5e-6 kg. (tests)"
+    consumed_by: ["14.4.3-14.4.8", "14.5", "14.7"]
+    aliases: ["exemplar architecture", "the frequency ladder"]
+    notes: >
+      The frequency ladder (1e6 Hz at 20 nm down to 5 Hz at 0.2 m) is what insulates the
+      mills from GHz-regime dissipation objections (DECISIONS.md, Ch. 14 notes). Everything
+      here is chosen, not derived; the derived inputs are the unit masses from Ch. 13.
+
+  - id: 14.4.1/supporting-systems-peripheral
+    type: scope-condition
+    section: "14.4.1"
+    statement: >
+      "the specifics of a ~1 kW cooling system, a ~0.001 kg/s feedstock solution supply system,
+      transportation and sealing mechanisms for product delivery, and so forth are peripheral to
+      the central issues of molecular manufacturing"; compressive structure against atmosphere
+      "<< 1 kg/m^3"; power conversion "negligible mass and volume (Section 11.7)".
+    support: INT
+    refs: ["11.4", "11.7", "14.3.2"]
+    polarity: "-"
+    priority: high
+    consumed_by: ["14.4.4", "14.4.8"]
+    notes: >
+      A 1.3 kW heat load in a ~0.05 m^3 box with 97%-void machinery and no described internal
+      cooling loop (DECISIONS.md). The "peripheral" classification is itself a claim.
+
+  - id: 14.4.2/micron-blocks-suffice
+    type: design-license
+    section: "14.4.2"
+    statement: >
+      "Micron-scale building blocks are small enough to make almost any macroscopic shape in
+      ordinary use today within better tolerances than those provided by conventional
+      machining"; mills make ~1e6 block kinds in the 0.1-1 um range, manipulators assemble
+      them; "adjustable blocks" with internal sliding and adhesive interfaces (10.5, 9.7)
+      supply struts and joints of arbitrary length and angle.
+    support: INT
+    refs: ["9.7", "10.5"]
+    polarity: "-"
+    consumed_by: ["14.4.9", "14.5.5", "14.6"]
+
+  - id: 14.4.3/throughput-and-latency
+    type: parameter
+    section: "14.4.3"
+    statement: >
+      At stated frequencies with 1000 kg/m^3 products, throughput 0.001 kg/s; mill stages delay
+      ~0.1 s, in-process inventory ~1e-4 kg; each manipulator stage 1000 s with ~0.5 kg in
+      process; feedstock-to-product "somewhat less than one hour" for 1 kg.
+    support: INT
+    refs: ["14.4.1/table-14-1"]
+    polarity: "+"
+    consumed_by: ["14.5.4", "14.7"]
+
+  - id: 14.4.4/mass-and-volume
+    type: parameter
+    section: "14.4.4"
+    statement: >
+      Early stages at 100 kg/m^3 mean density: ~1.8e-4 m^3; manipulator workspaces: 1 kg
+      products fit a 0.01 m^3 workspace, solids ~3% of it, three stages ~0.03 m^3, x1.66 for
+      packing and cooling -> ~0.05 m^3 total. Mechanism mass < 0.12 kg; +0.05 kg compressive
+      structure, +0.08 kg case -> < 0.25 kg; "Allowing as much as 0.75 kg for other subsystems
+      yields an estimated total system mass < 1 kg."
+    support: INT
+    refs: ["14.4.1/table-14-1"]
+    polarity: "+"
+    spot_check: >
+      The tabulated early-stage masses sum to ~0.09 kg -> 9e-4 m^3 at 100 kg/m^3, not 1.8e-4;
+      1.8e-4 corresponds to 0.018 kg, i.e. the table's largest entry (stage-1 mills, 0.06 kg) was
+      left out. Low impact (total volume is the workspaces). Total mass < 0.12 reproduces. (tests)
+    consumed_by: ["14.4.10", "14.5.6f", "14.7"]
+
+  - id: 14.4.5/system-lifetime
+    type: proposition
+    section: "14.4.5"
+    statement: >
+      Units <= 2e-18 kg have P_unit = 0.99 after ten years; mill stages 1-3 with N_unit = 10,
+      N_set ≈ 1e15 give P_syst ≈ 1 after ten years; N_unit = 20 "raises the expected lifetime to
+      over a century"; all radiation-sensitive units fail-stop on redundant transport; UV opacity
+      easy (6.5.4).
+    support: INT
+    refs: ["14.3.3/radiation-dominated-lifetime-model", "6.5.4/aluminum-shield-250nm"]
+    polarity: "-"
+    hypotheses:
+      - 14.3.3/radiation-dominated-lifetime-model
+      - 14.2.2/damage-tolerance-above-10nm
+    spot_check: "1e15 x 0.01^10 = 1e-5 -> P_syst = 0.99999; N_unit = 20 at 100 y: 1e15 x 0.095^20 = 4e-6. (tests)"
+    consumed_by: ["14.5.5a", "14.7"]
+
+  - id: 14.4.7/feedstock-and-byproducts
+    type: proposition
+    section: "14.4.7"
+    statement: >
+      Feedstock: small molecules in solution supplying C mostly, then H, N, O, F, Si, P, S, Cl;
+      "no strong reason why there should be substantial by-products"; excess hydrogen "could be
+      delivered as water, in a process that consumes atmospheric oxygen and (presumably)
+      produces mechanical energy as a by-product (Section 13.3.8)"; composition mismatch handled
+      by recycling solutions.
+    hedge: "presumably"
+    support: INT
+    refs: ["13.3.8"]
+    polarity: "-"
+    consumed_by: ["14.4.8", "14.5.1", "14.5.2"]
+
+  - id: 14.4.8/dissipation-budget
+    type: parameter
+    section: "14.4.8"
+    statement: >
+      Mills: "dominated by moietal operations, estimated by Section 13.3.7 as 1.5e6 J/kg"; block
+      assembly 5e5 J/kg (14.2.1c); manipulators and sorting "comparatively negligible";
+      computation "hard to estimate accurately, but can be made quite small": ~1e6 instructions
+      per block at ~1e-16 J (12.7.4) x 1e15 blocks/kg = 1e5 J/kg. Total carried forward: "~3.1e6
+      J/kg of free energy dissipated".
+    hedge: "hard to estimate accurately ... can be made quite small ... even 1e6 ... would increase ... by only"
+    support: INT
+    refs: ["13.3.7", "14.2.1/block-assembly-energy-5e5", "12.7.4/power-74aj-per-clock"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 14.2.1/block-assembly-energy-5e5
+      - 12.7.4/power-74aj-per-clock
+      - "13.3.7's 1.5e6 J/kg for moietal operations (pending)"
+      - "manipulator and sorting dissipation negligible (no number given)"
+      - "<= 1e6 instructions per block placed (stated as generous)"
+    spot_check: >
+      The three itemised terms sum to 2.1e6 J/kg; the text carries forward 3.1e6. The missing
+      1e6 J/kg is not itemised (possibly the 1e6 ethene-matched figure of 14.2.1c used instead
+      of the 5e5, or a rounding allowance). (tests)
+    consumed_by: ["14.4.8/energy-balance", "14.5.1", "14.5.6c", "14.7"]
+    aliases: ["3.1e6 J/kg", "nanofactory dissipation"]
+    notes: >
+      Sensitivity: the computation term is 1e5 J/kg at 1e-16 J/instr; Prase's 2-3 OOM rod-logic
+      penalty makes it 1e7-1e8 J/kg against 1.5e7 available (DECISIONS.md). The 12.3.8-vs-12.7.4
+      per-interlock discrepancy already found (0.125 vs 0.03 maJ) is a x3.3 on this term before
+      any physics correction. The mill term (13.3.7) is the largest and not yet extracted.
+
+  - id: 14.4.8/energy-balance
+    type: parameter
+    section: "14.4.8"
+    statement: >
+      Acetone -> diamond + water "liberates a total energy equaling ~1.7e7 J/kg of useful output,
+      while decreasing local entropy by ~5.7e3 J/kg·K (approximating the entropy of the product
+      object as zero)"; free energy ~1.5e7 J/kg; less ~3.1e6 dissipated, "the system produces
+      ~1.2e7 J/kg of surplus energy in the form of mechanical work", deliverable as electricity.
+      Waste heat 3.1e6 + 1.7e6 = 4.8e6 J/kg -> "1.3 kW" at 1 kg/hr, removable by 0.1 m^3/s air
+      with delta-T < 15 K; "Cooling channels can be placed in close proximity to the chief heat
+      sources".
+    support: BARE
+    refs: ["standard thermochemistry (uncited)"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 14.4.8/dissipation-budget
+      - "mechanochemical conversion of the reaction free energy to work at > 0.99 efficiency (13.3.8)"
+      - "product entropy ~0; all other entropy changes 'local'"
+    spot_check: >
+      ΔH acetone(l) + 1.5 O2 -> 3 C(diamond) + 3 H2O(l): -604 kJ/mol -> 1.68e7 J/kg diamond (OK).
+      Entropy: counting acetone, O2 and liquid water gives 8.2e3 J/kg·K, not 5.7e3; the book's
+      figure equals the acetone term alone. With 8.2e3 the waste heat is 5.6e6 J/kg (1.55 kW) and
+      the surplus 1.0e7. Chain 1.7e7 - 1.7e6 = 1.5e7; 1.5e7 - 3.1e6 = 1.2e7; 4.8e6/3600 = 1.33 kW
+      reproduce; §14.7 restates the heat as "~1.1 kW". Air cooling capacity 1.8 kW at 15 K. (tests)
+    consumed_by: ["14.5.1", "14.5.5e", "14.5.6c", "14.7"]
+    aliases: ["net energy producer", "1.2e7 J/kg surplus"]
+
+  - id: 14.4.9/information-per-product
+    type: parameter
+    section: "14.4.9"
+    statement: >
+      ~1e15 blocks, < 32 bits for type among < 1e9 kinds, "substantially fewer than 100 bits per
+      block, or < 1e17 bits per product object"; tape at ~1e28 bits/m^3 (12.6.4) holds 1e6
+      product specifications in < 1e-5 m^3, < 0.01 kg.
+    support: INT
+    refs: ["12.6.4"]
+    polarity: "+"
+    spot_check: "1e17 bits; 1e6 x 1e17 / 1e28 = 1e-5 m^3. OK."
+    consumed_by: ["14.6"]
+
+  - id: 14.4.10/self-manufacture
+    type: proposition
+    section: "14.4.10"
+    statement: >
+      The system folds from < 0.4 m to ~0.2 m, "within both the size and mass range of its own
+      products"; "the output of a set of specialized mills can be used to build an identical set
+      of mills"; hence "can be used to build objects that, when unfolded, are substantially
+      identical to itself." Instruction-copying paradox resolved as in von Neumann (read twice).
+    support: EXT
+    refs: ["von Neumann and Burks 1966", "Freitas and Gilbreath 1982"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 14.4.4/mass-and-volume
+      - 14.4.2/micron-blocks-suffice
+      - "the mills that make the block catalogue are themselves composed of catalogue blocks"
+    consumed_by: ["14.5.4", "14.5.6g", "16"]
+    notes: The replication claim; the closure hypothesis (mills made of the blocks mills make) is asserted in one sentence.
+
+  # ---- 14.5 Comparison to conventional manufacturing --------------------------------------
+
+  - id: 14.5/comparison-is-consequence-not-analysis
+    type: scope-condition
+    section: "14.5"
+    statement: >
+      "The discussion in this section is not a basis for further analysis of molecular
+      machinery, manufacturing, or computation; rather, it attempts to evaluate some of the
+      consequences of the previous analysis ... the descriptions are based on informed
+      estimates."
+    support: BARE
+    polarity: "+"
+    notes: Author's own scoping of 14.5; everything below inherits 14.4's hypotheses.
+
+  - id: 14.5.1/net-energy-producer
+    type: proposition
+    section: "14.5.1"
+    statement: >
+      Carbon feedstock (sugar, alcohol, petrochemicals) "~0.1 $/kg, comparable to the cost of raw
+      steel"; the process "can be driven by the chemical energy content of the feedstock
+      materials, producing electrical energy as a by-product"; energy and material inputs per
+      unit functional capacity "substantially lower than those for conventional manufacturing".
+    support: INT
+    refs: ["14.4.8/energy-balance"]
+    polarity: "-"
+    hypotheses:
+      - 14.4.8/energy-balance
+    consumed_by: ["14.5.6", "14.7"]
+
+  - id: 14.5.2/no-byproducts-no-toxics
+    type: proposition
+    section: "14.5.2"
+    statement: >
+      Systems "can be designed to produce no by-products at all, aside from some set of
+      compounds containing any unwanted elements"; "Design studies to date suggest that
+      relatively exotic and toxic materials (lead, mercury, cadmium) need play no role";
+      products recyclable by disassembly or closed-vessel oxidation.
+    hedge: "Design studies to date suggest"
+    support: BARE
+    polarity: "-"
+    priority: low
+
+  - id: 14.5.4/productivity-1e3s
+    type: proposition
+    section: "14.5.4"
+    statement: >
+      Time to produce outputs of complexity equal to its own: industrial economy "~1e8 s"
+      (capital doubling ~a year); exemplar "~1e3 s. This disparity stems from the difference in
+      the characteristic frequency of operations."
+    support: INT
+    refs: ["14.4.3/throughput-and-latency", "14.4.10/self-manufacture"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 14.4.10/self-manufacture
+    consumed_by: ["14.5.6g", "16"]
+    aliases: ["1000 s replication time", "1e5 x productivity"]
+
+  - id: 14.5.5/product-characteristics
+    type: proposition
+    section: "14.5.5"
+    statement: >
+      Products well-ordered save radiation defects; diamond at "a conservative 50 GPa" has ~55
+      and 75x the specific strength of hardest 9255 steel and 7178-T6 aluminium and 12/15x the
+      specific modulus; ~0.3 nm features; motors 1e15 W/m^3 at > 0.99 efficiency (11.7);
+      mechanochemical conversion > 0.99 at ~2e9 W/m^3 (13.3.8), ~1e12 W/m^3 "if suitably
+      low-dissipation designs can be found"; photovoltaics > 0.3; butane storage ~4e7 J/kg;
+      1e19 CPUs/m^3, 1e25 RAM bits/m^3, 1e28 tape bits/m^3, 1e9 instr/s at ~1e-16 J each.
+    hedge: "if suitably low-dissipation designs can be found"
+    support: INT
+    refs: ["9.3.1/materials-table", "11.7", "12.5.2c", "12.6.3", "12.6.4", "12.7.4/power-74aj-per-clock", "13.3.8", "Hubbard 1989", "Tapley and Poston 1990", "Kelly 1973"]
+    polarity: "+"
+    spot_check: >
+      Specific-strength ratios 53 and 75 reproduce with 2.1 GPa / 540 MPa alloys; E/rho ratios 12
+      and ~12 (book says 15 for Al). Butane 4.6e7 (LHV) and 1.0e7 J/kg of reactants. (tests)
+    consumed_by: ["14.7", "16"]
+    notes: The 50 GPa "conservative" strength meets 6.4.4's 22 GPa single-bond working limit and Lawn's 190 GPa; see the 9.3.1 audit note.
+
+  - id: 14.5.6/cost-0.1-to-0.5-per-kg
+    type: proposition
+    section: "14.5.6"
+    statement: >
+      "production cost will be essentially independent of complexity"; materials ~0.1-0.5 $/kg;
+      energy a net credit ("ignored"); waste only water and ~1 kW heat; no labour; land and
+      capital negligible (Eq. 14.3-14.4 with t ≈ 1e-4 yr); "this range can thus be taken as an
+      upper bound on the basic cost of producing objects using a mature molecular manufacturing
+      technology base." Development costs "hard to estimate".
+    support: INT
+    refs: ["14.4.8/energy-balance", "14.5.4/productivity-1e3s", "10.10.2d"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 14.5.4/productivity-1e3s
+      - 14.4.8/energy-balance
+      - "development, licensing, taxation, insurance excluded"
+    consumed_by: ["14.7", "16"]
+    aliases: ["$0.10-0.50 per kg"]
+
+  # ---- 14.6 Design and complexity --------------------------------------------------------
+
+  - id: 14.6/design-automation-required
+    type: proposition
+    section: "14.6"
+    statement: >
+      1e11 moietal operations per cubic-micron block, 1e15 block operations per kg: "most of
+      these operations must be specified without direct human attention"; hardware compilers,
+      retrosynthetic analysis of mechanosynthesis (Corey; Soreff 1992 etching analogy),
+      hierarchical decomposition, shape-description languages, assembly-process and design
+      compilers; "There can be no fully general design compilers"; compiler prerequisites listed
+      (modules for retrosynthesis, reaction geometries, subsystem designs, design rules);
+      "A further requirement, of course, is experimental feedback".
+    support: EXT
+    refs: ["Corey and Cheng 1989", "Simon 1981", "Merkle 1991", "Soreff 1992"]
+    vintage: "SUPERSEDED — 1992 view of CAD and compilers; the argument is by analogy"
+    polarity: "+"
+    consumed_by: ["14.7", "16"]
+
+  - id: 14.6.6/complexity-comparable-to-software
+    type: proposition
+    section: "14.6.6"
+    statement: >
+      Mechanical nanocomputers "of essentially the same complexity as microelectronic
+      computers"; small molecular manufacturing systems "comparable in complexity to modern
+      automated factories"; "Even the most complex systems described here are arguably less
+      complex than some modern software systems" because parts repeat like invocations, not
+      like lines of code.
+    hedge: "arguably"
+    support: BARE
+    polarity: "-"
+    priority: high
+    consumed_by: ["14.7", "16"]
+    notes: Marblestone's "systems problem beyond one lab" (register) is the empirical counterpoint.
+
+  # ---- 14.7 Conclusions --------------------------------------------------------------------
+
+  - id: 14.7/headline
+    type: proposition
+    section: "14.7"
+    statement: >
+      "A 1 kg system can build a 1 kg product object in ~1 hr, dissipating ~1.1 kW of heat. The
+      range of products that can be produced is large, encompassing high-performance
+      structures, massively parallel supercomputers, and additional molecular manufacturing
+      systems." Cost "~0.10 to 0.50 $/kg"; design "will require extensive automation".
+    support: INT
+    refs: ["14.4", "14.5"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 14.4.1/table-14-1
+      - 14.4.8/dissipation-budget
+      - 14.4.8/energy-balance
+      - 14.4.5/system-lifetime
+      - 14.4.10/self-manufacture
+      - 14.5.6/cost-0.1-to-0.5-per-kg
+    spot_check: "14.4.8 computes 1.3 kW; 14.7 says 1.1 kW."
+    consumed_by: ["15", "16", "criticism"]
+    aliases: ["the nanofactory claim", "1 kg/hour"]
+
+  - id: 14.7/open-problems
+    type: scope-condition
+    section: "14.7"
+    statement: >
+      Open problems: the relationship between the number of block types and product
+      capabilities; alternative, more flexible architectures; the whole of 14.6 as "a partial
+      survey of open problems in automating the design of products and the specification of
+      production processes."
+    support: BARE
+    polarity: "+"
+
+imports:
+
+  - from: "13.3.7/mill-dissipation-1.5e6"
+    used_for: the dominant term of the dissipation budget
+    at: ["14.4.8"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.3.6/error-rates"
+    used_for: fail-stop units, 1e-15 per-step failure rate, <= 0.01 failure per unit in 10 years
+    at: ["14.3.3", "14.4.5"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.3.2b/transport-network"
+    used_for: belts, pallets, fair nonblocking junctions for the redundant architecture
+    at: ["14.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.3.8/mechanochemical-energy-conversion"
+    used_for: oxidation of surplus hydrogen with energy recovery; > 0.99 conversion efficiency; storage rates
+    at: ["14.4.7", "14.4.8", "14.5.5e", "14.5.5f"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.3.5/reagent-preparation-mass"
+    used_for: reagent-preparation unit mass and, by assumption, stage 1-2 mill unit mass
+    at: ["14.4.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.2.2/input-ordering-mass"
+    used_for: input-ordering subsystem mass
+    at: ["14.4.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.4/manipulator-arm"
+    used_for: manipulator scaling (stiffness > 100 N/m, bending modes > 100x operating frequency; 10 cm arm)
+    at: ["14.2.1a", "14.2.2a", "14.4.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "12.7.4/power-74aj-per-clock"
+    used_for: ~1e-16 J per instruction in the computation term
+    at: ["14.4.8", "14.5.5g"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: The one import from the GHz-regime analysis; propagation path for Prase's critique. Per-interlock arithmetic in 12.3.8b/12.7.4 already differs by x3.3.
+
+  - from: "12.6.4/tape-storage-density"
+    used_for: 1e28 bits/m^3
+    at: ["14.4.9", "14.5.5g"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "12.5.2c/cpu-speed"
+    used_for: 1e9 instructions/s
+    at: ["14.5.5g"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "12.6.3/ram-density"
+    used_for: 1e25 bits/m^3
+    at: ["14.5.5g"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "11.7/electrostatic-motors"
+    used_for: power conversion at negligible mass and volume; 1e15 W/m^3 at > 0.99
+    at: ["14.4.1", "14.5.5e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11.4.2/vacuum-pumps"
+    used_for: vacuum integrity and product delivery
+    at: ["14.3.2", "14.4.1"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "11.4.3/sliding-seals"
+    used_for: seals for product delivery
+    at: ["14.3.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "9.7.3/covalent-interfaces-lossless"
+    used_for: blocks join "to form a dense, continuous diamondoid structure" without strength loss
+    at: ["14.2.1b", "14.5.5c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.7.3/energy-release-controllable"
+    used_for: the recovery claim (much or almost all of the bonding energy recovered as mechanical work) behind the 9e6 to 5e5 J/kg step
+    at: ["14.2.1c"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: The x18 on the block-assembly line rests on four unquantified mechanisms in 9.7.3. Audit item.
+
+  - from: "9.7.3/diamond-111-surface-energy"
+    used_for: ~5 J/m^2 (Field 1979)
+    at: ["14.2.1c"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "9.7.1/vdw-interface-props"
+    used_for: "> 150 maJ for typical interfaces of >= 1 nm^2"
+    at: ["14.2.2"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.2/stiff-housing-architecture"
+    used_for: stiff structures limit positional uncertainty at intermediate scale
+    at: ["14.2.2"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.3.1/materials-table"
+    used_for: diamond 50 GPa "conservative" strength and modulus for the specific-strength comparison
+    at: ["14.5.5b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.5.5/kaehler-brackets"
+    used_for: precompiled bracket library for bridging structures
+    at: ["14.6.2"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "10.5/nuts-screws-sliding-rods"
+    used_for: adjustable blocks with internal sliding interfaces
+    at: ["14.4.2c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.10.2d/cost-independent-of-complexity"
+    used_for: production cost independent of product complexity
+    at: ["14.5.6a"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "6.6.3/track-structure-scaling"
+    used_for: Eq. 6.54 as the damage model
+    at: ["14.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.6.2/radiation-hits-1e15-per-kg-rad"
+    used_for: P_unit = 0.99 for 2e-18 kg after ten years
+    at: ["14.3.3", "14.4.5"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.7.1/radiation-dominance-criterion"
+    used_for: damage "dominated by damage caused by ionizing radiation" given judicious design
+    at: ["14.3.3"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.7.1/single-point-failure-assumption"
+    used_for: the default this chapter relaxes above 10 nm
+    at: ["14.2.2b"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "6.7.2/redundancy-model"
+    used_for: Eq. 14.1-14.2 "correspond to Eqs. (6.58) and (6.59)"
+    at: ["14.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.5.4/aluminum-shield-250nm"
+    used_for: "An enclosure of this size can easily be made UV opaque"
+    at: ["14.4.5"]
+    cited: yes
+    hypotheses_discharged: yes
+
+  - from: "8.6.6/cluster-strategies"
+    used_for: the small end of the block-size continuum
+    at: ["14.2.1b"]
+    cited: yes
+    hypotheses_discharged: n/a
+
+  - from: "3.5.1/vdw-between-objects"
+    used_for: van der Waals attraction between blocks and grippers
+    at: ["14.2.1b", "14.2.2"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  # --- added at reconciliation 2026-09-18
+  - from: "6.5.3/shielding-assumed"
+    used_for: the enclosure is assumed UV-opaque rather than the components photostable
+    at: ["14.4.5"]
+    cited: no
+    hypotheses_discharged: yes
+
+  - from: "6.6.4/radiation-inescapable"
+    used_for: the premise that a macroscopic, long-lived system must tolerate localized random damage
+    at: ["14.3.3"]
+    cited: no
+    hypotheses_discharged: n/a
+
+  - from: "7.1/speed-scaling"
+    used_for: dissipation per operation vanishing with speed is why low-frequency manipulator and sorting operations are "comparatively negligible" and why the frequency ladder buys low dissipation
+    at: ["14.4.8", "14.4.1"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "7.6.4/asymmetrical-merging"
+    used_for: bonding-energy release on joining blocks is the fall into a deeper well; the 5e5 J/kg figure assumes it is not thermalised
+    at: ["14.2.1c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.4.8/assembly-of-interlocking-sleeves"
+    used_for: stretching a grooved sleeve to fit it over a shaft, cited as a specialised assembly operation
+    at: ["14.2.1a"]
+    cited: no
+    hypotheses_discharged: unknown

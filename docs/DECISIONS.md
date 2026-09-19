@@ -317,6 +317,33 @@ from Ch. 1, 2, 4, 8, 11, 13, 14 and §10.3.2. Findings:
 Reconciliation pass for these two chapters: 51 forward claims into extracted sections, 25 made
 into inferred imports (notably into 12.3.7 and 10.4.7b), 26 speculative guesses trimmed.
 
+## Ch. 14 full extraction (2026-09-18): the target chapter
+
+Darius's priority: Ch. 14 is the claim that matters; Ch. 15-16 are a curiosity unless it works.
+Ch. 14 is architecture plus bookkeeping; its load-bearing numbers are Table 14.1 and the
+§14.4.8 energy budget, reproduced in `nsaudit/ch14.py`. Spot checks, not verdicts:
+
+- **The dissipation budget does not sum.** Itemised terms: 1.5e6 (13.3.7, mills) + 5e5 (block
+  assembly) + 1e5 (computation) = 2.1e6 J/kg. The text carries forward 3.1e6. The missing 1e6
+  is not itemised.
+- **The entropy term is low.** Acetone + O2 -> diamond + liquid water, with product entropy
+  zero, gives 8.2e3 J/kg·K, not 5.7e3 (the book's figure equals the acetone term alone). With
+  8.2e3 the waste heat is 1.55 kW, not 1.3; 14.7 separately restates it as 1.1 kW. The enthalpy
+  (1.7e7 J/kg) reproduces.
+- **§14.4.4's early-stage volume omits the largest Table 14.1 entry** (stage-1 mills, 0.06 kg):
+  1.8e-4 m³ vs 9e-4 from the tabulated masses. Low impact.
+- **The block-assembly allowance** (9e6 -> 5e5 J/kg, ×18) is recorded with an explicit inferred
+  import from `9.7.3/energy-release-controllable`, whose four mechanisms carry no efficiency.
+  The ethene-matched intermediate figure is 2.4e6 from its own recipe, not ~1e6.
+- **The computation term** imports 1e-16 J/instruction from 12.7.4. The 12.3.8b/12.7.4
+  per-interlock discrepancy (×3.3) and any rod-logic physics penalty land here; the register now
+  targets `14.4.8/dissipation-budget` for Prase.
+- `14.2.2/damage-tolerance-above-10nm` relaxes the Ch. 6 single-point-failure rule for every
+  Table 14.1 stage above 10 nm, with no interfacial damage-rate calculation.
+
+The 7.4.2 -> 12.3.4 verdict is no longer marked provisional: all chapters it depends on are
+reconciled and none of the 34 remaining pending imports bears on it.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

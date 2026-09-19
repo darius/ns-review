@@ -481,7 +481,7 @@ exports:
       Eq. 3.32 reproduces Table 3.9 (diamond 343, PE 76, water 37, PTFE 38 maJ). Not in the book:
       Eq. 3.29 with MM2 sp3-carbon C and diamond density gives ~650 maJ, ~2x the Lifshitz 340;
       which convention 9.7 and 10.4.8 use matters at the 2x level. (tests)
-    consumed_by: ["3.5.2", "10.4.8a", "11", "14.2"]
+    consumed_by: ["3.5.2", "10.4.8a", "11"]
 
   - id: 3.5.1/vdw-between-objects
     type: parameter

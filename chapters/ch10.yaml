@@ -396,7 +396,7 @@ exports:
       = 3.4e-22 J = 0.082 kT, not 0.06 (25% low vs its own inputs). Power density over the
       interface cylinder is 1.1e12 W/m^3; ~1e11 needs an outer radius ~6 nm (volume undefined
       in the text). (tests)
-    consumed_by: ["11", "13", "14"]
+    consumed_by: ["11", "13"]
     aliases: ["bearing drag bound", "Eq. 10.27"]
 
   - id: 10.4.6/drag-consistent-with-efficiency
@@ -410,7 +410,7 @@ exports:
     support: INT
     refs: ["11.7", "13.3"]
     polarity: "-"
-    consumed_by: ["11.7", "13.3", "14"]
+    consumed_by: ["11.7", "13.3"]
 
   # ---- 10.4.7 Sleeve bearings in molecular detail ---------------------------------------
 
@@ -451,7 +451,7 @@ exports:
     priority: high
     hypotheses:
       - "baseline conditions: no extreme T, no UV, no reactive molecules, no extreme loads"
-    consumed_by: ["11", "13", "14"]
+    consumed_by: ["11", "13"]
     notes: The > 500 maJ barrier is asserted from bond-count reasoning, not computed. Adjudicate at audit.
 
   - id: 10.4.7/graphite-18gpa
@@ -616,7 +616,7 @@ exports:
       - 9.8/bulk-stiffness-applies
       - 10.11/stiffness-factor-0.5
       - 10.12/smooth-sliding-conditions
-    consumed_by: ["11", "12.3.3", "13", "14"]
+    consumed_by: ["11", "12.3.3", "13"]
     aliases: ["bounded continuum model (Part II usage)"]
 
   - id: 10.11/stiffness-factor-0.5

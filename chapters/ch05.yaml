@@ -54,7 +54,7 @@ exports:
     refs: ["Eq. 4.10"]
     polarity: "+"
     priority: high
-    consumed_by: ["3.3.3b", "6.2.2", "9.2", "12.3.7", "13", "14"]
+    consumed_by: ["3.3.3b", "6.2.2", "9.2", "12.3.7", "13"]
     aliases: ["Eq. 5.4", "kT/k_s", "Chapter 5 stiffness-uncertainty relation"]
 
   - id: 5.3.1/bath-coupling-irrelevant

@@ -62,7 +62,7 @@ exports:
     support: BARE
     polarity: "-"
     priority: high
-    consumed_by: ["10", "11", "12.3.4", "13", "14"]
+    consumed_by: ["10", "11", "12.3.4", "13"]
     notes: >
       The chapter-level inventory that every Part II dissipation budget inherits. Not listed:
       viscoelastic lag of assemblies of components (Prase 2026 "molecular relaxation"),
@@ -683,7 +683,8 @@ exports:
       clause has no explicit out-edges. Adjudicated on the inferred edge to 12.3.4 (spike).
     verdict: hypothesis-violated
     verdict_notes: >
-      SPIKE VERDICT (provisional). at: 12.3.4. The item itself is fine as far as it goes — under
+      at: 12.3.4. Recorded as a spike verdict on 2026-09-18 and confirmed the same day once Ch. 3,
+      5, 6, 7, 10, 12 were reconciled (no pending import bears on it). The item itself is fine as far as it goes — under
       its own tau_relax = 1e-13 s the "very high frequency" exception is not triggered at 5-10 GHz
       (omega·tau ~3e-3). But 12.3.4 never evaluates it, and with the inelastic thermalization time
       the modern f·Q data imply (5e-12 to 1.2e-11 s) omega·tau is 0.4-0.7 there, inside the
@@ -893,7 +894,7 @@ exports:
     support: INT
     refs: ["7.6.3"]
     polarity: "+"
-    consumed_by: ["13", "14"]
+    consumed_by: ["13"]
 
   - id: 7.6.2/merging-wells-free-energy-model
     type: construction
@@ -923,7 +924,7 @@ exports:
     vintage: "OK"
     polarity: "+"
     priority: high
-    consumed_by: ["12.4.3c", "12.3.8", "14"]
+    consumed_by: ["12.4.3c", "12.3.8"]
     aliases: ["ln(2) kT", "bit erasure cost", "2.87 maJ at 300 K"]
     spot_check: "kT ln 2 at 300 K = 2.87e-21 J. OK."
 
@@ -973,7 +974,7 @@ exports:
     hypotheses:
       - 7.1/mechanism-inventory
       - "parameters chosen so that dissipation is acceptable (self-declared circularity)"
-    consumed_by: ["10", "11", "12", "13", "14"]
+    consumed_by: ["10", "11", "12", "13"]
     notes: >
       The chapter's summary claim, with the circularity stated in the author's own parenthesis.
       The audit question is whether Part II's actual parameter choices are in the "reasonable"

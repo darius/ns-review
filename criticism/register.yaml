@@ -22,6 +22,7 @@
     - "12.3.7/error-rate-1e-64"
     - "12.3.8/reliability-needs-no-dissipation"
     - "12.7.4/power-74aj-per-clock"              # 1e-16 J/instr, consumed by 14.4.8
+    - "14.4.8/dissipation-budget"                # where the rod-logic penalty lands: the 1e5 J/kg computation term
   claim: >
     Three arguments against the GHz rod-logic computer. (1) Akhiezer/phonon-viscosity damping:
     Drexler's Q ~3770 sits at the bulk-diamond f·Q ceiling (3.7e13 Hz) evaluated at the ~10 GHz

@@ -85,23 +85,32 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 - Do not summarise the book's argument in a chapter file; record claims.
 - Do not run `memory_delete`-style cleanups on `generated/` — just rebuild it.
 
-## Current state (2026-09-18, evening)
+## Current state (2026-09-18, end of first working session) — START HERE
 
-- Ch. 3 (30 exports), 5 (19), 6 (35), 7 (58), 9 (41) in full; Ch. 10 §10.3.4–10.3.6, 10.4,
-  10.8, 10.11–10.12 (37); Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28). 248 exports, 0 dangling
-  imports, 0 unconfirmed forward claims; all seven `reconciled` (SCHEMA.md; build-enforced).
-- `nsaudit/` covers ch03, ch05, ch06, ch07, ch10, ch12 plus one edge audit. 109 tests pass,
+Handoff for review. Eight chapters extracted and mutually reconciled; one verdict; 126 tests.
+Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
+
+- Ch. 3 (30 exports), 5 (19), 6 (35), 7 (58), 9 (41), 14 (31) in full; Ch. 10 §10.3.4–10.3.6,
+  10.4, 10.8, 10.11–10.12 (37); Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28). 279 exports, 0
+  dangling imports, 0 unconfirmed forward claims; all eight `reconciled` (build-enforced).
+- `nsaudit/` covers ch03, ch05, ch06, ch07, ch10, ch12, ch14 plus one edge audit. 126 tests pass,
   1 xfail (§7.4.3 text/equation contradiction). Printed-equation errors found so far: Eq. 7.29
-  missing a π; §7.3.5e d_n exponent sign; Eq. 6.24 missing k_s and off by 2 (DECISIONS.md).
-- One provisional verdict: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated,
-  impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
+  missing a π; §7.3.5e d_n exponent sign; Eq. 6.24 missing k_s and off by 2. Arithmetic
+  inconsistencies: 12.3.8b per-interlock energy; 14.4.8 dissipation sum and entropy term.
+- One verdict (no longer provisional): `7.4.2/phonon-viscosity-small-except` → 12.3.4,
+  hypothesis-violated, impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
-- Next: the intermediates are in. Pending imports now come only from Ch. 1, 2, 4 (4.3–4.4),
-  8, 11, 13, 14 and §10.3.2. Two directions, in order: (a) firm up the provisional 7.4.2 → 12.3.4
-  verdict and audit the three edges the reconciliation exposed as single nodes — 12.3.7's use
-  of `5.3.1/bath-coupling-irrelevant` (Prase's FDT objection), 12.3.7's use of the equilibrium
-  limit of `6.3.3/switched-coupling-error-model`, and 9.4.3's `deficit-is-mm2-artifact` against
-  `3.3.2/mm2-known-defects` (bending, not stretching); (b) Ch. 8 and 16 for Moriarty's targets,
-  with Ch. 4 §4.3–4.4 as the last small intermediate. The 7.4.2 exception also has an
-  unevaluated use site at 10.4.6; the 12.3.4 bound should transfer.
+- Priority (Darius, 2026-09-18): the path into Ch. 14. Ch. 15–16 matter only if Ch. 14 works.
+- Pending imports (34) by source chapter: Ch. 13 (8), Ch. 4 (10, mostly stat-mech definitions),
+  Ch. 8 (4), Ch. 11 (4), Ch. 10 unextracted sections (3), Ch. 12 unextracted sections (3),
+  Ch. 1 and 2 (1 each). Ch. 13 is now the gap on the Ch. 14 path: 13.3.7 supplies the largest
+  term of the 14.4.8 budget (1.5e6 J/kg) and 13.3.6 the error rates and fail-stop behaviour.
+- Next, in order: (1) extract Ch. 13 (at least 13.2.2, 13.3.2, 13.3.5–13.3.8, 13.4); (2)
+  adjudicate the 14.4.8 budget as a unit, with its three imports (13.3.7, 9.7.3 recovery,
+  12.7.4 computation) and the two arithmetic inconsistencies above; (3) the three single-edge
+  audits exposed by reconciliation: 12.3.7 on `5.3.1/bath-coupling-irrelevant` (Prase FDT),
+  12.3.7 on the equilibrium limit of `6.3.3/switched-coupling-error-model`, and 9.4.3's
+  `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`; (4) the 7.4.2 exception's second
+  use site at 10.4.6 (the 12.3.4 bound should transfer). Ch. 11 after Ch. 13 if 14.4.1's
+  "supporting systems peripheral" (cooling, power) needs checking.

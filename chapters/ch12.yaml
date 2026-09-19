@@ -363,7 +363,7 @@ exports:
     hypotheses:
       - 12.3.7/positional-error-model
       - 12.3.7/error-threshold-0.7nm
-    consumed_by: ["12.3.8", "13.3.6", "14"]
+    consumed_by: ["12.3.8", "13.3.6"]
     aliases: ["1e-64 error rate", "rod-logic error rate"]
 
   # ---- 12.3.8 Summary observations -------------------------------------------
@@ -387,7 +387,7 @@ exports:
       2 × (0.56 + 0.052 + 0.06 + 0.41) = 2.17 maJ. Per interlock: 2 maJ / 16 switching events =
       0.125 maJ = 0.030 kT_300, which matches the printed "~0.031 kT_300" and not the printed
       "~0.013 maJ" (= 0.003 kT). So "0.013" is almost certainly a typo for 0.13. (nsaudit/ch12.py)
-    consumed_by: ["12.7.4", "14.4.8"]
+    consumed_by: ["12.7.4"]
     aliases: ["rod-logic switching energy"]
     notes: >
       Arithmetic flag (not a verdict): 12.7.4 charges 0.03 maJ per interlock per operation,
@@ -598,7 +598,8 @@ imports:
     hypotheses_discharged: no
     verdict: hypothesis-violated
     verdict_notes: >
-      SPIKE VERDICT (provisional: Ch. 7 and Ch. 12 are not reconciled; see DECISIONS.md).
+      Spike verdict (2026-09-18), confirmed the same day after reconciliation of Ch. 3/5/6/7/10/12;
+      no pending import bears on it.
       The use site never evaluates the exception; the mechanism is simply absent from the
       inventory, and Section 7.4.2 is cited nowhere in the book outside itself. Magnitude, by
       nsaudit/audit_phonon_viscosity_rod_logic.py, applying the book's own Eq. 7.53 to the
