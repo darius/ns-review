@@ -804,3 +804,44 @@ imports:
     at: ["14.2.1a"]
     cited: no
     hypotheses_discharged: unknown
+
+  # ---- added at Ch. 13 reconciliation (2026-09-26) ------------------------------------------
+
+  - from: "13.4.4/larger-arms-easier"
+    used_for: manipulators at intermediate scales ("Section 13.4.4 discusses manipulators of sizes intermediate between the 100 nm and macroscopic scales")
+    at: ["14.2.1a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.3.6/fail-stop-gauging"
+    used_for: "All radiation-sensitive units are assumed to be fail-stop (Section 13.3.6)"
+    at: ["14.3.3", "14.4.5"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.4.1/manipulator-dissipation-100maj"
+    used_for: '"The mechanical aspects of manipulator operations result in comparatively negligible energy dissipation"'
+    at: ["14.4.8"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      13.4.1f gives ~100 maJ per motion excluding power and control; negligible only if each
+      motion places a block of >= ~1e3 atoms (at 1 atom per motion it is 5e6 J/kg). Table 14.1's
+      manipulators place blocks, so plausibly discharged; control dissipation is carried only
+      by the 12.7.4 computation term. Adjudicate with the 14.4.8 budget.
+
+  - from: "13.2.1/sorting-reversible-low-drag"
+    used_for: '"operations in molecular sorting and ordering" comparatively negligible (save entropic effects)'
+    at: ["14.4.8"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "13.2.1/receptor-lifetime"
+    used_for: input-ordering units exposed to feedstock solution in a 10-year, no-repair architecture
+    at: ["14.4.1", "14.4.5"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      13.2.1f argues receptor lifetimes from enzyme lifetimes (days) and solvent stability, and
+      frames even one day as sufficient, i.e. with replacement. 14.4.5's lifetime analysis
+      covers radiation only. Adjudicate at audit.

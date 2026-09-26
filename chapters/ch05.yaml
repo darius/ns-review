@@ -136,7 +136,7 @@ exports:
     support: INT
     refs: ["5.4.1/rod-modal-stiffness", "Eq. 5.25"]
     polarity: "+"
-    consumed_by: ["9.2", "11", "13"]
+    consumed_by: ["9.2", "11"]
 
   - id: 5.4.2/discrete-rod-quantum-model
     type: construction
@@ -249,7 +249,7 @@ exports:
     polarity: "+"
     hypotheses:
       - "ideal gas, hard-sphere hard-surface model"
-    consumed_by: ["7.5.1", "13"]
+    consumed_by: ["7.5.1"]
 
   - id: 5.7/longitudinal-variance-from-transverse
     type: construction

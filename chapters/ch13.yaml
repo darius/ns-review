@@ -1,0 +1,1459 @@
+chapter: 13
+title: Molecular Sorting, Processing, and Assembly
+status: reconciled
+coverage: full
+source: source/ch13.txt
+history:
+  - date: 2026-09-26
+    note: >
+      Full extraction. Ch. 13 supplies the three largest Ch. 14 inputs: the mill dissipation
+      (13.3.7, 1.5e6 J/kg), the per-step error rate and fail-stop unit mass (13.3.6), and the
+      reagent-processing mass (13.3.5). Every number reproduced or checked in nsaudit/ch13.py
+      (tests/test_ch13.py). The mill-dissipation mix rests on Ch. 8 (8.3.4f, 8.5.2b, 8.5.3b),
+      which is pending.
+  - date: 2026-09-26
+    note: >
+      Reconciled. 23 speculative consumed_by claims into Ch. 13 from Ch. 5/6/7/9/10/12 trimmed
+      (Ch. 13 does not use them). 42 imports from extracted sections (24 inferred), 17 pending
+      (Ch. 1, 2, 4, 8, 10.9, 11). Five Ch. 13 -> Ch. 14 uses
+      added as imports in ch14.yaml (two cited, three inferred); the rest of this file's
+      forward claims into Ch. 14 trimmed.
+
+exports:
+
+  # ---- 13.1 Overview ----------------------------------------------------------------------
+
+  - id: 13.1/solution-to-vacuum
+    type: design-license
+    section: "13.1"
+    statement: >
+      "This process begins with small molecules in a liquid and ends with complex structures in
+      an evacuated region." Liquids are "dense, thoroughly disordered, and can carry a wide
+      variety of molecules"; vacuum "avoids both viscous drag and mechanical interference from
+      stray molecules, while minimizing unwanted chemical reactions."
+    support: BARE
+    polarity: "+"
+
+  # ---- 13.2 Sorting and ordering molecules ------------------------------------------------
+
+  - id: 13.2/receptors
+    type: construction
+    section: "13.2.1"
+    statement: >
+      Modulated receptors on a sorting rotor (Fig. 13.1): cam-driven radial rods form a binding
+      site, transport it inward, eject the molecule, and return blocked. "The capabilities of
+      general structures can equal or exceed those of antibodies" (K_d 1e-5 to 1e-11 nm^-3,
+      Alberts et al. 1989). A receptor enclosing a ~0.9 nm molecule has ~2.7 nm excluded
+      diameter and ~1e3 atoms; 12 receptors per rotor gives a ~10 nm rotor of ~2e4 atoms.
+      "Among differing solvent systems in which the interactions of the solvent with the ligands
+      and the receptor are relatively weak and nonspecific, K_d will be relatively solvent
+      independent."
+    hedge: "can equal or exceed"
+    support: EXT
+    refs: ["Alberts et al. 1989", "9.5.4/antibody-diversity-analogy", "Eq. 13.1"]
+    vintage: "OK — antibody K_d range is textbook"
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 9.5.4/antibody-diversity-analogy
+      - "antibody affinity/specificity transfer to diamondoid receptors built by mechanosynthesis (no receptor designed)"
+      - "solvent interacts weakly and nonspecifically with ligand and receptor"
+    consumed_by: ["13.2.2", "13.2.3"]
+    aliases: ["sorting rotor", "modulated receptor mechanism"]
+
+  - id: 13.2.1/receptor-occupancy-99
+    type: parameter
+    section: "13.2.1"
+    statement: >
+      Diffusion-controlled binding "typically ~1e9 s^-1 nm^-3 (Creighton, 1984)"; with several
+      tens of species at >= 0.1 nm^-3, "~100 encounters occur in a 1e-6 second exposure time,
+      ensuring equilibration. With K_d <= 1e-3 nm^-3, the probability of receptor occupancy is
+      >= ~.99."
+    support: EXT
+    refs: ["Creighton 1984", "Eq. 13.1"]
+    vintage: "OK"
+    polarity: "+"
+    hypotheses:
+      - "1e-6 s receptor exposure (1e6 operations/s)"
+    spot_check: "Eq. 13.1 with c = 0.1, K_d = 1e-3 nm^-3: P_occ/P_unocc = 100, P_occ = 0.99."
+
+  - id: 13.2.1/concentration-work-20maj
+    type: parameter
+    section: "13.2.1"
+    statement: >
+      Delivering receptor contents to a high-concentration compartment requires "a work of
+      concentration amounting to ~20 maJ per molecule at 300 K"; with greater drive forces a
+      modulated receptor "can easily pump against pressures of several gigapascal ... at an
+      energy cost on the order of 100 maJ per molecule." Drive mechanisms "are not considered
+      here".
+    hedge: "can easily"
+    support: BARE
+    polarity: "+"
+    spot_check: "kT ln(1/0.01) = 19 maJ at 300 K (tests)."
+    consumed_by: ["13.2.2"]
+
+  - id: 13.2.1/diamondoid-receptors-superior
+    type: proposition
+    section: "13.2.1"
+    statement: >
+      "Diamondoid structures have advantages over proteins in their feasible affinities and
+      specificities. In general, stiffer structures permit greater specificity." Diamondoid
+      stiffness greater "by several orders of magnitude, permitting significant improvements in
+      specificity"; greater atom density gives stronger van der Waals binding; design freedom
+      "will often permit better matching".
+    hedge: "will often"
+    support: BARE
+    refs: ["Creighton 1984 (protein stiffness only)"]
+    polarity: "+"
+    notes: >
+      Proteins are cited; the diamondoid comparison is not. Stiffer receptors also forgo induced
+      fit; adjudicate at audit whether "stiffer -> more specific" holds for the category-1
+      (smaller-ligand) case.
+
+  - id: 13.2.1/kinetic-control-avoided
+    type: scope-condition
+    section: "13.2.1"
+    statement: >
+      High affinity can give slow competitor dissociation, so that occupancy "is controlled by
+      competitive binding kinetics, rather than by equilibria; this typically results in poor
+      discrimination. This problem does not arise in systems with K_d > ~1e-3 nm^-3 and having
+      ~1e-6 s receptor exposure times."
+    support: BARE
+    polarity: "-"
+    consumed_by: ["13.2.2"]
+
+  - id: 13.2.1/steric-discrimination-45maj
+    type: parameter
+    section: "13.2.1"
+    statement: >
+      Eq. 13.2: K_d,1/K_d,2 ≈ exp[(ΔF_1 - ΔF_2)/kT] ≈ exp[(ΔV_1 - ΔV_2)/kT]. Missing CH3 (H in
+      its place) costs "~24 maJ (Creighton, 1984), altering binding affinity by a factor of
+      ~0.003". CH for N with a ~0.3 nm initial N-receptor separation: "computational experiments
+      in the MM2 approximation indicate that the adverse overlap energy experienced by the
+      competitor can be ~45 maJ, sufficient to alter affinities by a factor ~5e4".
+    hedge: "can be"
+    support: BARE
+    refs: ["Creighton 1984 (24 maJ)", "Mitchell and McCammon 1991", "Straatsma and McCammon 1991"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 3.3.1/mm2-adopted
+      - "MM2 overlap repulsion accurate at ~0.3 nm N-X contact (inside r_vdw0)"
+      - "solvation, pV and entropy differences neglected (Eq. 13.2 second approximation)"
+    spot_check: "exp(-24/4.14) = 0.003; exp(45/4.14) = 5.2e4 (tests)."
+    notes: >
+      The 45 maJ is the author's own unpublished MM2 computation, hence BARE. 3.3.2 states a
+      "tens of percent" nonbonded-stiffness uncertainty vs MM3; at 45 maJ, 20% is ~9 maJ,
+      a factor ~9 in the discrimination. Adjudicate at audit.
+    consumed_by: ["13.2.1d", "13.2.2"]
+
+  - id: 13.2.1/tight-receptor-mechanism
+    type: construction
+    section: "13.2.1"
+    statement: >
+      Paired-rotor tight receptor (Fig. 13.2): only the preferred species and strictly smaller
+      ligands pass the enclosed position without a large overlap barrier; "barriers > 30 maJ
+      should be easily implemented." Requires a compliant drive: rotor rotational relaxation
+      "< 1e-7 s, assuming a mean viscosity of the surrounding medium like that of water
+      (Creighton, 1984)"; a nonlinear compliance (~1e-12 N, negligible stiffness over several
+      radians) lets a blocked bulky ligand escape. "This appears to meet the relevant
+      constraints."
+    hedge: "should be easily ... appears to meet"
+    support: BARE
+    refs: ["13.2.1c", "Creighton 1984"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.2.1/steric-discrimination-45maj
+      - "nonlinear-compliance drive exists (not designed)"
+      - "bulk viscosity near the rotor (fn. 31: bulk values 'no more than a rough guide')"
+    consumed_by: ["13.2.2"]
+
+  - id: 13.2.1/sorting-reversible-low-drag
+    type: parameter
+    section: "13.2.1"
+    statement: >
+      "Properly designed sorting rotor systems can approach thermodynamic reversibility in the
+      limit of slow motion when handling fluids of nearly pure composition"; well-merging loss
+      avoided by modulating receptor affinity via the cam profile. Viscous drag: wetted area
+      ~50 nm^2, shear length ~2.7 nm, rim speed 0.0027 m/s (1e6 receptor-sites/s), eta = 1e-3:
+      "~1e-16 W, or ~0.1 maJ per receptor transferred. Sliding-interface drag in associated
+      bearings can be made negligible in comparison."
+    hedge: "can approach ... can be made negligible"
+    support: INT
+    refs: ["7.6.2/merging-wells-free-energy-model"]
+    polarity: "-"
+    hypotheses:
+      - 7.6.2/merging-wells-free-energy-model
+      - "effective viscosity ~ bulk water (fn. 31: liquid-structure effects 'can be important'; bulk viscosity 'no more than a rough guide')"
+      - "nearly pure fluid (else entropies of mixing significant)"
+    spot_check: "eta A v^2 / L = 1.35e-16 W; / 1e6 = 0.135 maJ per receptor (tests)."
+    consumed_by: ["13.2.2", "14.4.8"]
+
+  - id: 13.2.1/receptor-lifetime
+    type: proposition
+    section: "13.2.1"
+    statement: >
+      Receptors "are, by the nature of their task, exposed to an ill-defined chemical
+      environment"; diamondoid surface reactivities "resemble the reactivities of smaller organic
+      molecules", so solvent-molecule stability models receptor stability: "This suggests
+      reasonably long operational lifetimes." Sacrificial moieties neutralise reactive
+      contaminants. Metabolic enzymes last several days (Creighton 1984); "even a one-day lifetime
+      is sufficient for a device to process ~1e6 times its own mass before requiring replacement."
+    hedge: "suggests reasonably long ... should be longer"
+    support: EXT
+    refs: ["Creighton 1984"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "reactivity of low-strain diamondoid surface patches ~ that of small organic solvent molecules"
+      - "replacement (or redundancy) available at the day timescale"
+    spot_check: "own mass in < 0.1 s (13.2.1e) -> > 8.6e5 own-masses per day."
+    notes: >
+      The only Ch. 13 mechanisms outside the eutactic baseline that Ch. 6 and 10.4.7 assume
+      ("no extraneous reactive molecules"). The fallback ("even a one-day lifetime") implies
+      replacement, which Ch. 14's architecture (no repair) must supply by redundancy.
+      Adjudicate at audit against 14.4.1's input-ordering stage.
+    consumed_by: ["14.4.1"]
+
+  - id: 13.2.2/purity-1e-15-required
+    type: parameter
+    section: "13.2.2"
+    statement: >
+      "if a device is to perform 1e6 operations per second for several decades without an error,
+      the fraction of contaminant molecules must be held to <= 1e-15. This degree of purity can
+      readily be achieved (for a wide range of reasonably stable feedstock molecules) by using a
+      cascade of modulated receptors."
+    hedge: "can readily be achieved"
+    support: BARE
+    polarity: "-"
+    spot_check: "1e6 /s × 3.2e7 s/yr × 30 yr ≈ 1e15."
+    consumed_by: ["13.3.6"]
+
+  - id: 13.2.2/staged-cascade-model
+    type: construction
+    section: "13.2.2"
+    statement: >
+      Counterflow cascade of N reservoirs (Fig. 13.3), mass balance Eq. 13.3; with
+      stage-independent f_in, f_out, alpha_in, alpha_out and constant c_0, c_n declines
+      exponentially: R = (f_rat alpha_rat)^-1 (Eq. 13.5), c_N = c_0 R^N (Eq. 13.6). "Although real
+      systems will never correspond precisely to this model, it can be used to estimate".
+    support: EXT
+    refs: ["McCabe and Smith 1976"]
+    vintage: "OK — standard counterflow cascade"
+    polarity: "+"
+    hypotheses:
+      - "stage-independent flows and selectivities"
+      - "single effective impurity (a mixture makes alpha_rat stage-dependent, as 13.2.2b notes)"
+
+  - id: 13.2.2/cascade-five-stages
+    type: parameter
+    section: "13.2.2"
+    statement: >
+      Feedstock at 1e-2 product fraction, geometric discrimination only. First inward stage:
+      impurities ~1e-4 to 1e-9 by antibody analogy; R ~1e-3 to 1e-8 with f_rat = 0.1. Later
+      tight-receptor stages: "feasible values of R >= ~5e3, given f_rat = 0.1". Late impurities
+      (smaller analogues) are "few", handled by selective outbound receptors. "values of
+      alpha_rat >= 1e4 should be readily achievable throughout, hence analyses using R = 1e-3 will
+      yield conservative results. Accordingly, producing a stream with an impurity fraction
+      <= 1e-15, starting with a feedstock with an impurity fraction ~.99, should require a number
+      of stages N <= 5."
+    hedge: "should be readily achievable ... should require"
+    support: BARE
+    refs: ["13.2.1c", "13.2.1d"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.2.2/staged-cascade-model
+      - 13.2.1/steric-discrimination-45maj
+      - 13.2.1/tight-receptor-mechanism
+      - 13.2.1/kinetic-control-avoided
+      - "the set of smaller-analogue impurities is small and each gets its own outbound receptor"
+    spot_check: >
+      0.99 × (1e-3)^5 ≈ 1e-15: N = 5 (tests). The printed "R >= ~5e3" is the reciprocal: Eq. 13.5
+      with the 45 maJ factor (5e4) and f_rat = 0.1 gives R ≈ 2e-4, 1/R ≈ 5e3. Typo or
+      transcription; not load-bearing (R = 1e-3 is used).
+
+  - id: 13.2.2/input-ordering-mass
+    type: parameter
+    section: "13.2.2"
+    statement: >
+      Many rotors in parallel "lend themselves to the construction of redundant architectures".
+      Inward-flow rotors dominate dissipation: for N = 5 at ~1e6 molecules/s per row, "~0.5 maJ
+      per molecule delivered"; entropy-of-mixing losses "~10% of the useful work" (~20 maJ).
+      "a purification system can deliver a quantity of product equaling its own mass in < 0.5 s."
+    support: INT
+    refs: ["13.2.1a", "13.2.1e"]
+    polarity: "-"
+    hypotheses:
+      - 13.2.1/sorting-reversible-low-drag
+      - 13.2.2/cascade-five-stages
+      - "per-rotor masses of 13.2.1a/e (~1e5 atoms incl. housing and drive share)"
+    spot_check: "5 stages × 0.135 maJ = 0.7 maJ (book ~0.5). Rotor 1e5 atoms vs 1e6 molecules/s of a few heavy atoms: own mass in ~0.02-0.1 s per rotor."
+    consumed_by: ["14.4.1"]
+
+  - id: 13.2.2/hard-separations-negligible
+    type: proposition
+    section: "13.2.2"
+    statement: >
+      Shape separation fails for near-identical shapes; among small molecules of the elements of
+      greatest interest, "differences in atomic valence, bond length, and nonbonded radius
+      guarantee substantial differences in shape". Transition and lanthanide metals may need
+      chromatography-like strategies; "separation of these more difficult elements will be a
+      quantitatively small portion of the overall processing task, having little impact on such
+      system parameters as mass, energy consumption, and productivity."
+    hedge: "guarantee ... will be"
+    support: BARE
+    polarity: "-"
+
+  - id: 13.2.3/ordered-input-steps
+    type: construction
+    section: "13.2.3"
+    statement: >
+      Ordered input by (1) reliable receptor occupancy from a pure liquid, (2) reliable covalent
+      bonding to a reagent moiety on another transport, (3) transfer as a bound moiety
+      (Fig. 13.5). Step 3 "is a natural consequence of the pattern of motion". Fig. 13.5 caption:
+      modulation mechanisms omitted, "exposure of an empty receptor as shown would be inherently
+      dissipative".
+    support: BARE
+    polarity: "+"
+    consumed_by: ["13.3.3"]
+
+  - id: 13.2.3/reliable-occupancy-161maj
+    type: parameter
+    section: "13.2.3"
+    statement: >
+      "A receptor will be occupied reliably (P_empty <= 1e-15) if the free energy of binding has
+      a magnitude greater than ~143 maJ." Binding entropy loss "comparable to the loss of entropy
+      in freezing to a crystal; for small organic molecules, a typical value is 6e-23 J/K, hence
+      the required potential energy of binding is ΔV_binding ≈ -161 maJ."
+    support: BARE
+    polarity: "+"
+    hypotheses:
+      - "equilibrium (Boltzmann) occupancy at the moment of capture"
+    spot_check: "kT ln 1e15 = 143 maJ; + 300 K × 6e-23 J/K = 161 maJ (tests)."
+    notes: >
+      Reliability from the total-equilibrium limit, as in 12.3.7 (see the 6.3.3 import). 6e-23
+      J/K has no reference.
+
+  - id: 13.2.3/ethyne-receptor-pressure
+    type: parameter
+    section: "13.2.3"
+    statement: >
+      MM2 ethyne receptor (Fig. 13.6): ΔV_binding = -97 maJ; the 64 maJ increment "can be
+      supplied by hydrostatic pressure". Organic liquids stay liquid at ~1-2 GPa (methanol > 3,
+      ethanol > 2, acetone and CS2 > 1 GPa) with volume per molecule ~0.75 of atmospheric (Gray
+      1972); ethyne ~5e-29 m^3 -> "~1.3 GPa, at which liquids consisting of small, nonpolar
+      organic molecules like ethyne are still far from solidification." "The range of feedstock
+      molecules that can be ordered in this manner is large."
+    hedge: "still far from ... is large"
+    support: EXT
+    refs: ["Gray 1972", "3.3.1/mm2-adopted"]
+    vintage: "CHECK — high-pressure phase data for ethyne specifically not cited"
+    polarity: "-"
+    hypotheses:
+      - 3.3.1/mm2-adopted
+      - "liquid ethyne chemically stable at ~1.3 GPa (fn. 32: 'an open question'; polymerisation exoergic)"
+    spot_check: "621 kg/m^3, 26 g/mol, ×0.75 -> 5.2e-29 m^3; 64 maJ / 5.2e-29 = 1.2 GPa (tests)."
+    notes: >
+      Fn. 32 flags ethyne's own stability at this pressure as open; Ch. 14's sample calculations
+      use acetone instead. No receptor for acetone is shown.
+
+  - id: 13.2.3/bonding-in-receptor
+    type: proposition
+    section: "13.2.3"
+    statement: >
+      The transfer reaction "must take the form of an addition": radical additions or
+      Diels-Alder for unsaturated molecules, additions to transition metals (Eq. 8.34) for
+      saturated ones; large piezochemical forces overcome barriers; "Strategies for forming
+      strong bonds with little energy dissipation are available (Section 8.5.6)." But "In working
+      with small molecules ... it is difficult to provide stiff restoring forces that resist
+      motion of the molecule in the direction of the attacking moiety. This limitation may, for
+      example, preclude low energy dissipation in radical coupling reactions involving small
+      molecules (see the related discussion in Section 8.5.3b)." Any intractable feedstock "can
+      be discarded in favor of an alternative."
+    hedge: "may, for example, preclude"
+    support: INT
+    refs: ["8.5.6", "8.5.3b", "Eq. 8.34"]
+    polarity: "+"
+    priority: high
+    notes: >
+      The small-molecule caveat on 8.5.3b is the author's; 13.3.7b later invokes 8.5.3b's
+      dissipation-free radical coupling for reagent application. Check at audit that the
+      13.3.7 mix does not count small-molecule couplings in the ~1 maJ class.
+    consumed_by: ["13.3.7"]
+
+  # ---- 13.3 Molecular mills ----------------------------------------------------------------
+
+  - id: 13.3/mills-impose-boundary-conditions
+    type: design-license
+    section: "13.3"
+    statement: >
+      "Chapter 8 assumes that accurately controlled mechanical motions can be imposed as a
+      boundary condition in molecular systems, implying control of positions, trajectories, and
+      forces during chemical transformations. This section describes mechanisms that can provide
+      such control using systems of belts and rollers".
+    support: INT
+    refs: ["Ch. 8"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.1/simple-encounter-parameters
+      - 10.12/smooth-sliding-conditions
+
+  - id: 13.3.1/simple-encounter-parameters
+    type: parameter
+    section: "13.3.1"
+    statement: >
+      Simple contact-and-separation encounters (Fig. 13.7a): peak compressive load "> 10 nN"
+      (8.3.3c); moiety-moiety stiffness along the line of motion "~90 N/m with sufficiently stiff
+      bearings" (8.5.3d); perpendicular stiffness with sterically complementary devices under
+      load "can easily exceed 50 N/m". Eq. 13.7 reaction time; v = 0.005 m/s, r = 10 nm, δ = 0.01
+      nm: t_trans ≈ 1.8e-7 s, "moderately greater than the typical value assumed in Chapter 8".
+      Backing surfaces prolong encounters indefinitely.
+    hedge: "can easily exceed"
+    support: INT
+    refs: ["8.3.3c", "8.5.3d", "Eq. 13.7"]
+    polarity: "+"
+    hypotheses:
+      - "perpendicular stiffness > 50 N/m from steric complementarity under compressive load (no calculation)"
+    spot_check: "Eq. 13.7 exact and approximate forms both 1.79e-7 s (tests)."
+    consumed_by: ["13.3.7"]
+
+  - id: 13.3.1/complex-encounters
+    type: design-license
+    section: "13.3.1"
+    statement: >
+      Reagent devices with moving parts actuated by auxiliary rollers or cams: "This approach
+      enables thorough control of molecular trajectories and reaction environments"; devices can
+      "entirely surround the pair of moieties with a eutactic environment"; cams can "guide and
+      power an arbitrarily long sequence of arbitrarily complex motions. Relatively small and
+      simple mechanisms in this class are capable of exploiting pi-bond torsion effects,
+      performing three-moiety encounters ... and so forth."
+    support: BARE
+    refs: ["8.5.6", "8.5.7"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "no such device designed; size and mass excluded from 13.3.5 ('substantially smaller than would be appropriate')"
+    consumed_by: ["13.3.7"]
+
+  - id: 13.3.1/conditional-repetition
+    type: construction
+    section: "13.3.1"
+    statement: >
+      Conditional repetition (8.3.4f) turns single-encounter failure P into P^n; it "can both
+      increase reliability and (by permitting the use of less exoergic reactions) decrease energy
+      dissipation." Reagent device with steric probe and cam follower (Fig. 13.8): probe
+      extension while the group is present must be "negligible (e.g., <= 1e-15)", blocked by a
+      "large (e.g., 150 maJ) energy barrier"; bias force "~0.1 nN". Groove network (Fig. 13.9)
+      attempts transfer "if and only if the group has not yet been transferred". Where grooves
+      merge, "If the sizes and depths of these wells are designed such that Eq. (7.73) holds,
+      then the merging wells are in effect preequilibrated, and there is no fixed lower bound on
+      the energy dissipation."
+    hedge: "If ... designed such that"
+    support: INT
+    refs: ["8.3.4f", "7.6", "Eq. 7.73"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 7.6.2/merging-wells-free-energy-model
+      - "probe discriminates presence/absence of the group at <= 1e-15"
+      - "merging-well occupancies fixed and known in advance (Eq. 7.73)"
+      - "corrects omitted reactions only; misreactions pass (13.3.6a)"
+    consumed_by: ["13.3.6", "13.3.7"]
+
+  - id: 13.3.2/stream-transformations
+    type: construction
+    section: "13.3.2"
+    statement: >
+      Splitting and merging streams to transform frequencies (Fig. 13.7c); smooth nonsliding
+      transfer between belts at different speeds (Fig. 13.7d).
+    support: BARE
+    polarity: "+"
+
+  - id: 13.3.2b/transport-network
+    type: construction
+    section: "13.3.2"
+    statement: >
+      Transfer to pallets on tracks gives flexibility "required for fault-tolerant operation".
+      Fair, nonblocking merging and distribution junctions: a merging junction keeps producing
+      "so long as one input stream has not failed"; a distribution junction keeps distributing
+      "so long as one output stream remains unblocked". "A failed junction of either kind is
+      assumed to block one or more of its inputs; in the worst case, failure blocks all inputs".
+      "These simple abstract behaviors can be implemented with active mechanisms, and perhaps
+      without them." The network is a demand-driven supply system: "no computational
+      synchronization of production with demand is necessary."
+    hedge: "can be implemented ... and perhaps without them"
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "junction failure mode is blocking (assumed, not derived)"
+      - "no junction mechanism designed"
+    consumed_by: ["14.3.3"]
+
+  - id: 13.3.3/prep-10-encounters
+    type: parameter
+    section: "13.3.3"
+    statement: >
+      Example: ethyne input to a strained-alkyne reagent (8.43) via two radical additions
+      (8.5.5), hydrogen abstractions (8.5.4), and tool regeneration ending in H2 elimination from
+      a transition metal (Eq. 8.33). "This example suggests that cycles that prepare reagent
+      devices by charging them with fresh reagent moieties may typically require on the order of
+      10 reactive encounters."
+    hedge: "suggests ... may typically require on the order of"
+    support: INT
+    refs: ["8.5.4", "8.5.5", "Eq. 8.33"]
+    polarity: "+"
+    priority: high
+    consumed_by: ["13.3.5", "13.3.7"]
+    notes: >
+      This is the ops-per-moiety count that 13.3.5d uses for mass and 13.3.7b's naive estimates
+      use ("ten such steps"), but 13.3.7b's final 1.5e6 J/kg uses ~1 operation per atom. See
+      13.3.7/mill-dissipation-1.5e6.
+
+  - id: 13.3.3/prep-environment-tailored
+    type: design-license
+    section: "13.3.3"
+    statement: >
+      In reagent preparation, "Each of the group-transfer reactions ... can occur in an enclosing
+      environment designed to facilitate that reaction, to minimize misreactions, and to minimize
+      energy dissipation."
+    support: INT
+    refs: ["Ch. 8"]
+    polarity: "-"
+    consumed_by: ["13.3.7"]
+
+  - id: 13.3.4/application-constrained
+    type: scope-condition
+    section: "13.3.4"
+    statement: >
+      In reagent application "the workpiece-side structure ... [must] be an intermediate in the
+      construction of a desired device. This precludes thorough adaptation of the reaction
+      environment for the purpose of facilitating reliable, low-dissipation operations.
+      Nonetheless, the freedom to choose designs that can in fact be manufactured and synthetic
+      sequences that generate relatively favorable intermediate structures provides considerable
+      latitude".
+    hedge: "provides considerable latitude"
+    support: BARE
+    polarity: "-"
+    consumed_by: ["13.3.7"]
+
+  - id: 13.3.5/component-sizes
+    type: parameter
+    section: "13.3.5"
+    statement: >
+      Standard density 2500 kg/m^3 (~125 atoms/nm^3). Roller pair r = 5 nm, 2 nm thick, "ample
+      room for a stiff bearing" (10.4.6, Fig. 10.17): ~310 nm^3. Encounter mechanism 4 nm cube
+      (64 nm^3, "four times the volume of the exemplar interlock"); cam 4×2×10 nm (80 nm^3).
+      Belt 100 nm per roller: strip 50 nm^3 or close-packed 4×4×2 devices 1600 nm^3 (50 moieties
+      per mechanism). Support: five 4 nm^2 struts 15 nm long, 300 nm^3, "seems ample".
+    hedge: "seems ample"
+    support: BARE
+    refs: ["10.4.6", "12.3.3"]
+    polarity: "+"
+    spot_check: "2 π (5 nm)^2 (2 nm) = 314 nm^3 (tests)."
+    consumed_by: ["13.3.5c"]
+
+  - id: 13.3.5/reagent-preparation-mass
+    type: parameter
+    section: "13.3.5"
+    statement: >
+      Per encounter mechanism: close-packed belts ~2300 nm^3, ~5.7e-21 kg, ~2.9e5 atoms (basis
+      for later calculations); one device pair per roller pair ~800 nm^3, ~2.0e-21 kg, ~1.0e5
+      atoms. "substantially larger than would be appropriate for a simple encounter mechanism ...
+      and substantially smaller than would be appropriate for a conditionally repeated
+      complex-encounter mechanism ..., but should not grossly underestimate". Arbitrary ~10%
+      filled volume: ~2e-23 m^3 per mechanism. Ten encounters: ~5.7e-20 kg (2.9e6 atoms);
+      "high-throughput reagent processing systems can produce their own mass in deliverable
+      moieties in ~3 s." Application "adds a single step to a sequence of ~10".
+    hedge: "should not grossly underestimate"
+    support: INT
+    refs: ["13.3.3", "13.3.5a-b"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.3/prep-10-encounters
+      - 13.3.5/component-sizes
+      - "mechanisms are not conditionally repeated complex encounters (excluded from the estimate)"
+      - "1e6 moieties/s per mechanism, ~1 carbon-atom mass per moiety"
+    spot_check: >
+      Volume/mass/atoms reproduce to 3% for both extremes; 10 × 5.9e-21 kg at 1e6 one-carbon
+      moieties/s delivers own mass in 2.95 s (tests).
+    notes: >
+      Tension with 13.3.7: the low-dissipation mix relies on conditional repetition (N = 10) and
+      cam-driven strain manipulation, i.e. the mechanisms this estimate explicitly excludes as
+      larger. Energy and mass estimates are made for different mechanism classes. Adjudicate at
+      audit.
+    consumed_by: ["13.3.6c", "13.3.8", "14.4.1"]
+
+  - id: 13.3.6/error-rates
+    type: proposition
+    section: "13.3.6"
+    statement: >
+      "Sections 8.3.3f and 8.3.4(d-g) discuss conditions that suffice to ensure that errors
+      resulting from misreactions, omitted reactions, and reagent instabilities occur at rates
+      <= 1e-15 per operation. ... these conditions exclude many potential reagents and
+      transformations from use in reliable mechanosynthesis. It will here be assumed that choices
+      compatible with these constraints are made, and that error rates in molecular mill systems
+      are accordingly dominated by radiation damage." 13.3.6c: units with a ".01 probability of
+      failure in a 10-year period ... Eq. (6.54) implies that this degree of reliability can be
+      achieved so long as the mass is <= 2e-18 kg, assuming a background radiation level of 0.5
+      rad/year" (~100 nm cube, ~350 mechanisms). Fn. 34: 1e-15 is an MTTF of ~3000 years "for a
+      single device working at 1e4 operations per second".
+    hedge: "It will here be assumed"
+    support: INT
+    refs: ["8.3.3f", "8.3.4d-g", "Eq. 6.54"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 6.4.5/reagent-devices-case-by-case
+      - 6.4.1/lifetime-1e20s-standard
+      - 6.7.1/radiation-dominance-criterion
+      - 6.7.1/single-point-failure-assumption
+      - 6.5.3/shielding-assumed
+      - 13.2.2/purity-1e-15-required
+      - "a compatible set of reagents and reactions exists (8.3.3f, 8.3.4d-g; pending)"
+      - "operating frequency ~1e4 /s per device (fn. 34)"
+    spot_check: >
+      exp(-1e15 × 5 rad × 2e-18 kg) -> P_fail = 0.010; 2e-18 / 5.7e-21 = 350 mechanisms; fn. 34
+      MTTF 3000 yr at 1e4 /s (tests). At 13.3.7a's 1e6 /s per mechanism (also Table 14.1's rate
+      for reagent-prep units), 1e-15 per op is 0.32 failures per mechanism in 10 years and ~3.2
+      per 10-step prep unit; holding such a unit to 0.01 needs ~3e-18 per op (167 maJ vs 143 in
+      the equilibrium reading). Not a verdict: radiation dominance holds at 1e4 /s, not at 1e6.
+      Adjudicate at the 14.3.3 / 14.4.1 use sites.
+    consumed_by: ["14.3.3", "14.4.5"]
+
+  - id: 13.3.6/damage-cascades
+    type: proposition
+    section: "13.3.6"
+    statement: >
+      After a failed reaction a departing product has incorrect structure, which "will usually
+      cause failures in further reactive encounters ... Accordingly, significant damage will
+      rapidly result in additional damage." Per-encounter measurement and correction "appears
+      excessive"; conditional repetition corrects only omitted reactions.
+    hedge: "will usually ... appears excessive"
+    support: BARE
+    polarity: "+"
+    consumed_by: ["13.3.6b"]
+
+  - id: 13.3.6/fail-stop-gauging
+    type: construction
+    section: "13.3.6"
+    statement: >
+      Gauge rollers complementary to the correct structure; "failed reactions will usually be
+      signaled by a protrusion on one of the output structures" (internal misplacements: "detection
+      of the event must be indirect"). "Gauge mechanisms can reliably discriminate between
+      correct and incorrect structures (Sections 11.2.3 and 11.2.4)"; detection triggers blocking
+      of the subsystem; "Mobile debris species must be bound or confined." Gauges are "a small
+      fraction" of encounter devices "provided that an error can safely be allowed to remain
+      undetected for many operation cycle-times"; long delivery belts prevent delivery of
+      mismanufactured products. "The resulting fail-stop subsystems make convenient building
+      blocks" for 14.3.3.
+    hedge: "will usually ... provided that"
+    support: INT
+    refs: ["11.2.3", "11.2.4"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.6/damage-cascades
+      - "errors produce external protrusions (internal errors: no mechanism given)"
+      - "belt transit time exceeds detection latency"
+      - "blocking mechanism itself fails safe"
+    consumed_by: ["14.3.3", "14.4.5"]
+
+  - id: 13.3.7/mechanical-dissipation-1maj
+    type: parameter
+    section: "13.3.7"
+    statement: >
+      Belt 0.004 m/s (4 nm spacing, 1e6 moieties/s). Rollers (r = 5 nm, bearing 2 nm radius and
+      length, 1000 N/m, 10.4.6 "more adverse parameters for band-stiffness scattering"): "~7e-20
+      W" per roller, ~20 rollers -> "~1.4e-24 J per delivered moiety". Backing surfaces: 16 nm^2
+      device at 1000 N/m, "~1e-19 W, or ~1e-24 J per pair sliding ... 20 nm". Cam followers
+      (7.3.4 scaling): "~1e-27 J per nanometer"; thermoelastic "[Eq. (6.50)] is of the same
+      order". Nonisothermal compression (7.5): "With good design practice, typical values ...
+      should commonly be <= 0.1 maJ per cycle"; "A reasonable estimate of the total energy
+      dissipated by mechanical operations in a ten-step mechanochemical process is therefore ~1
+      maJ per moiety delivered".
+    hedge: "With good design practice ... should commonly be"
+    support: INT
+    refs: ["10.4.6", "7.3.4", "7.5", "Eq. 6.50 [sic; thermoelastic is Eq. 7.50]"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 10.4.6/total-drag-bound
+      - 10.12/smooth-sliding-conditions
+      - 7.5.1/nonisothermal-compression
+      - 7.1/mechanism-inventory
+      - "1e6 operations/s per mechanism"
+    spot_check: >
+      Eq. 10.27 at the bearing surface speed (0.004 × 2/5 = 0.0016 m/s), k_s = 1000, r = l = 2 nm,
+      R = 10, Δk/k = 0.4: 6.9e-20 W; ×20 / 1e6 = 1.4e-24 J (tests). "Eq. (6.50)" is one of the
+      §6.4.5 pyrolysis reactions (6.38-6.51 are drawn reactions, untagged in the transcription);
+      the thermoelastic cycle loss is Eq. 7.50. Cross-reference slip or transcription.
+    notes: >
+      The inventory again omits phonon viscosity (the 7.4.2 exception); at ~1e6 Hz the
+      "very high frequency" branch is not in question (see import).
+    consumed_by: ["13.3.7b"]
+
+  - id: 13.3.7/naive-chemical-dissipation
+    type: parameter
+    section: "13.3.7"
+    statement: >
+      Each operation as exoergic as carbon combustion (~650 maJ/C), ten steps per atom: "~3e8
+      J/kg". Each step exoergic enough for P_err <= 1e-15: "~145 maJ per step, yielding an estimate
+      of ~7e7 J/kg." "(Note that the naive estimate may in fact be reasonable for systems where
+      low energy dissipation is not a design objective.)"
+    support: BARE
+    polarity: "+"
+    spot_check: "650 maJ × 10 × 5.0e25 C/kg = 3.3e8; 145 × 10 × 5.0e25 = 7.3e7 J/kg (tests)."
+    notes: >
+      Both exceed the ~1.5e7 J/kg free energy of 14.4.8's acetone process: at these values the
+      system is a net energy consumer, not a producer.
+
+  - id: 13.3.7/reversible-limit-1e5
+    type: proposition
+    section: "13.3.7"
+    statement: >
+      "As discussed in Section 8.5.2b, reliable mechanochemical operations can in some instances
+      approach thermodynamical reversibility in the limit of slow motion." At 1e6 /s many
+      dissipate energies "in the range characteristic of mechanical motions"; with "only
+      reliable, nearly reversible steps" dissipation "could approach zero, and in practice be ~1
+      maJ per atom, or ~1e5 J/kg." "The conditions for combining reliability and near
+      reversibility are, however, quite stringent": moieties must favour the initial structure on
+      encounter and the product "by ~145 maJ" on separation.
+    hedge: "can in some instances ... could approach"
+    support: INT
+    refs: ["8.5.2b", "13.3.7a"]
+    polarity: "-"
+    hypotheses:
+      - "a complete set of reliable, nearly reversible steps exists (assumed)"
+    spot_check: "1 maJ × 5.0e25 = 5e4 J/kg (book ~1e5)."
+
+  - id: 13.3.7/conditional-repetition-loosens
+    type: parameter
+    section: "13.3.7"
+    statement: >
+      With conditional repetition the required modulation is "~(5 + 145/N) maJ", 5 maJ being the
+      bias favouring the initial structure; "the energy dissipated can be ~1 maJ per operation.
+      For N = 10, the required energy difference (~20 maJ) can be induced by relatively modest
+      manipulations of bond strain, overlap energy, electrostatics, or electronic structure."
+      "a simple conditional-repetition process with N = 10 can achieve high reliability with an
+      exoergicity (and energy dissipation) of ~15 maJ per operation".
+    hedge: "can be induced by relatively modest"
+    support: INT
+    refs: ["8.3.4f", "13.3.1c"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.1/conditional-repetition
+      - "per-try outcomes independent (P^N)"
+      - "modulation of ~20 maJ achievable by 'modest manipulations' (no example)"
+    spot_check: "5 + 145/10 = 19.5 maJ; kT ln(1e15)/10 = 14.3 maJ (tests)."
+
+  - id: 13.3.7/application-dissipation
+    type: proposition
+    section: "13.3.7"
+    statement: >
+      "In reagent preparation, the feasibility of tailoring the entire reaction environment should
+      commonly permit the use of low-dissipation operations; but in reagent application, the
+      prospects are less clear." Single-transition-state group transfers: "it should commonly be
+      feasible" to choose moderately exoergic reagents (~15 maJ) or modulate bond strengths (~1
+      maJ). Strong-bond reagents: net exoergicity "can often be reduced to low values by imposing
+      mechanical constraints"; strain relieved by cam-controlled motion "thus avoiding the
+      production of thermal vibrational energy". Radical coupling (8.5.3b) "shows that a stiff
+      mechanism can form highly exoergic bonds (~500 maJ) without substantial energy
+      dissipation".
+    hedge: "should commonly ... less clear ... can often"
+    support: INT
+    refs: ["8.3.3c", "8.5", "8.5.3b"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.4/application-constrained
+      - 13.3.3/prep-environment-tailored
+      - 13.2.3/bonding-in-receptor
+      - "cam-driven strain relief is adiabatic (no calculation)"
+    consumed_by: ["13.3.7b"]
+
+  - id: 13.3.7/mill-dissipation-1.5e6
+    type: parameter
+    section: "13.3.7"
+    statement: >
+      "it seems reasonable to assume that nearly reversible pathways can be followed in reagent
+      preparation, and that most reagent application steps are either nearly reversible or
+      dissipate an amount of energy characteristic of a moderately exoergic reaction. In this
+      picture, many reactions dissipate ~1 maJ, some dissipate ~15 maJ, and a few ... dissipate
+      ~100 maJ or more. If the mean energy dissipated per operation is ~30 maJ, and the mean
+      number of atoms transferred is ~1, then the energy dissipated per kilogram of product is
+      ~1.5e6 J."
+    hedge: "it seems reasonable to assume ... If the mean ... is ~30 maJ"
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.7/conditional-repetition-loosens
+      - 13.3.7/application-dissipation
+      - 13.3.7/mechanical-dissipation-1maj
+      - 13.3.4/application-constrained
+      - 13.3.6/error-rates
+      - "the 1 / 15 / 100 maJ mix and its ~30 maJ mean (no distribution or example set given)"
+      - "~1 operation per atom of product"
+    spot_check: >
+      30 maJ × 5.0e25 C/kg = 1.5e6 J/kg (tests). The figure is one 30-maJ operation per atom;
+      13.3.3 gives ~10 preparation encounters per moiety and 13.3.7b's naive estimates use ten
+      steps per atom. At 11 operations per atom and the same mean, 1.65e7 J/kg, the whole ~1.5e7
+      J/kg free energy of 14.4.8. The two readings are "mean over application operations, with
+      preparation near-reversible" and "mean over all operations". Not a verdict.
+    notes: >
+      The load-bearing input to 14.4.8 (the largest dissipation term). 14.4.8's surplus vanishes
+      if this term grows ~8×; waste heat grows in proportion from the start. The mix is
+      asserted; the mechanisms that realise the low-dissipation classes (conditional repetition,
+      strain-relief cams) are those 13.3.5 excludes from its mass estimate. Adjudicate at audit
+      with 8.3.4f, 8.5.2b, 8.5.3b.
+    consumed_by: ["13.3.8", "14.4.8"]
+    aliases: ["1.5e6 J/kg", "~30 maJ per operation"]
+
+  - id: 13.3.7/errors-only-affect-energy
+    type: proposition
+    section: "13.3.7"
+    statement: >
+      "If this estimate should prove to be wrong, the only conclusions affected are those
+      regarding energy consumption and waste heat generation in manufacturing processes."
+    support: BARE
+    polarity: "-"
+    priority: high
+    notes: >
+      Negative claim. Waste heat sets cooling (14.4.8, 14.4.1 "supporting systems peripheral")
+      and local temperature, which enters every Boltzmann reliability factor (143 maJ at 300 K).
+      13.3.8's > 0.99 efficiency also rests on 13.3.7. Adjudicate at audit.
+
+  - id: 13.3.8/mechanochemical-energy-conversion
+    type: parameter
+    section: "13.3.8"
+    statement: >
+      "The flexibility of transition-metal chemistry (Section 8.5.10) strongly suggests that a
+      wide variety of reactions among small molecules can be carried out in a nearly reversible
+      fashion", including 2H2 + O2 -> 2H2O (Eq. 13.8), "which yields ~475 maJ per molecule of
+      product (delivered to the liquid phase)". At 1e6 /s with a 13.3.5 system: "~8e6 W/kg, or
+      ~2e9 W/m^3. An overall efficiency > .99 is suggested by the energy dissipation estimates of
+      Section 13.3.7. Similar results can presumably be obtained for the oxidation of small
+      organic molecules." Excess feedstock hydrogen gives ~1 H2O per product carbon, "net
+      exoergicity is ~400 maJ per atom".
+    hedge: "strongly suggests ... is suggested ... presumably"
+    support: INT
+    refs: ["8.5.10", "13.3.5", "13.3.7"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.3.5/reagent-preparation-mass
+      - "near-reversible transition-metal pathway for H2 + O2 exists (8.5.10; pending)"
+      - "dissipation in the ~1 maJ/op reversible regime of 13.3.7, not the 30 maJ mean"
+      - 13.5/open-problems
+    spot_check: >
+      475 maJ is ΔH_f of liquid water (285.8 kJ/mol); ΔG_f is 237.1 kJ/mol = 394 maJ, so the
+      reversible work ceiling is 83% of 475. 8.1e6 W/kg and 2.4e9 W/m^3 at 475; 6.7e6 and 2.0e9 at
+      394 (tests). "> .99" needs < 4.75 maJ dissipated per H2O over all its steps, i.e. the
+      near-reversible branch; one operation at 13.3.7's 30 maJ mean is already 6%. Not a verdict.
+    consumed_by: ["14.4.7", "14.4.8", "14.5.5"]
+
+  # ---- 13.4 Manipulators -------------------------------------------------------------------
+
+  - id: 13.4/manipulator-arm
+    type: construction
+    section: "13.4"
+    statement: >
+      A system building systems of equal or greater complexity avoids infinite regress via "a
+      multiple-degree-of-freedom positioning mechanism, controlled either by a local nanocomputer
+      or by a more remote macroscale computer ... with no simple bound on the complexity of the
+      resulting products. Whether directly or indirectly, mill-style systems are likely to be
+      implemented using manipulator-style systems." Thermal positioning error handled by a stiff
+      mechanism (13.4.1) or self-aligning tips (13.4.2); cooling "receives no further attention".
+      Many internal motions per moiety: "Peak operating frequencies can exceed 1e6 /s, although at
+      a substantial (many kT_300 per operation) penalty in energy consumption. Productivity on a
+      per-unit-mass basis likewise is less than for a mill-style system, but still many orders of
+      magnitude greater than that of conventional macroscale manufacturing systems."
+    hedge: "can exceed ... likely"
+    support: INT
+    refs: ["13.4.1", "13.4.2", "13.4.4"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.4.1/arm-compliance-0.04
+      - 13.4.4/larger-arms-easier
+      - 13.5/manipulator-efficiency-depends-on-control
+    consumed_by: ["14.2.1", "14.2.2", "14.4.1"]
+
+  - id: 13.4.1/stiffness-target
+    type: parameter
+    section: "13.4.1"
+    statement: >
+      8.5.5a: positioning stiffness of 5 to 10 N/m "should be adequate". "A reasonable design goal
+      is to keep the arm compliance small compared to 0.1 m/N (e.g., 0.04 m/N)". By Eq. 2.3 a 100
+      nm arm at 0.04 m/N corresponds to a meter arm at 4e-9 m/N, "quite stiff compared to present
+      practice in industrial robotics, motivating a clean-slate design".
+    support: INT
+    refs: ["8.5.5a", "Eq. 2.3"]
+    polarity: "+"
+    spot_check: "0.04 × 1e-7 = 4e-9 m/N (tests)."
+    consumed_by: ["13.4.1e"]
+
+  - id: 13.4.1/arm-design
+    type: construction
+    section: "13.4.1"
+    statement: >
+      Six-axis tubular arm (Figs. 13.10-13.14): 100 nm extended length, 30 nm diameter, 3.5 nm
+      wall; threaded telescoping joint J4 (0.5 nm pitch); canted rotary joints J1-J3, J5 with
+      toroidal worm drives (11.3.2), threads forming "high-shear-stiffness interfaces like those
+      in Section 10.4.7"; 1.5 nm drive shafts of modulus ~0.1 diamond in a torsionally stiff
+      bellows core; 7 nm conveyor channel; control by clutches and odometer-like registers with no
+      moment-by-moment trajectory computation (fn. 56). "the specific set of choices explored here
+      is intended to demonstrate lower bounds on capabilities ... little effort has been made to
+      minimize energy dissipation, to maximize speed, or to simplify kinematics."
+    support: INT
+    refs: ["11.3.1", "11.3.2", "10.4.7", "9.3.3"]
+    polarity: "+"
+    hypotheses:
+      - 9.3.3/bounded-continuum
+      - 10.4.7/interface-catalogue
+      - "toroidal worm drives with ratios > 3000 at this size (11.3.2; pending)"
+      - "bellows torsional compliance 'can be made comparatively negligible' (no calculation)"
+    consumed_by: ["13.4.1e", "13.4.1f"]
+
+  - id: 13.4.1/arm-compliance-0.04
+    type: parameter
+    section: "13.4.1"
+    statement: >
+      Table 13.1 (worst case: full J4 extension, maximum bending): tube bending 13.6 (E = 1e12,
+      r 11.5-15 nm, 0.1 nm surface correction), joint rocking 0.05 each × (tip distance / joint
+      radius)^2, joint torsion 0.31 × multipliers, S1 torsion 0.11 × 25 (all mm/N); drive system
+      <= 0.004 m/N with speed reductions 190, 70, 65 (J2, J3, J5) and 50 (J1). "The total arm
+      compliance estimated in Table 13.1 is 0.04 m/N, corresponding to a stiffness of 25 N/m",
+      compatible with ~0.1 m/N workpiece and moiety compliance at error rates <= 1e-15 (8.5.5a);
+      1 nN deflects the arm 0.04 nm.
+    support: INT
+    refs: ["Table 13.1", "8.5.5a", "9.4.2", "10.4.7 (Fig. 10.17)"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 13.4.1/arm-design
+      - 9.8/bulk-stiffness-applies
+      - "mean stiffness 10 N/m per close interatomic contact (assumed, no reference)"
+      - "E = 1e12 on the structural section"
+    spot_check: >
+      Tube bending L^3/3EI = 13.6 mm/N and the table sum 0.040 m/N reproduce; torsion (640
+      contacts × 10 N/m, two interfaces in series) = 0.31 mm/N reproduces (tests). Rocking does
+      not: a ring of 650 axial 10 N/m springs measured at maximum stretch has stiffness n k / 2,
+      compliance 3.1e-4 m/N, not ~3e-5. With it the total is ~0.087 m/N (~11.5 N/m); with 10.11's
+      0.5 stiffness factor on E as well, ~0.10 m/N (~10 N/m), the whole 0.1 m/N budget. The
+      printed "Total 4.0" row and "m/mN" header are transcription artefacts for ~40 mm/N. Not a
+      verdict: the book's rocking model is not stated.
+    consumed_by: ["13.4.3"]
+
+  - id: 13.4.1/manipulator-dissipation-100maj
+    type: parameter
+    section: "13.4.1"
+    statement: >
+      Typical move 0.25-0.5 nm between operations on (111); "Treating 0.5 nm as a typical
+      displacement ... should yield conservative estimates". J3/J5 orientation moves cause ~10 nm
+      tip displacements compensated by J1/J2; in ~1e-6 s the J2 drive ring slides at ~1 m/s.
+      Interfacial shear stiffness ~100 N/m, T_trans ~1e-4 (Eq. 7.41); 10.4.6 assumptions over
+      ~200 nm^2 give ~10 maJ per motion. "An estimate of ~100 maJ per motion for the arm as a whole
+      therefore appears generous. Note, however, that this estimate does not include energy
+      dissipated in the power and control system, and is rather crude." ~1 atom per motion: 100
+      maJ is "significant"; a 2 nm, ~1000-atom cluster: "a trivial ~0.1 maJ" per atom. ~5e6 atoms
+      per arm: builds its own mass in ~5 s.
+    hedge: "appears generous ... rather crude"
+    support: INT
+    refs: ["Eq. 7.41", "10.4.6"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 10.4.6/total-drag-bound
+      - 13.5/manipulator-efficiency-depends-on-control
+      - "power and control dissipation excluded"
+    spot_check: >
+      5e6 atoms / 1e6 per s = 5 s (tests). 100 maJ per 1-atom motion is 5e6 J/kg, over 3× the
+      13.3.7 mill budget; 14.4.8's "comparatively negligible" manipulator term requires
+      block-scale (>= ~1e3 atoms) placement. The ~10 maJ is order-consistent with 10.4.6's sample
+      bearing (2.7e-14 W at 1 m/s -> ~27 maJ per microsecond) but its R and Δk/k are not stated.
+    consumed_by: ["14.4.8"]
+
+  - id: 13.4.2/self-aligning-tips
+    type: design-license
+    section: "13.4.2"
+    statement: >
+      Intermediate structures "can be limited to surface irregularities of atomic height";
+      sterically complementary tips bring the tip "into stiff alignment (compliance <= 0.01 m/N)
+      with the surface before the final reactive encounter", via adjustable probes or pre-attached
+      probe structures; multiple-position detents (10.9.2) supply steric diversity.
+    support: BARE
+    refs: ["10.9.2"]
+    polarity: "-"
+
+  - id: 13.4.3/manipulator-errors-negligible
+    type: proposition
+    section: "13.4.3"
+    statement: >
+      Manipulators "will tend to have lower stiffness and hence higher error rates" than mills;
+      "Nonetheless, the feasible stiffness permits errors stemming from thermal excitation to be
+      kept to negligible levels (<< 1e-15), given suitable choices of reagent, reaction site, and
+      encounter geometry (Sections 8.3.3f and 13.4.1e)." Programmable control permits discarding
+      damaged workpieces and tools; correction "is not assumed".
+    hedge: "given suitable choices"
+    support: INT
+    refs: ["8.3.3f", "13.4.1e", "13.4.2"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 13.4.1/arm-compliance-0.04
+      - 6.3.1/time-dependent-pes-model
+
+  - id: 13.4.4/larger-arms-easier
+    type: proposition
+    section: "13.4.4"
+    statement: >
+      "Within the size range where gravitational effects are negligible, the design of
+      manipulator arms becomes easier with increasing size." At constant speed (2.3.2) structural
+      stiffness ∝ L, joint stiffness and dissipation ∝ L^2, delivered mass ∝ L^3, time ∝ L, "the
+      energy per unit mass delivered is a constant"; stiffness can be traded for lower friction.
+      "Accordingly, the feasibility of stiff manipulator arms of sizes intermediate between 100 nm
+      and macroscopic dimensions is assumed in the following sections without presenting
+      additional design and analysis." Fn. 35: the 13.4 arm can lift 1e-10 kg with 1 nN, ~1e9 its
+      own mass.
+    hedge: "is assumed ... without presenting additional design and analysis"
+    support: INT
+    refs: ["2.3.2"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "gravitational effects negligible (fn. 35; Ch. 14's 10 cm arms are treated separately in 14.2.2/vibration-isolation-feasible)"
+      - "constant-speed scaling (2.3.2; pending)"
+    spot_check: "L^2 × L / L^3 = const."
+    consumed_by: ["14.2.1"]
+
+  - id: 13.5/manipulator-efficiency-depends-on-control
+    type: scope-condition
+    section: "13.5"
+    statement: >
+      "The efficiency of manipulator motions is expected to depend heavily on the energy
+      dissipated by their control mechanisms."
+    support: BARE
+    polarity: "+"
+    notes: >
+      13.4.1f's ~100 maJ per motion excludes control; 14.4.8 prices control through the
+      computation term (12.7.4) only.
+
+  - id: 13.5/sorting-and-mill-summary
+    type: proposition
+    section: "13.5"
+    statement: >
+      Operations "can be made sufficiently tolerant of thermal excitation that damage ... occurs
+      chiefly as a result of ambient ionizing radiation." Sorting "< 1 maJ per molecule"; mills
+      "many operations being < 1 maJ, and an estimated mean ... ~30 maJ per operation". At 1e6
+      operations/s each subsystem processes its own mass "within a few seconds".
+    support: INT
+    refs: ["13.2.2c", "13.3.6", "13.3.7"]
+    polarity: "-"
+    hypotheses:
+      - 13.3.6/error-rates
+      - 13.3.7/mill-dissipation-1.5e6
+
+  - id: 13.5/open-problems
+    type: scope-condition
+    section: "13.5"
+    statement: >
+      Open problems: atomically detailed device models; exhaustive impurity-interaction studies
+      for a chosen feedstock; "Many of the problems of greatest interest in mill and manipulator
+      design depend on the prior characterization of a compatible set of mechanochemical
+      processes"; "identifying sets of nearly thermodynamically reversible processes that can
+      combine fuel and oxygen molecules."
+    support: BARE
+    polarity: "+"
+    notes: >
+      The author lists the compatible reaction set and reversible fuel oxidation as open; 13.3.6,
+      13.3.7 and 13.3.8 assume both.
+
+imports:
+
+  # ---- Ch. 3, 5, 6 --------------------------------------------------------------------------
+
+  - from: "3.3.1/mm2-adopted"
+    used_for: MM2 computational experiments (45 maJ steric discrimination; ethyne receptor -97 maJ)
+    at: ["13.2.1c", "13.2.3b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.5.1/vdw-between-objects"
+    used_for: Hamaker constant sets discrimination against smaller ligands (category 1)
+    at: ["13.2.1c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "5.5.1/cantilever-variance-classical"
+    used_for: tube bending compliance L^3/3EI with k_b = E (pi/4)(r2^4 - r1^4) (Table 13.1 note b)
+    at: ["13.4.1e"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "5.3.1/classical-variance"
+    used_for: arm and tip compliance -> positional variance -> error rate (via 8.5.5a)
+    at: ["13.4.1e", "13.4.2", "13.4.3"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "5.9/classical-adequate"
+    used_for: classical compliance analysis of the arm
+    at: ["13.4.1e"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.1/error-and-damage-defined"
+    used_for: errors (failed reactions) vs damage (radiation) in mills
+    at: ["13.3.6"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.3.1/time-dependent-pes-model"
+    used_for: placement errors of manipulator-applied moieties
+    at: ["13.4.3"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.3.3/switched-coupling-error-model"
+    used_for: >
+      reliability as kT ln(1/P) (143 maJ for 1e-15 occupancy; 145 maJ exoergicity per reliable
+      step; 5 + 145/N) — the total-equilibrium limit
+    at: ["13.2.3b", "13.3.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      As at 12.3.7: 6.3.3 recommends the worst-case decoupling model for conservative error
+      estimates; Ch. 13 uses the equilibrium Boltzmann limit throughout. Here it also sets the
+      energy side (145 maJ per step feeds 13.3.7). Adjudicate at audit.
+
+  - from: "6.4.1/damage-mechanism-list"
+    used_for: chemical damage of receptors in an ill-defined feedstock environment
+    at: ["13.2.1f"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.1/lifetime-1e20s-standard"
+    used_for: thermomechanical damage below radiation damage ("dominated by radiation damage")
+    at: ["13.3.6", "13.5"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.2/machine-phase-stability"
+    used_for: reagent moieties stable in enclosing eutactic encounter environments
+    at: ["13.3.1b", "13.3.3", "13.3.6"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.4.4/allowable-cc-stress"
+    used_for: peak compressive encounter loads > 10 nN against the 1.2 nN/bond working limit
+    at: ["13.3.1a"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      Compressive and spread over several bonds, so not directly the tensile limit; the moiety's
+      own bonds see the load. Adjudicate at audit.
+
+  - from: "6.4.5/reagent-devices-case-by-case"
+    used_for: "It will here be assumed that choices compatible with these constraints are made"
+    at: ["13.3.6"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.5.3/shielding-assumed"
+    used_for: damage "chiefly as a result of ambient ionizing radiation" presumes UV excluded
+    at: ["13.3.6", "13.5"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.6.3/track-structure-scaling"
+    used_for: Eq. 6.54 damage model for the 2e-18 kg unit
+    at: ["13.3.6c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.7.1/single-point-failure-assumption"
+    used_for: unit fails on one radiation hit
+    at: ["13.3.6c"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "6.7.1/radiation-dominance-criterion"
+    used_for: error rates "dominated by radiation damage"; unit mass <= 2e-18 kg
+    at: ["13.3.6", "13.3.6c"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: See the 1e4 vs 1e6 /s spot check on 13.3.6/error-rates.
+
+  # ---- Ch. 7 --------------------------------------------------------------------------------
+
+  - from: "7.1/mechanism-inventory"
+    used_for: the 13.3.7a mechanical-dissipation inventory (bearings, sliding, cams, thermoelastic, compression)
+    at: ["13.3.7a"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "7.1/speed-scaling"
+    used_for: v^2 drag scaling (slower rotors; "phonon drag ... scales with speed squared")
+    at: ["13.2.1e", "13.4.1f"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "7.3.4/oscillator-cross-section"
+    used_for: cam-follower phonon scattering, ~1e-27 J per nm by scaling the 7.3.4 sample
+    at: ["13.3.7a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.3.5/transmission-coefficient"
+    used_for: T_trans ~1e-4 for the worm-drive interface (Eq. 7.41)
+    at: ["13.4.1f"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.4.1/worst-case-cycle-loss"
+    used_for: thermoelastic damping of cams "of the same order" (cited as "Eq. (6.50)"; Eq. 7.50 intended)
+    at: ["13.3.7a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.4.2/phonon-viscosity-small-except"
+    used_for: omitted from the 13.3.7a mill inventory and the 13.4.1f arm estimate
+    at: ["13.3.7a", "13.4.1f"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      Third and fourth sites of the 7.4.2 pattern (after 12.3.4, 10.4.6). At ~1e6 Hz the
+      "very high frequency" branch is ω·τ ~ 1e-6 even on f·Q-derived τ; the 13.4.1f worm-drive
+      interface is the "nearly pure shear" branch at ~1 m/s. The 12.3.4 bound should transfer.
+
+  - from: "7.5.1/nonisothermal-compression"
+    used_for: reactive-encounter compression losses <= 0.1 maJ per cycle "with good design practice"
+    at: ["13.3.7a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.5.2/harmonic-well-compression"
+    used_for: reactive encounters as compression of stiffening wells (Section 7.5)
+    at: ["13.3.7a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.2/merging-wells-free-energy-model"
+    used_for: well merging on receptor exposure; merging cam grooves (Eq. 7.73 preequilibration)
+    at: ["13.2.1e", "13.3.1c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.4/asymmetrical-merging"
+    used_for: chemical dissipation from merging shallow occupied with deep unoccupied wells
+    at: ["13.3.7"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  # ---- Ch. 9, 10 ------------------------------------------------------------------------------
+
+  - from: "9.5.4/antibody-diversity-analogy"
+    used_for: fewer than 35 atoms suffice to match antibody structural diversity (9.5.4); receptors equal antibodies
+    at: ["13.2.1a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.3.1/materials-table"
+    used_for: E = 1e12 for the arm tube, G = 5e11 for S1, shafts ~0.1 diamond
+    at: ["13.4.1e"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "9.3.3/bounded-continuum"
+    used_for: "A bounded-continuum design for a stiff manipulator"
+    at: ["13.4.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.4.2/delta-surf"
+    used_for: 0.1 nm surface correction for structural vs excluded volume (Table 13.1 note b)
+    at: ["13.4.1e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "9.8/bulk-stiffness-applies"
+    used_for: bulk modulus on the structural section of a 3.5 nm wall
+    at: ["13.4.1e"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/band-stiffness-drag"
+    used_for: roller bearings with "the more adverse parameters for band-stiffness scattering"
+    at: ["13.3.7a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/total-drag-bound"
+    used_for: per-roller 7e-20 W; backing-surface sliding; arm interfaces "assumptions like those used in the bearing analyses"
+    at: ["13.3.7a", "13.4.1f"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/drag-consistent-with-efficiency"
+    used_for: bearing loss per delivered moiety small vs the useful work of a mechanosynthetic step
+    at: ["13.3.7a"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.4.7/interface-catalogue"
+    used_for: high-shear-stiffness threaded interfaces in the arm joints (interlocking, so the high-drag class)
+    at: ["13.4.1a", "13.4.1f"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.4.7/interfacial-stability"
+    used_for: sorting-rotor bearings run in feedstock solution
+    at: ["13.2.1e", "13.2.1f"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: >
+      10.4.7's stability is under a baseline of "no extraneous reactive molecules"; sorting
+      rotors operate in solution with diverse trace contaminants. Adjudicate at audit.
+
+  - from: "10.4.7/strained-shell-bearing-2808"
+    used_for: roller bearings "of the sort ... shown in Figure 10.17"; joint rocking interface "patterned on Figure 10.17"
+    at: ["13.3.5a", "13.4.1e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.11/bounded-continuum-license"
+    used_for: arm, rotor and mill components of arbitrary shape at stated moduli
+    at: ["13.2.1", "13.3.5", "13.4.1"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "10.11/stiffness-factor-0.5"
+    used_for: not applied — Table 13.1 uses E = 1e12 (full diamond) where 12.3.3 took 5e11
+    at: ["13.4.1e"]
+    cited: no
+    hypotheses_discharged: unknown
+    notes: With the factor, tube bending doubles and the total is ~0.053 m/N (tests).
+
+  - from: "10.12/smooth-sliding-conditions"
+    used_for: belts, rollers, backing surfaces, cam followers and worm-drive threads slide smoothly
+    at: ["13.3.7a", "13.4.1f"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "12.3.3/exemplar-parameters"
+    used_for: encounter mechanism volume "four times the volume of the exemplar interlock"
+    at: ["13.3.5a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  # ---- pending chapters -------------------------------------------------------------------------
+
+  - from: "1.3/element-set"
+    used_for: elements of greatest interest (Fig. 1.3) guarantee shape differences
+    at: ["13.2.2d"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "2.3/stiffness-scaling"
+    used_for: Eq. 2.3 compliance scaling (100 nm arm -> meter arm); constant-speed scaling (2.3.2)
+    at: ["13.4.1", "13.4.4"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "4.3.2/classical-partition-function"
+    used_for: free-energy differences for Eq. 13.2 by integration over the PES
+    at: ["13.2.1c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.3c/stress-facilitated-reactions"
+    used_for: peak loads > 10 nN; piezochemical forces to lower barriers
+    at: ["13.2.3c", "13.3.1a", "13.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.3f/error-conditions"
+    used_for: conditions sufficient for <= 1e-15 misreaction and omitted-reaction rates
+    at: ["13.3.6", "13.4.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.4/reliability-conditions"
+    used_for: 8.3.4(d-g) conditions for <= 1e-15 per operation
+    at: ["13.3.6"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.4f/conditional-repetition"
+    used_for: P -> P^n; less exoergic reactions; the (5 + 145/N) maJ modulation
+    at: ["13.3.1c", "13.3.6a", "13.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.2b/near-reversible-reliable-operations"
+    used_for: reliable operations approaching reversibility; the ~1 maJ class of the 13.3.7 mix
+    at: ["13.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.3b/radical-coupling-low-dissipation"
+    used_for: ~500 maJ bonds formed "without substantial energy dissipation"; small-molecule caveat in 13.2.3c
+    at: ["13.2.3c", "13.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.3d/moiety-stiffness-90"
+    used_for: ~90 N/m moiety-moiety stiffness with stiff bearings
+    at: ["13.3.1a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.5a/positioning-stiffness-5-10"
+    used_for: 5-10 N/m positioning stiffness adequate; <= 1e-15 site-selection errors at ~0.1 m/N
+    at: ["13.4.1", "13.4.1e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.6/low-dissipation-bond-formation"
+    used_for: pi-bond torsion encounters; strategies for strong bonds with little dissipation
+    at: ["13.2.3c", "13.3.1b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.10/transition-metal-flexibility"
+    used_for: near-reversible H2 + O2 via transition-metal complexes
+    at: ["13.3.8"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.9.2/detents"
+    used_for: multiple-position detents for self-aligning tip diversity
+    at: ["13.4.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11.2.3/gauge-mechanisms"
+    used_for: gauges "can reliably discriminate between correct and incorrect structures" (11.2.3-11.2.4)
+    at: ["13.3.6b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11.3.2/toroidal-worm-drive"
+    used_for: J1-J3, J5 drives; speed ratios > 3000 and joint stiffness
+    at: ["13.4.1", "13.4.1e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11.4.1a/liquid-ordering-in-gaps"
+    used_for: fn. 31 liquid-structure effects near rotor surfaces
+    at: ["13.2.1e"]
+    cited: yes
+    hypotheses_discharged: unknown

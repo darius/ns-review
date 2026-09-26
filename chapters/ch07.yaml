@@ -768,7 +768,7 @@ exports:
     refs: ["Goodman 1980", "Goodman and Wachman 1976", "Saxena and Joshi 1989"]
     vintage: "CHECK — gas-surface data; applicability to nm components is the question (7.5.1d)"
     polarity: "+"
-    consumed_by: ["7.5.1c", "13"]
+    consumed_by: ["7.5.1c"]
 
   - id: 7.5.1/single-molecule-gas-model
     type: construction
@@ -783,7 +783,7 @@ exports:
       - "f << 1 (piston speed small vs thermal speed) and moderate-to-large alpha"
       - "pistons interact only with particles moving toward them (overtaken molecules neglected)"
       - "component velocity statistics are Maxwellian at some T_g"
-    consumed_by: ["7.5.1c", "13.3"]
+    consumed_by: ["7.5.1c"]
 
   - id: 7.5.1/nonisothermal-compression
     type: parameter
@@ -880,7 +880,6 @@ exports:
     hedge: "Usually ... commonly ... can greatly"
     support: BARE
     polarity: "-"
-    consumed_by: ["13"]
 
   # ---- 7.6 Transitions among time-dependent wells ----------------------------------
 
@@ -894,7 +893,6 @@ exports:
     support: INT
     refs: ["7.6.3"]
     polarity: "+"
-    consumed_by: ["13"]
 
   - id: 7.6.2/merging-wells-free-energy-model
     type: construction
@@ -974,7 +972,7 @@ exports:
     hypotheses:
       - 7.1/mechanism-inventory
       - "parameters chosen so that dissipation is acceptable (self-declared circularity)"
-    consumed_by: ["10", "11", "12", "13"]
+    consumed_by: ["10", "11", "12"]
     notes: >
       The chapter's summary claim, with the circularity stated in the author's own parenthesis.
       The audit question is whether Part II's actual parameter choices are in the "reasonable"

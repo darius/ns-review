@@ -10,7 +10,7 @@ adjudicate claims in dependency order, weighted by how much depends on them.
 
 ## Status
 
-Early. Chapters 3, 5, 6, 7, 9 and 14 in full, the bearing and drag sections of Chapter 10, and
+Early. Chapters 3, 5, 6, 7, 9, 13 and 14 in full, the bearing and drag sections of Chapter 10, and
 the dissipation/error sections of Chapter 12 are extracted and reconciled with each other. One
 edge has been adjudicated end to end as a spike (the §7.4.2 phonon-viscosity exception at its
 Ch. 12 use site), with the calculation in `nsaudit/` under test. See `generated/INDEX.md` for
@@ -57,5 +57,5 @@ the reverse index is generated. Don't adjudicate while extracting. Quote hedges 
 claim with no reference is recorded as such, not skipped and not given a reference it doesn't
 have.
 
-Good first tasks: extend Ch. 7 to full coverage; process the three Moriarty–Phoenix PDFs into
+Good first tasks: process the three Moriarty–Phoenix PDFs into
 the register; read the entries marked `unread`.

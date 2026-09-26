@@ -163,7 +163,7 @@ exports:
       - "n, m >= 25 or a suitably chosen smaller pair"
       - "ring count modest or phases arranged to cancel"
       - "no-relaxation approximation"
-    consumed_by: ["10.4.6a", "10.4.7", "11", "13"]
+    consumed_by: ["10.4.6a", "10.4.7", "11"]
     notes: >
       The load-bearing result for loaded bearings; the "energy fluctuations neglected" (0.05 maJ
       for n=9,m=14) are comparable to the 12.3.4 loss budget lines. Reproducible.
@@ -553,7 +553,7 @@ exports:
       delta-V_barrier."
     support: BARE
     polarity: "+"
-    consumed_by: ["13", "14"]
+    consumed_by: ["14"]
     notes: A manufacturability constraint stated here and owed by Ch. 13-14.
 
   # ---- 10.8 Barriers in extended systems -----------------------------------------------
@@ -571,7 +571,7 @@ exports:
     polarity: "+"
     hypotheses:
       - 10.3.6/coupled-sites-rigid-coupling
-    consumed_by: ["12.3.3b", "11", "13"]
+    consumed_by: ["12.3.3b", "11"]
     aliases: ["Section 10.8", "barriers in extended systems"]
 
   - id: 10.8/tuning-component

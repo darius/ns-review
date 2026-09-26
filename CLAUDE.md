@@ -74,36 +74,38 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 - Do not summarise the book's argument in a chapter file; record claims.
 - Do not run `memory_delete`-style cleanups on `generated/` — just rebuild it.
 
-## Current state (2026-09-18, end of first working session) — START HERE
+## Current state (2026-09-26, after Ch. 13) — START HERE
 
-Handoff for review. Eight chapters extracted and mutually reconciled; one verdict; 126 tests.
-Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
+Nine chapters extracted and mutually reconciled (3, 5, 6, 7, 9, 13, 14 full; 10, 12 partial);
+one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
 
 - Equation errors found so far: Eq. 7.29 missing a π (in the book: its own quoted 1570 K
   follows the printed form); §7.3.5e d_n exponent sign and Eq. 6.24 missing k_s and off by 2
   (not checked against the print: could be transcription; the nanosyste.ms PDF is built from
   the same Markdown, so a scan is needed). Arithmetic inconsistencies: 12.3.8b per-interlock
-  energy; 14.4.8 dissipation sum and entropy term.
+  energy; 14.4.8 dissipation sum and entropy term; Table 13.1 rocking compliance (10× low on a
+  ring-of-springs model).
 - One verdict (no longer provisional): `7.4.2/phonon-viscosity-small-except` → 12.3.4,
   hypothesis-violated, impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
 - Priority (Darius, 2026-09-18): the path into Ch. 14. Ch. 15–16 matter only if Ch. 14 works.
-- Ch. 13 is now the gap on the Ch. 14 path: 13.3.7 supplies the largest term of the 14.4.8
-  budget (1.5e6 J/kg) and 13.3.6 the error rates and fail-stop behaviour.
-- 13.3.7's 1.5e6 J/kg is a ~30 maJ mean per operation, lowered from the naive 145 maJ by
-  conditional repetition (13.3.1c, 8.3.4f), near-reversible steps (8.5.2b) and dissipation-free
-  radical coupling (8.5.3b). Those Ch. 8 subsections are on the Ch. 14 path; the rest of
-  Ch. 8 is not yet. Audit question: 30 maJ × 5e25 atoms/kg is one operation per atom, while
-  13.3.7b's naive estimates assume ten steps per atom (×10 would consume the whole 1.5e7 J/kg).
+- Ch. 13 findings on that path (DECISIONS.md "Ch. 13"): the 1.5e6 J/kg mill term is one 30 maJ
+  operation per atom, while 13.3.3 has ~10 preparation encounters per moiety (×11 would
+  consume the whole ~1.5e7 J/kg free energy); its low-dissipation mechanisms are the ones
+  13.3.5's mass estimate excludes; 1e-15 per operation is radiation-dominated at 1e4 /s but not
+  at the 1e6 Hz Table 14.1 uses for reagent prep; 13.3.8's 475 maJ is ΔH, not ΔG.
+- 13.3.7's mix rests on Ch. 8: conditional repetition (8.3.4f), near-reversible steps (8.5.2b),
+  dissipation-free radical coupling (8.5.3b), plus 8.3.3f / 8.3.4d-g for the 1e-15 conditions
+  and 8.5.10 for 13.3.8. Those subsections are on the Ch. 14 path; the rest of Ch. 8 is not yet.
 - 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes, but waste
   heat grows in proportion from the start, so cooling (Ch. 11, 14.4.1) may bind first.
-- Next, in order: (1) extract Ch. 13 (at least 13.2.2, 13.3.1, 13.3.2, 13.3.5–13.3.8, 13.4),
-  then 8.3.4, 8.5.2, 8.5.3 as a partial Ch. 8; (2)
-  adjudicate the 14.4.8 budget as a unit, with its three imports (13.3.7, 9.7.3 recovery,
-  12.7.4 computation) and the two arithmetic inconsistencies above; (3) the three single-edge
-  audits exposed by reconciliation: 12.3.7 on `5.3.1/bath-coupling-irrelevant` (Prase FDT),
-  12.3.7 on the equilibrium limit of `6.3.3/switched-coupling-error-model`, and 9.4.3's
-  `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`; (4) the 7.4.2 exception's second
-  use site at 10.4.6 (the 12.3.4 bound should transfer). Ch. 11 after Ch. 13 if 14.4.1's
-  "supporting systems peripheral" (cooling, power) needs checking.
+- Next, in order: (1) partial Ch. 8: 8.3.3, 8.3.4, 8.5.2, 8.5.3, 8.5.5a, 8.5.10; (2)
+  adjudicate the 14.4.8 budget as a unit, with its imports (13.3.7, 9.7.3 recovery, 12.7.4
+  computation, and the inferred 13.4.1f manipulator and 13.2.1 sorting terms) and the
+  arithmetic inconsistencies above; (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
+  1e-15 at 1e6 Hz; (4) the single-edge audits: 12.3.7 on `5.3.1/bath-coupling-irrelevant`
+  (Prase FDT), the equilibrium limit of `6.3.3/switched-coupling-error-model` (12.3.7, and now
+  13.2.3b/13.3.7b), and 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;
+  (5) the 7.4.2 exception at 10.4.6, 13.3.7a and 13.4.1f (the 12.3.4 bound should transfer).
+  Ch. 11 (cooling, power, gauges 11.2.3) if 14.4.1's "supporting systems peripheral" needs it.

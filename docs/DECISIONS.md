@@ -344,6 +344,53 @@ Ch. 14 is architecture plus bookkeeping; its load-bearing numbers are Table 14.1
 The 7.4.2 -> 12.3.4 verdict is no longer marked provisional: all chapters it depends on are
 reconciled and none of the 34 remaining pending imports bears on it.
 
+## Ch. 13 full extraction (2026-09-26): the inputs to the Ch. 14 budgets
+
+52 exports; nine chapters now reconciled. Every Ch. 13 number is reproduced or checked in
+`nsaudit/ch13.py`. Spot checks, not verdicts:
+
+- **The 1.5e6 J/kg mill term is one 30 maJ operation per atom.** 13.3.3 estimates ~10
+  preparation encounters per moiety, and 13.3.7b's own naive estimates use ten steps per atom.
+  If the ~30 maJ mean covers all operations, the term is ~1.65e7 J/kg, the whole ~1.5e7 J/kg
+  free energy of 14.4.8. The other reading (preparation near-reversible, the mean is over
+  application steps) keeps 1.5e6. The 1 / 15 / 100 maJ mix is asserted, with no example set.
+- **Energy and mass estimates are for different mechanisms.** The low-dissipation classes rely
+  on conditional repetition and cam-driven strain relief; 13.3.5's mass (reused in Table 14.1)
+  explicitly excludes conditionally repeated complex-encounter mechanisms as larger.
+- **1e-15 per operation is radiation-dominated only at 1e4 /s.** Fn. 34 and 14.3.3 compute at
+  1e4 /s per device. 13.3.7a runs each mechanism at 1e6 /s, and Table 14.1's reagent-prep and
+  input-ordering units run at 1e6 Hz: ~0.32 failures per mechanism, ~3.2 per 10-step prep unit,
+  in 10 years. Holding a prep unit to 0.01 needs ~3e-18 per op (~167 maJ instead of 143), which
+  feeds back into the 145 maJ reliability exoergicity behind 13.3.7's energy estimate. 14.4.5's
+  "earlier stages are massively redundant" does not help when per-unit failure is ~1.
+- **Table 13.1's rocking compliance is 10× low on a ring-of-springs model.** 650 contacts × 10
+  N/m measured at maximum stretch gives n k / 2, i.e. 3.1e-4 m/N, not ~3e-5; the torsion entry,
+  counted the same way, reproduces. Corrected, the arm is ~0.087 m/N (~11.5 N/m, vs 25); with
+  10.11's 0.5 stiffness factor too (Table 13.1 uses full-diamond E), ~0.10 m/N. 8.5.5a's budget
+  is ~0.1 m/N for arm plus workpiece plus moiety. The book's rocking model is not stated.
+- **13.3.8's 475 maJ per H2O is the enthalpy.** ΔG is 394 maJ, so reversible work is at most
+  83% of it; "> .99 efficiency" needs < 4.75 maJ dissipated per H2O over all steps, i.e. the
+  near-reversible branch, not 13.3.7's 30 maJ mean.
+- **The 7.4.2 exception is unevaluated at two more sites** (13.3.7a mills; 13.4.1f worm-drive
+  interfaces, the "nearly pure shear" branch). At ~1e6 Hz the frequency branch is not in
+  question.
+- **Reliability throughout is the equilibrium Boltzmann limit** (143 maJ for 1e-15; 145 maJ per
+  reliable step; 5 + 145/N), the least conservative of 6.3.3's models, as at 12.3.7; here it also
+  sets the energy side.
+- Manipulator dissipation (~100 maJ per motion, excluding control) is 5e6 J/kg at one atom per
+  motion; 14.4.8's "comparatively negligible" needs block-scale placement. Recorded as an
+  inferred import in ch14.
+- Sorting receptors run in solution, outside 10.4.7's "no extraneous reactive molecules"
+  baseline, with lifetimes argued from enzymes (days) and replacement implied; Ch. 14 has no
+  repair. Inferred imports at 14.4.1/14.4.5.
+- Smaller: 13.2.2b's "R >= ~5e3" is the reciprocal of R; "Eq. (6.50)" for thermoelastic damping
+  is a pyrolysis reaction (Eq. 7.50 meant); Table 13.1's "Total 4.0" and "m/mN" are
+  transcription artefacts for ~40 mm/N. Fn. 32: liquid ethyne's stability at 1.3 GPa is open,
+  and no acetone receptor (Ch. 14's feedstock) is shown.
+
+Reconciliation: 23 speculative forward claims into Ch. 13 trimmed; 5 Ch. 13 -> Ch. 14 uses added
+to ch14.yaml as imports (2 cited, 3 inferred).
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

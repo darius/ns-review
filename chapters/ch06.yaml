@@ -52,7 +52,7 @@ exports:
     hedge: "frequently ... seldom"
     support: BARE
     polarity: "-"
-    consumed_by: ["6.4", "8", "13"]
+    consumed_by: ["6.4", "8"]
 
   - id: 6.2.2/classical-tst
     type: construction
@@ -73,7 +73,7 @@ exports:
       - "microscopic equilibrium within each well"
       - "wells localised and distinctly bounded (no translation/rotation)"
       - "quadratic col"
-    consumed_by: ["6.3", "6.4.3", "6.4.4", "7.6.2", "8", "13"]
+    consumed_by: ["6.3", "6.4.3", "6.4.4", "7.6.2", "8"]
     aliases: ["TST", "Section 6.2", "Eq. 6.1"]
     spot_check: "kT/2 pi hbar = 6.25e12 /s at 300 K. (tests)"
 
@@ -251,7 +251,7 @@ exports:
     support: BARE
     polarity: "-"
     priority: high
-    consumed_by: ["8", "13"]
+    consumed_by: ["8"]
     notes: The stability of every specific structure in the book is deferred to "later" analysis and experiment by this sentence.
 
   - id: 6.4.3/thermal-cleavage-rate
@@ -315,7 +315,7 @@ exports:
       - 3.3.3/morse-potential
       - "position-independent applied force (no cage; conservative)"
       - "single bond, pure tension (9.6.1 explicitly diverges from this for shells)"
-    consumed_by: ["6.4.4c", "8.3", "9.6.1 (contrast)", "11", "13"]
+    consumed_by: ["6.4.4c", "8.3", "9.6.1 (contrast)", "11"]
     aliases: ["Section 6.4.4a", "bond failure rates under tension"]
 
   - id: 6.4.4/allowable-cc-stress
@@ -372,7 +372,7 @@ exports:
       1 s at 750 K -> 6e-21 /s at 300 K (740 K would fail); 30 min at 610 K -> 3e-21 /s. The
       diamond 1e85 s figure needs ~2e-3 /s at 1800 K, i.e. minutes-scale stability; 1 /s would
       give 1e68 s. (tests)
-    consumed_by: ["6.7.1", "8", "13"]
+    consumed_by: ["6.7.1", "8"]
 
   - id: 6.4.5/pyrolysis-misses-stress-and-cage
     type: proposition
@@ -390,7 +390,7 @@ exports:
     support: BARE
     polarity: "-"
     priority: high
-    consumed_by: ["8", "13"]
+    consumed_by: ["8"]
     notes: The stress side is conceded to be under-modelled and then assumed away for "moderate" stresses, undefined. Adjudicate at audit.
 
   - id: 6.4.5/design-strategy-false-negatives
@@ -405,7 +405,7 @@ exports:
     support: BARE
     polarity: "-"
     priority: high
-    consumed_by: ["8", "10", "13"]
+    consumed_by: ["8", "10"]
     notes: A conservatism claim about the whole design methodology; 10.4.7e's sp3 nitrogen chains are a test case.
 
   - id: 6.4.5/reagent-devices-case-by-case
@@ -453,7 +453,7 @@ exports:
     support: BARE
     polarity: "-"
     spot_check: "0.864 aJ = 5.4 eV (diamond gap 5.47 eV); corresponds to 230 nm (6.5.2). (tests)"
-    consumed_by: ["10.4.7b (contact charging)", "11.6", "13"]
+    consumed_by: ["10.4.7b (contact charging)", "11.6"]
     aliases: ["contact charging", "Section 6.4.7"]
 
   # ---- 6.5 Photochemical damage --------------------------------------------------------
