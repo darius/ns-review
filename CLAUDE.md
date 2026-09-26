@@ -6,19 +6,7 @@ dependency graph, then adjudication in dependency order. Owner: Darius. Read
 `docs/DECISIONS.md` for why things are the way they are — it stands in for the design
 conversation, which is not otherwise available to you.
 
-## Layout
-
-```
-chapters/chNN.yaml      source of truth: one interface file per chapter (see docs/SCHEMA.md)
-criticism/register.yaml prior critiques and experiments; each imports from chapters via `targets`
-source/                 full_book.md (upstream Markdown, auto-fetched) + extracted text (tools/extract_chapter.py)
-tools/build.py          validate + generate; run before every commit
-tools/extract_chapter.py
-nsaudit/                calculation package; tests/ reproduce published numbers (run: .venv/bin/python -m pytest)
-generated/INDEX.md      reverse index, priority set, inferred imports, verdicts — never hand-edit
-docs/SCHEMA.md          field reference and verdict lattice
-docs/DECISIONS.md       design rationale and source pointers
-```
+`generated/` is built by `tools/build.py` — never hand-edit it. Tests: `.venv/bin/python -m pytest`.
 
 ## Invariants — these are rules, not preferences
 
@@ -90,22 +78,16 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 Handoff for review. Eight chapters extracted and mutually reconciled; one verdict; 126 tests.
 Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
 
-- Ch. 3 (30 exports), 5 (19), 6 (35), 7 (58), 9 (41), 14 (31) in full; Ch. 10 §10.3.4–10.3.6,
-  10.4, 10.8, 10.11–10.12 (37); Ch. 12 §12.3.3–12.3.8, 12.4.3, 12.7.4 (28). 279 exports, 0
-  dangling imports, 0 unconfirmed forward claims; all eight `reconciled` (build-enforced).
-- `nsaudit/` covers ch03, ch05, ch06, ch07, ch10, ch12, ch14 plus one edge audit. 126 tests pass,
-  1 xfail (§7.4.3 text/equation contradiction). Printed-equation errors found so far: Eq. 7.29
-  missing a π; §7.3.5e d_n exponent sign; Eq. 6.24 missing k_s and off by 2. Arithmetic
-  inconsistencies: 12.3.8b per-interlock energy; 14.4.8 dissipation sum and entropy term.
+- Printed-equation errors found so far: Eq. 7.29 missing a π; §7.3.5e d_n exponent sign;
+  Eq. 6.24 missing k_s and off by 2. Arithmetic inconsistencies: 12.3.8b per-interlock
+  energy; 14.4.8 dissipation sum and entropy term.
 - One verdict (no longer provisional): `7.4.2/phonon-viscosity-small-except` → 12.3.4,
   hypothesis-violated, impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
 - Priority (Darius, 2026-09-18): the path into Ch. 14. Ch. 15–16 matter only if Ch. 14 works.
-- Pending imports (34) by source chapter: Ch. 13 (8), Ch. 4 (10, mostly stat-mech definitions),
-  Ch. 8 (4), Ch. 11 (4), Ch. 10 unextracted sections (3), Ch. 12 unextracted sections (3),
-  Ch. 1 and 2 (1 each). Ch. 13 is now the gap on the Ch. 14 path: 13.3.7 supplies the largest
-  term of the 14.4.8 budget (1.5e6 J/kg) and 13.3.6 the error rates and fail-stop behaviour.
+- Ch. 13 is now the gap on the Ch. 14 path: 13.3.7 supplies the largest term of the 14.4.8
+  budget (1.5e6 J/kg) and 13.3.6 the error rates and fail-stop behaviour.
 - Next, in order: (1) extract Ch. 13 (at least 13.2.2, 13.3.2, 13.3.5–13.3.8, 13.4); (2)
   adjudicate the 14.4.8 budget as a unit, with its three imports (13.3.7, 9.7.3 recovery,
   12.7.4 computation) and the two arithmetic inconsistencies above; (3) the three single-edge
