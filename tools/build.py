@@ -8,7 +8,7 @@ Checks (exit nonzero on hard errors):
   - imports: pending (from-chapter not extracted) vs DANGLING (extracted, id absent)
   - consumed_by: for each extracted target chapter, whether an import back to this id exists
     (unconfirmed forward refs are reported, not errors)
-  - scope-condition exports never referenced as anyone's hypothesis (warning: orphan condition)
+  - scope-condition exports neither listed as a hypothesis nor imported (warning: orphan condition)
 Generates: reverse index (who imports / who attacks each export), negative-claims register,
 support-type stats, pending/dangling lists.
 """
@@ -107,9 +107,6 @@ def main():
                 c = chapter_of(h)
                 if h not in exports and covered(h):
                     err(f"{i}: hypothesis '{h}' names an id absent from extracted ch{c}")
-    for i, (n, ex) in exports.items():
-        if ex["type"] == "scope-condition" and i not in hyp_refs and ex["section"] != str(n):
-            warn(f"orphan scope-condition {i}: no export lists it as a hypothesis")
 
     # --- imports: pending vs dangling; reverse index
     importers = defaultdict(list)  # export id -> [(chapter, at, cited, verdict)]
@@ -129,6 +126,11 @@ def main():
                 pending.append((n, f, im.get("used_for", "")))
     for n, f, u in dangling:
         err(f"DANGLING import in ch{n}: '{f}' (ch{chapter_of(f)} is extracted but has no such id) — {u}")
+    # an imported scope-condition has a use site; only one nobody lists or imports is orphaned
+    for i, (n, ex) in exports.items():
+        if (ex["type"] == "scope-condition" and i not in hyp_refs and i not in importers
+                and ex["section"] != str(n)):
+            warn(f"orphan scope-condition {i}: no export lists it as a hypothesis and no chapter imports it")
 
     # --- consumed_by confirmation (section-aware: a claim into a partially extracted chapter is
     #     checkable only if the named section lies inside the extracted coverage)

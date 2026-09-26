@@ -21,8 +21,9 @@ conversation, which is not otherwise available to you.
 4. **Preserve the hedge.** `hedge:` holds the author's exact modal ("appears to", "typically
    ... save in", "may be"). It is evidence.
 5. **BARE is a category, not a gap.** A claim with no internal or external reference is
-   `support: BARE`. Do not omit it, do not invent a reference for it. ~60% of claims are BARE;
-   that fraction is tracked per chapter and is itself a finding.
+   `support: BARE`. Do not omit it, do not invent a reference for it. The BARE fraction
+   (13–63% by chapter so far; see generated/INDEX.md) is tracked and is itself a finding. Do
+   not aim for a rate; classify each claim on its own text.
 6. **Hypotheses are the point.** Every export of type `construction` or `design-license`, and
    every `parameter` with a stated regime of validity, gets a `hypotheses:` list. A stated
    scope condition ("assumes mean free paths shorter than l") becomes its own
@@ -78,8 +79,10 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 Handoff for review. Eight chapters extracted and mutually reconciled; one verdict; 126 tests.
 Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
 
-- Printed-equation errors found so far: Eq. 7.29 missing a π; §7.3.5e d_n exponent sign;
-  Eq. 6.24 missing k_s and off by 2. Arithmetic inconsistencies: 12.3.8b per-interlock
+- Equation errors found so far: Eq. 7.29 missing a π (in the book: its own quoted 1570 K
+  follows the printed form); §7.3.5e d_n exponent sign and Eq. 6.24 missing k_s and off by 2
+  (not checked against the print: could be transcription; the nanosyste.ms PDF is built from
+  the same Markdown, so a scan is needed). Arithmetic inconsistencies: 12.3.8b per-interlock
   energy; 14.4.8 dissipation sum and entropy term.
 - One verdict (no longer provisional): `7.4.2/phonon-viscosity-small-except` → 12.3.4,
   hypothesis-violated, impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
@@ -88,7 +91,15 @@ Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the gr
 - Priority (Darius, 2026-09-18): the path into Ch. 14. Ch. 15–16 matter only if Ch. 14 works.
 - Ch. 13 is now the gap on the Ch. 14 path: 13.3.7 supplies the largest term of the 14.4.8
   budget (1.5e6 J/kg) and 13.3.6 the error rates and fail-stop behaviour.
-- Next, in order: (1) extract Ch. 13 (at least 13.2.2, 13.3.2, 13.3.5–13.3.8, 13.4); (2)
+- 13.3.7's 1.5e6 J/kg is a ~30 maJ mean per operation, lowered from the naive 145 maJ by
+  conditional repetition (13.3.1c, 8.3.4f), near-reversible steps (8.5.2b) and dissipation-free
+  radical coupling (8.5.3b). Those Ch. 8 subsections are on the Ch. 14 path; the rest of
+  Ch. 8 is not yet. Audit question: 30 maJ × 5e25 atoms/kg is one operation per atom, while
+  13.3.7b's naive estimates assume ten steps per atom (×10 would consume the whole 1.5e7 J/kg).
+- 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes, but waste
+  heat grows in proportion from the start, so cooling (Ch. 11, 14.4.1) may bind first.
+- Next, in order: (1) extract Ch. 13 (at least 13.2.2, 13.3.1, 13.3.2, 13.3.5–13.3.8, 13.4),
+  then 8.3.4, 8.5.2, 8.5.3 as a partial Ch. 8; (2)
   adjudicate the 14.4.8 budget as a unit, with its three imports (13.3.7, 9.7.3 recovery,
   12.7.4 computation) and the two arithmetic inconsistencies above; (3) the three single-edge
   audits exposed by reconciliation: 12.3.7 on `5.3.1/bath-coupling-irrelevant` (Prase FDT),
