@@ -89,7 +89,7 @@ def main():
         if c not in chapters: return False
         d = chapters[c]
         if d.get("coverage", "full") != "partial": return True
-        sec = ID_RE.match(id_).group(1)
+        sec = re.sub(r"[a-z]$", "", ID_RE.match(id_).group(1))   # 8.3.3c lies in section 8.3.3
         return any(sec == s or sec.startswith(s + ".") for s in d["sections"])
     exports = {}          # id -> (chapter, export)
     for n, d in chapters.items():

@@ -394,6 +394,49 @@ reconciled and none of the 34 remaining pending imports bears on it.
 Reconciliation: 23 speculative forward claims into Ch. 13 trimmed; 5 Ch. 13 -> Ch. 14 uses added
 to ch14.yaml as imports (2 cited, 3 inferred).
 
+## Ch. 8 partial extraction (2026-09-27): what "near-reversible" rests on
+
+Sections 8.3.3-8.3.4 and 8.5 (28 exports), chosen because 13.3.7's mill dissipation turns on
+whether preparation steps are near-reversible (see Ch. 13 above). Spot checks, not verdicts:
+
+- **The general licence is 8.5.2b, and it is conditional.** Reliable steps default to route
+  (1), dissipating >= 145 maJ; near-reversibility needs "systems capable of altering relative
+  well depths by >= 150 maJ in mid-transformation", which "will in many instances be possible".
+- **It is worked out for one case**: tensile C-C cleavage (8.5.3b-d). Available k_s,struct ≈ 90
+  N/m (MM2 cluster fit 153 N/m × 1.05 load × 1.14 ad hoc MM3 bending correction, halved) vs 60
+  N/m required, a 1.5× margin; the "all single bonds save O-O" threshold (90) is met at 91.6.
+  The thresholds come from Fig. 8.8 (Lippincott potential), not reproducible from the text.
+- **Everywhere else it is argued, not shown**: pi-bond torsion "meets the conditions" (8.5.6, no
+  PES); radical addition dissipation "would make an interesting ab initio study" (8.5.5);
+  carbene reactions "at present unclear" (8.5.8); transition metals "presumably" by analogy
+  with the C-C case (8.5.10c, the basis of 13.3.8).
+- **13.3.3's preparation example is the unworked classes.** Radical additions (open) and
+  hydrogen abstractions, whose tools (8.5.4c) are single-step exoergic by design: an
+  alkynyl-abstraction plus donation pair is >= 385 maJ per H moved by the book's own bounds.
+- **Spin.** 8.5.3c: "slow intersystem crossing can cause large energy dissipation in
+  mechanically forced radical coupling, even when the reverse process has a dissipation < kT."
+  13.3.7b's ~500 maJ radical coupling "without substantial energy dissipation" is the time
+  reversal of the worked cleavage case with exactly this caveat set aside.
+- **Misreactions use the conservative model, omissions the equilibrium one.** 8.3.3f's 180 maJ
+  criterion comes from 6.3.3's worst-case decoupling curve (bracketed between Ch. 6's two
+  computable limits); 8.3.4e's 145 maJ is equilibrium "at the time of kinetic decoupling",
+  the form Ch. 12 and 13 carry forward.
+- Conditional repetition (8.3.4f) reproduces (ΔF = 0: 50 trials; 25 maJ: 6). Its reliability
+  depends on a measurement (Ch. 11) that must itself be good to 1e-15; the measurement's and
+  reset's dissipation are not discussed.
+- Smaller: 8.5.5a's biased approach raises the favoured TS by 30 maJ, not 25; Eq. 8.12's sign
+  reads oddly; Eqs. 8.28-8.30 are figures absent from the transcription.
+
+Net for the 14.4.8 audit: the low end of the mill term (~2e6 J/kg) needs the 8.5.2b
+modulation for every preparation step class; the book demonstrates it for one bond-cleavage
+case with a 1.5× MM2 margin. A DFT calculation of 8.5.5's radical addition and 8.5.3d's
+surface stiffness would settle the most.
+
+Reconciliation: four Ch. 13 imports repointed to extracted ids and seven added;
+Moriarty-Phoenix's Fig. 8.14 target moved from 8.5.4 to 8.5.7, where the figure is.
+build.py: ids with a letter suffix (8.3.3c) now count as inside section 8.3.3 under partial
+coverage (previously they could never leave pending).
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

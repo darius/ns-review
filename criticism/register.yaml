@@ -68,7 +68,7 @@
   url: https://softmachines.org/?p=70
   location: three PDFs (PhoenixMoriartyI/II/III.pdf), ~56 pages, plus blog comments
   targets:
-    - "8.5.4/abstraction-steric-hindrance"   # pending: Fig. 8.14
+    - "8.5.7/radical-displacement"           # Fig. 8.14 is in 8.5.7 (was pending as 8.5.4)
     - "15.4.5/bead-imaging"                   # pending: Fig. 15.3
     - "16/stage1-to-stage2-path"              # pending
     - "13.3.6/error-rates"                    # pending

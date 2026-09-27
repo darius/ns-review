@@ -74,9 +74,9 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 - Do not summarise the book's argument in a chapter file; record claims.
 - Do not run `memory_delete`-style cleanups on `generated/` — just rebuild it.
 
-## Current state (2026-09-26, after Ch. 13) — START HERE
+## Current state (2026-09-27, after Ch. 13 and partial Ch. 8) — START HERE
 
-Nine chapters extracted and mutually reconciled (3, 5, 6, 7, 9, 13, 14 full; 10, 12 partial);
+Ten chapters extracted and mutually reconciled (3, 5, 6, 7, 9, 13, 14 full; 8, 10, 12 partial);
 one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
 
 - Equation errors found so far: Eq. 7.29 missing a π (in the book: its own quoted 1570 K
@@ -96,13 +96,16 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   energy, so preparation reversibility (8.5.2b, 8.3.4f) is the lever; its low-dissipation mechanisms are the ones
   13.3.5's mass estimate excludes; 1e-15 per operation is radiation-dominated at 1e4 /s but not
   at the 1e6 Hz Table 14.1 uses for reagent prep; 13.3.8's 475 maJ is ΔH, not ΔG.
-- 13.3.7's mix rests on Ch. 8: conditional repetition (8.3.4f), near-reversible steps (8.5.2b),
-  dissipation-free radical coupling (8.5.3b), plus 8.3.3f / 8.3.4d-g for the 1e-15 conditions
-  and 8.5.10 for 13.3.8. Those subsections are on the Ch. 14 path; the rest of Ch. 8 is not yet.
+- Ch. 8 (8.3.3-8.3.4, 8.5; DECISIONS.md "Ch. 8"): near-reversibility (8.5.2b) needs >= 150 maJ
+  of well-depth modulation mid-step; worked out only for tensile C-C cleavage with a 1.5× MM2
+  stiffness margin; radical-addition dissipation left open (8.5.5), carbenes unclear, transition
+  metals "presumably". 13.3.3's preparation example uses exactly the unworked classes, and
+  13.3.7's radical coupling sets aside 8.5.3c's spin caveat. Rest of Ch. 8 (8.4, 8.6) not needed yet.
 - 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes, but waste
   heat grows in proportion from the start, so cooling (Ch. 11, 14.4.1) may bind first.
-- Next, in order: (1) partial Ch. 8: 8.3.3, 8.3.4, 8.5.2, 8.5.3, 8.5.5a, 8.5.10; (2)
-  adjudicate the 14.4.8 budget as a unit, with its imports (13.3.7, 9.7.3 recovery, 12.7.4
+- Next, in order: (1) [done 2026-09-27: partial Ch. 8] (2)
+  adjudicate the 14.4.8 budget as a unit, carrying the mill term as an interval (~2e6 to ~7e7
+  J/kg, the ends set by whether 8.5.2b holds for preparation steps), with its imports (13.3.7, 9.7.3 recovery, 12.7.4
   computation, and the inferred 13.4.1f manipulator and 13.2.1 sorting terms) and the
   arithmetic inconsistencies above; (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
   1e-15 at 1e6 Hz; (4) the single-edge audits: 12.3.7 on `5.3.1/bath-coupling-irrelevant`

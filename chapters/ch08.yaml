@@ -1,0 +1,740 @@
+chapter: 8
+title: Mechanosynthesis
+status: reconciled
+coverage: partial
+sections: ["8.3.3", "8.3.4", "8.5.2", "8.5.3", "8.5.4", "8.5.5", "8.5.6", "8.5.7", "8.5.8", "8.5.9", "8.5.10"]
+source: source/ch08.txt
+history:
+  - date: 2026-09-27
+    note: >
+      Partial extraction of the sections on the Ch. 14 path: the reliability conditions and
+      conditional repetition that 13.3.6 and 13.3.7 import (8.3.3-8.3.4), and the forcible
+      processes of 8.5, which carry the chapter's claims about low-dissipation reliable steps.
+      Every number reproduced or bracketed in nsaudit/ch08.py (tests/test_ch08.py). 8.1-8.2,
+      8.3.1-8.3.2, 8.3.5, 8.4, 8.5.1 and 8.6-8.7 not extracted (8.6 is Moriarty's target and is
+      off the Ch. 14 energy path).
+  - date: 2026-09-27
+    note: >
+      Reconciled. Four Ch. 13 imports repointed from guessed ids to the extracted ones, seven
+      added (8.3.4c, 8.3.4d, 8.3.4g, 8.5.3c, 8.5.4c, and both 8.5.5 entries); two forward claims into
+      Ch. 14 trimmed (they reach 14 through 13). Register: Moriarty-Phoenix's Fig. 8.14 target
+      is 8.5.7, not 8.5.4.
+
+exports:
+
+  # ---- 8.3.3 Capabilities -------------------------------------------------------------------
+
+  - id: 8.3.3a/effective-concentration
+    type: parameter
+    section: "8.3.3"
+    statement: >
+      Intramolecular effective concentrations "can be as large as ~1e3 to 1e10 nm^-3 (Creighton,
+      1984)"; from Eq. 6.5 at 20 N/m in three dimensions an atom's local density is "~2e4 nm^-3";
+      positioning "should routinely yield rate accelerations on the order of 1e4 or more"
+      relative to ~1 nm^-3 in solution.
+    hedge: "should routinely"
+    support: EXT
+    refs: ["Creighton 1984", "6.2.2/effective-volume"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "(2 pi kT / 20 N/m)^-3/2 = 2.1e4 nm^-3 (tests)."
+    consumed_by: ["8.3.4e"]
+
+  - id: 8.3.3b/eutactic-solvation
+    type: parameter
+    section: "8.3.3"
+    statement: >
+      Preorganized environments can equal or exceed solvent effects: ~2.5e-29 C·m in 2e9 V/m
+      "(easily achieved in a polarized environment)" is ~50 maJ, ">1e5 at 300 K"; reversing an
+      HCN between two oriented HCNs costs ~110 maJ (MM2/CSC), ">1e10". Prohibiting true
+      solvation "does not appear to be a significant sacrifice."
+    hedge: "easily achieved ... does not appear to be"
+    support: EXT
+    refs: ["Cram 1986", "11.7.2a"]
+    vintage: "OK"
+    polarity: "-"
+    spot_check: "50 maJ exactly; exp(50/4.14) = 1.7e5; exp(110/4.14) = 3e11 (tests)."
+    consumed_by: ["8.3.4e"]
+
+  - id: 8.3.3c/stress-facilitated-reactions
+    type: construction
+    section: "8.3.3"
+    statement: >
+      Piezochemistry: activation volume Eq. 8.7; 2 GPa at ΔV‡ = -0.02 nm^3 gives 1.6e4 (constant
+      ΔV‡, "(poor) approximation"). Diamond anvils reach >= 550 GPa (Mao et al. 1989; Xu et al.
+      1986), ">= 30 nN compressive load per bond in a (111) diamond plane"; 50 GPa (~3 nN/bond)
+      "can have large chemical effects" (500 maJ at constant ΔV‡, "effects in real systems are
+      smaller, but still large"). Activation length Eq. 8.8 ~ -0.1 nm with loads > 5 nN: ~500
+      maJ. Tip instability Eq. 8.9-8.10 (k_perp = 20 N/m, 0.1 nm radii) permits ~4 nN.
+    hedge: "rough guide ... smaller, but still large"
+    support: EXT
+    refs: ["Isaacs and George 1987", "Jenner 1985", "Mao et al. 1989", "Xu et al. 1986", "Hemley and Mao 1990", "6.4.4/stressed-bond-cleavage"]
+    vintage: "OK — diamond-anvil pressures since exceeded"
+    polarity: "+"
+    hypotheses:
+      - "continuum stress is scale-independent (Ch. 2), so device pressures equal anvil pressures"
+    spot_check: >
+      2e9 × 0.02e-27 / kT -> 1.56e4; 550 GPa / 1.8e19 = 30.6 nN; 50 GPa -> 2.8 nN; 50 GPa ×
+      0.01 nm^3 = 5 nN × 0.1 nm = 500 maJ; 20 N/m × 0.2 nm = 4 nN (tests).
+    notes: >
+      The 30 nN/bond is a compressive per-area load; the 6.4.4 tensile working limit is 1.2
+      nN/bond. 13.3.1a's "> 10 nN" peak load cites this section.
+    consumed_by: ["6.4.4", "8.3.4e", "8.5", "13.3.1a", "13.3.7b"]
+
+  - id: 8.3.3f/error-conditions
+    type: proposition
+    section: "8.3.3"
+    statement: >
+      "At equilibrium, a reaction with ΔF <= -145 maJ at 300 K leaves less than 1e-15 of the
+      starting molecules unreacted." Competing transition states "commonly" differ by a bond
+      length (d_t ≈ 0.15 nm) or more: "This is not universally true, but it is the norm". With 20
+      N/m and "the sinusoidal worst-case decoupling model of Section 6.3.3d", P_err <= 1e-15
+      needs >= ~180 maJ, i.e. d_t >= 0.135 nm; "suppression of unwanted reactions by factors of
+      better than 1e-15 should be routinely achievable. With k_s = 30 N/m and d_t >= 0.15 nm, this
+      model yields P_err <= 1e-27." "In a well-designed eutactic mechanochemical system,
+      unplanned molecular encounters do not occur"; exceptions are unimolecular instabilities
+      and misreactions.
+    hedge: "commonly ... not universally true, but it is the norm ... should be routinely achievable"
+    support: INT
+    refs: ["6.3.3", "6.4", "8.5.5a"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 6.3.3/switched-coupling-error-model
+      - "competing transition states separated by >= ~0.135 nm (asserted as the norm)"
+      - "20 N/m positioning stiffness of the reagent atom w.r.t. a rigid target"
+    spot_check: >
+      ½ × 20 × (0.135 nm)^2 = 182 maJ; ½ × 30 × (0.15 nm)^2 = 338 maJ. The 1e-15 and 1e-27 are
+      read from the worst-case curve (Fig. 6.8); both lie between Ch. 6's computable limits
+      (equilibrium 1.6e-19 / 8e-36, instantaneous onset 2.7e-6 / 1.7e-10), as they should
+      (tests).
+    notes: >
+      Misreactions use the conservative worst-case model; omitted reactions (145 maJ) use the
+      equilibrium limit "at the time of kinetic decoupling" (8.3.4e). 12.3.7 and 13.2.3b/13.3.7b
+      use the equilibrium form.
+    consumed_by: ["8.3.4d", "8.5.5a", "13.3.6", "13.4.3"]
+
+  # ---- 8.3.4 Reliability constraints ----------------------------------------------------------
+
+  - id: 8.3.4c/cycle-times
+    type: parameter
+    section: "8.3.4"
+    statement: >
+      Mill processing units ~1e6 atoms, manipulators ~1e8; "a typical value is n_synth ≈ 1" atom
+      per operation; t_prod = 1 s (mill) and 100 s (manipulator) at f_synth = 1e6 Hz, "used as a
+      reference value in the systems analysis of Chapter 14". Exemplar reactions assume t_trans =
+      1e-7 s, t_act ≈ 1e-6 s; these "require reactions with low energy barriers."
+    support: BARE
+    polarity: "+"
+    notes: >
+      n_synth ≈ 1 is per operation of a processing unit as a whole (input stream to product
+      site), not per elementary reactive encounter; compare 13.3.3's ~10 encounters per moiety.
+    consumed_by: ["13.3.7"]
+
+  - id: 8.3.4d/error-rate-requirement
+    type: parameter
+    section: "8.3.4"
+    statement: >
+      Fabrication and destructive errors at <= 1e-10 per reagent application are "low" for 1e8-atom
+      modules, but "The following calculations, however, take as a requirement that both classes
+      of error occur at rates <= 1e-15 per mechanosynthetic operation"; "higher error rates could
+      be tolerated at the cost of increased design complexity." Ch. 14 "assumes that all
+      fabrication errors are destructive". Failed modules are replaced by backups (13.3.6).
+    support: BARE
+    polarity: "+"
+    consumed_by: ["13.3.6"]
+
+  - id: 8.3.4e/single-trial-reliability
+    type: parameter
+    section: "8.3.4"
+    statement: >
+      Omission <= 1e-15 in one trial needs ΔF <= -145 maJ "at the time of kinetic decoupling, in
+      terms of the approximation discussed in Section 6.3.3" and t_trans >= 35/k_react; with the
+      TST bound, Eq. 8.11: ΔV‡ <= kT ln(t f_TST / -ln P_err); f_TST >= 1e12 is "a reasonable value"
+      for rigid, well-aligned moieties; t = 1e-7 s -> ΔV‡ <= 33 maJ. Singlet-triplet gap must exceed
+      145 maJ or satisfy Eq. 8.12 on intersystem crossing.
+    support: INT
+    refs: ["6.2.2", "6.3.3", "Eq. 8.11", "Eq. 8.12"]
+    polarity: "+"
+    priority: high
+    hypotheses:
+      - 6.3.3/switched-coupling-error-model
+      - 6.2.2/classical-tst
+      - "equilibrium between states at the kinetic-decoupling time"
+      - 8.3.4e/isc-condition
+    spot_check: "kT ln(1e-7 × 1e12 / 34.5) = 33.0 maJ; -ln 1e-15 = 34.5 (tests)."
+    consumed_by: ["8.5.3a", "8.5.4b", "13.2.3b", "13.3.6", "13.3.7b"]
+
+  - id: 8.3.4e/reaction-speed-feasible
+    type: proposition
+    section: "8.3.4"
+    statement: >
+      A ~1e3 s solution reaction at ~1 nm^-3 needs ~3e11 speedup for reliable reaction in 1e-7 s;
+      effective concentration "can easily provide" > 3e4; the remaining 1e7 needs the barrier
+      lowered ~70 maJ; electrostatics > 100 maJ and piezochemistry > 500 maJ "(crudely
+      estimated)". "Achieving adequate reaction speeds does not appear to be a severe
+      constraint." Encounters can be prolonged ~1e2 (13.3.1).
+    hedge: "does not appear to be a severe constraint"
+    support: INT
+    refs: ["8.3.3a", "8.3.3b", "8.3.3c", "13.3.1"]
+    polarity: "-"
+    hypotheses:
+      - 8.3.3a/effective-concentration
+      - 8.3.3b/eutactic-solvation
+      - 8.3.3c/stress-facilitated-reactions
+    spot_check: "35 × 1e3 / 1e-7 = 3.5e11; kT ln 1e7 = 67 maJ (tests)."
+
+  - id: 8.3.4e/isc-condition
+    type: scope-condition
+    section: "8.3.4"
+    statement: >
+      "Intersystem crossing from the singlet state to a low-lying triplet can cause errors,
+      including omitted reactions and misreactions." Sufficient: the singlet-triplet gap always
+      exceeds 145 maJ, or exceeds it at t_0 with ∫ k_isc dt >= ln(P_err) up to t_1 (Eq. 8.12).
+    support: EXT
+    refs: ["Salem and Rowland 1972"]
+    vintage: "OK"
+    polarity: "+"
+    notes: Eq. 8.12 as printed has k_isc integral >= ln(P_err), a negative number; the intended sign is unclear. Adjudicate at audit.
+    consumed_by: ["8.5.3c", "8.5.6"]
+
+  - id: 8.3.4f/conditional-repetition
+    type: construction
+    section: "8.3.4"
+    statement: >
+      "A conditional repetition process uses the outcome of a measurement process (Chapter 11) to
+      determine whether an operation is repeated." At equilibrium with ΔF = 0, success 0.5 per
+      trial, mean 2 trials, "after 50 trials the probability of failure by omission is < 1e-15";
+      at 25 maJ exoergicity, 0.9976 per trial, 6 repetitions, mean ≈ 1.002. "A simple and efficient
+      approach to implementing conditional repetition in a molecular mill is presented in Section
+      13.3.1c."
+    support: INT
+    refs: ["Ch. 11", "13.3.1c"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "reaction equilibrates within each trial"
+      - "measurement of success is itself reliable to <= 1e-15 (Ch. 11 pending; 13.3.1c probe)"
+      - "per-trial outcomes independent"
+    spot_check: "2^-50 = 8.9e-16; 1/(1 + e^-6.04) = 0.99761, 0.00239^6 < 1e-15 (tests)."
+    notes: >
+      Corrects omissions only. The dissipation of the measurement and of resetting the
+      repetition mechanism is not discussed here; 13.3.1c addresses the groove merging
+      (Eq. 7.73 preequilibration).
+    consumed_by: ["8.5.4a", "8.5.6", "13.3.1c", "13.3.7b"]
+
+  - id: 8.3.4g/reagent-stability-230maj
+    type: parameter
+    section: "8.3.4"
+    statement: >
+      With <= 1e-4 s between reactions and frequency factor <= 1e13 Hz, instability errors <= 1e-15
+      per reaction need "a barrier height >= 230 maJ"; at >= 275 maJ, ~1e-20 per reaction, and
+      "sets of ~1e4 reagent moieties have a mean time to failure ... of ~10,000 years". Many
+      rearrangements "can be suppressed ... by surrounding the reagent moiety with a suitably
+      structured environment".
+    hedge: "can be suppressed"
+    support: BARE
+    polarity: "-"
+    spot_check: "kT ln(1e13 × 1e-4 / 1e-15) = 229 maJ; 275 maJ -> 1.5e-20; MTTF 2.2e4 yr (tests)."
+    consumed_by: ["8.5.5", "8.5.9", "8.5.10b", "13.3.6"]
+
+  # ---- 8.5.2 General considerations ------------------------------------------------------------
+
+  - id: 8.5.2a/force-scale
+    type: parameter
+    section: "8.5.2"
+    statement: >
+      Barrier reductions of ~70 maJ suffice (8.3.4e). "a compressive load of ~2 to 3 nN stores 70
+      maJ in a nonbonded interaction in the MM2 model"; "for a C-C bond in the Morse model (Table
+      3.8), a tensile force of ~5 nN stores 70 maJ." Reactive coordinates store more energy per
+      force than unreactive ones.
+    support: INT
+    refs: ["3.3.3 (Fig. 3.8)", "Table 3.8"]
+    polarity: "+"
+
+  - id: 8.5.2b/near-reversible-reliable-operations
+    type: design-license
+    section: "8.5.2"
+    statement: >
+      At ~1e-6 s actuation, acoustic radiation, well-compression and (at ~1e-3 m/s, ~1 nm)
+      phonon-scattering losses are small; "In an elementary reaction process, the most
+      significant potential sources of dissipation are transitions among time-dependent wells."
+      Loss classes: (1) >> kT (occupied high well into empty low well), (2) ~kT (similar
+      energies), (3) negligible (occupied low into empty high). "The simplest way to achieve high
+      reaction reliability is to follow route (1), dissipating >= 145 maJ per operation. During
+      forcible mechanochemical processes, however, it will in many instances be possible first to
+      follow route (2) or (3) to a state in which the wells are merged (or rapidly equilibrating
+      over a low barrier), then to use piezochemical effects to transform the PES to a type (1)
+      surface before separation." "Systems capable of altering relative well depths by >= 150
+      maJ in mid-transformation can achieve error rates < 1e-15 with an energy dissipation < 0.1
+      kT_300. Opportunities for this sort of control are discussed in several of the following
+      sections."
+    hedge: "it will in many instances be possible"
+    support: INT
+    refs: ["7.2", "7.3", "7.5", "7.6"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 7.6.2/merging-wells-free-energy-model
+      - "well depths modulable by >= 150 maJ during the transformation (demonstrated only for tensile cleavage, 8.5.3b)"
+      - "equilibration fast while wells are near-equal (barriers <= ~38 maJ, 8.5.3b)"
+      - 8.5.3c/spin-dissipation
+    notes: >
+      The general licence for 13.3.7's "~1 maJ" class. Worked out quantitatively only for
+      tensile C-C cleavage (8.5.3b-d); pi-bond torsion (8.5.6) is argued to meet the conditions;
+      radical addition (8.5.5) is left as "an interesting ab initio study"; carbene reactions
+      (8.5.8) "at present unclear"; transition metals (8.5.10c) "presumably". Adjudicate at
+      audit.
+    consumed_by: ["8.5.3", "8.5.6", "8.5.10c", "13.3.7b"]
+
+  # ---- 8.5.3 Tensile bond cleavage ------------------------------------------------------------
+
+  - id: 8.5.3a/cleavage-load
+    type: parameter
+    section: "8.5.3"
+    statement: >
+      For a C-C bond (Fig. 6.11 model), P_err <= 1e-15 within 1e-7 s by Eq. 8.11 "requires a
+      tensile load of ~4.2 nN"; Morse underestimates strength but errors "approximately cancel".
+      Opening θ_bond from 109.5° to 115° reduces back-bond stress to 0.79; back-bond cleavage
+      resisted by ~300 maJ angle strain (solid cage), "more than adequate to ensure a > 1e15
+      difference in rates".
+    support: INT
+    refs: ["6.4.4 (Fig. 6.11)", "6.4.3", "Eq. 8.11"]
+    polarity: "-"
+    hypotheses:
+      - 6.4.4/stressed-bond-cleavage
+      - 6.4.3/solid-cage-effect
+      - 8.3.4e/single-trial-reliability
+
+  - id: 8.5.3b/low-dissipation-cleavage
+    type: parameter
+    section: "8.5.3"
+    statement: >
+      V_cleave = V_bond(Δr) + ½ k_s,struct (Δd - Δr)^2 (Eq. 8.26); Lippincott (-115 N/m extreme
+      negative stiffness for C-C) adopted over Morse (-55) as "more conservative". Low dissipation
+      needs "good equilibration ... between the old well and the new before the energy of the new
+      well has fallen substantially below that of the old": 1e9 /s transitions for ~1e-7 s
+      well evolution, i.e. barriers <= 38 maJ at f = 1e13. From Fig. 8.8 (barrier at equal well
+      depths vs stiffness): "For processes in which k_s,struct > 90 N/m, and characteristic times
+      are >= 1e-7 s, dissipation is small relative to kT for all the single bonds shown; for
+      standard C-C bonds, k_s,struct > 60 N/m is sufficient."
+    support: INT
+    refs: ["7.6.2", "Table 3.8", "Fig. 8.8"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 7.6.2/merging-wells-free-energy-model
+      - "Lippincott potential adequate for the negative-stiffness region"
+      - "characteristic time >= 1e-7 s"
+    spot_check: >
+      kT ln(1e13/1e9) = 38 maJ (tests). The 60 / 90 N/m thresholds are read from Fig. 8.8 and are
+      not reproducible from the text (the Lippincott parameters are not given here).
+    notes: >
+      The only quantitative low-dissipation demonstration in the chapter. 13.3.7b invokes its
+      time reversal (radical coupling, ~500 maJ "without substantial energy dissipation") with
+      "spin-pairing considerations" set aside; see 8.5.3c.
+    consumed_by: ["8.5.10c", "13.3.7b"]
+
+  - id: 8.5.3c/spin-dissipation
+    type: scope-condition
+    section: "8.5.3"
+    statement: >
+      Cleavage yields a singlet diradical; if cleavage is fast compared to intersystem crossing,
+      triplet equilibration dissipates ln(2) kT; if ISC is fast, no significant dissipation. "Note
+      that slow intersystem crossing can cause large energy dissipation in mechanically forced
+      radical coupling, even when the reverse process has a dissipation < kT."
+    support: BARE
+    polarity: "+"
+    priority: high
+    notes: >
+      This is the caveat 13.3.7b sets aside ("aside from spin-pairing considerations"). 8.5.6
+      proposes a nearby bismuth atom to speed ISC (8.4.4b, pending).
+    consumed_by: ["8.5.6", "13.3.7b"]
+
+  - id: 8.5.3d/atomic-stiffness-90
+    type: parameter
+    section: "8.5.3"
+    statement: >
+      k_sz of a surface carbon on hydrogenated diamond (111): MM2 clusters fitted with a continuum
+      1/r compliance tail, "k_sz = 153 ± 2 N/m"; × ~1.05 under 3-7 nN tension; MM2 bending × 1.49
+      (MM3-like) raises it × 1.14: "k_sz ≈ 183 N/m". "k_s,struct = k_sz / 2 ≈ 90 N/m. This
+      significantly exceeds the required stiffness for low-dissipation cleavage of all the single
+      bonds in Figure 8.8, save for O-O. For the C-C bond, available stiffness exceeds the
+      requirement by a factor of 1.5; accordingly, low-dissipation bond cleavage should be a
+      feasible process in a broad range of circumstances."
+    hedge: "should be a feasible process in a broad range of circumstances"
+    support: EXT
+    refs: ["Timoshenko and Goodier 1951", "3.3.2/mm2-known-defects"]
+    vintage: "CHECK — MM2 surface stiffness; a DFT value would settle the 1.5× margin"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 3.3.1/mm2-adopted
+      - 3.3.2/mm2-known-defects
+      - "the reagent side is as stiff as a diamond (111) surface atom (Fig. 8.5: 190 N/m for an exposed atom)"
+    spot_check: "153 × 1.05 × 1.14 = 183; /2 = 91.6; / 60 = 1.53 (tests)."
+    notes: >
+      The margin that licenses the one worked low-dissipation case is 1.5× on a stiffness from an
+      MM2 model with an ad hoc bending correction. The "all the single bonds ... save for O-O"
+      threshold (90) is met at 91.6, i.e. with no margin. Adjudicate at audit.
+    consumed_by: ["8.5.10c", "13.3.1a"]
+
+  # ---- 8.5.4 Abstraction ------------------------------------------------------------------------
+
+  - id: 8.5.4a/abstraction-leps
+    type: parameter
+    section: "8.5.4"
+    statement: >
+      CH3· + HCH3 barrier ~100 maJ (Wildman 1986), representative of "relatively difficult
+      abstraction reactions". Extended LEPS (Eq. 3.23) fitted to the ab initio transition state
+      (r_CC = 0.2669 nm; Sato 0.132 CH, -0.061 CC): ΔV‡ = 0 at ~3.6 nN (r_CC 0.242 nm); 2 kT at 2
+      nN; ~29 maJ at 1 nN, consistent with omission <= 1e-15 in ~4e-9 s "(if, that is, the reaction
+      were also sufficiently exoergic)" and with conditional repetition.
+    support: EXT
+    refs: ["Wildman 1986", "Kerr 1990", "Bérces and Márta 1988", "3.4.3/leps-potential"]
+    vintage: "CHECK — LEPS piezochemistry vs modern DFT under load"
+    polarity: "+"
+    hypotheses:
+      - 3.4.3/leps-potential
+      - "linear geometry held by 'modest angle-bending stiffness'"
+    spot_check: "34.5 / (1e13 exp(-29/4.14)) = 3.8e-9 s (tests)."
+
+  - id: 8.5.4b/exoergic-abstraction
+    type: proposition
+    section: "8.5.4"
+    statement: >
+      "A reliable single-step reaction must meet stringent exoergicity requirements (Section
+      8.3.4e) at the time of kinetic decoupling." Eqs. 8.28 and 8.30 meet P_err < 1e-15 "without
+      using cycles of repetition and measurement"; Eq. 8.29 gives ~1e-13 (energies from C-H bond
+      strengths, Kerr 1990). Greater exoergicity lowers the load needed (Fig. 8.11).
+    support: EXT
+    refs: ["Kerr 1990", "Musgrave et al. 1992"]
+    vintage: "OK"
+    polarity: "+"
+    notes: Eqs. 8.28-8.30 are figures, absent from the transcription; the energies are not recoverable from the text.
+
+  - id: 8.5.4c/hydrogen-tools
+    type: design-license
+    section: "8.5.4"
+    statement: >
+      Alkynyl C-H (915 maJ) lets alkynyl radicals abstract H from "most exposed nonalkyne sites
+      with a single-step P_err < 1e-15"; strained alkenyls (>= 790 vs ~737 maJ for ethenyl) abstract
+      from most sp3 sites. Donors with C-H < ~530 maJ "can donate hydrogen atoms reliably to carbon
+      radicals where the product is an ordinary sp3 structure. Section 8.6 accordingly assumes
+      that the abstraction and donation of hydrogen atoms can be performed at will on diamondoid
+      structures."
+    hedge: "can be performed at will"
+    support: EXT
+    refs: ["Kerr 1990"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 8.3.3f/error-conditions
+      - 8.3.4g/reagent-stability-230maj
+    spot_check: >
+      With the book's own bounds, a single-step abstraction (alkynyl, 915) and donation (<= 530)
+      pair is exoergic by >= 385 maJ per H moved, whatever the sp3 C-H energy (tests); the
+      implied sp3 C-H is >= 675 maJ. As specified these are route-(1) steps: dissipated unless
+      recovered by the 8.5.2b strategy, which is not described for them. Not a verdict.
+    notes: >
+      13.3.3's reagent-preparation example uses hydrogen abstractions; this is the step class
+      whose single-step form is deliberately exoergic. Tool regeneration (8.5.7) is claimed to
+      proceed "rapidly and reliably" with no dissipation figure.
+    consumed_by: ["8.6", "13.3.3"]
+
+  # ---- 8.5.5 Radical additions -----------------------------------------------------------------
+
+  - id: 8.5.5/radical-addition
+    type: parameter
+    section: "8.5.5"
+    statement: >
+      Radical additions to alkenes/alkynes "often" exoergic by ~160-190 maJ, "sufficient to ensure
+      reaction reliability"; alkyl-addition barriers 30-60 maJ (Kerr 1973); "modest loads (~1 nN)
+      can be expected to reduce the energy barrier sufficiently" for 1e-7 s; MNDO (phenyl +
+      ethene) overestimates the barrier (~98 maJ), max repulsive force ~1.5 nN (Arnaud and Subra
+      1982). The adduct bond (160-190 maJ plus 30-60 maJ barrier) meets the 230 maJ stability
+      requirement for many cases.
+    hedge: "often ... can be expected"
+    support: EXT
+    refs: ["Kerr 1973", "Arnaud and Subra 1982"]
+    vintage: "OK"
+    polarity: "-"
+    hypotheses:
+      - 8.3.4g/reagent-stability-230maj
+    consumed_by: ["13.3.3"]
+
+  - id: 8.5.5/radical-addition-dissipation-open
+    type: scope-condition
+    section: "8.5.5"
+    statement: >
+      "The energy dissipation caused by radical addition (and its inverse) depends on an interplay
+      of stiffness and reaction PES like that examined in Section 8.5.3 for bond cleavage.
+      Obtaining the necessary PES data would make an interesting ab initio study."
+    support: BARE
+    polarity: "+"
+    priority: high
+    notes: >
+      13.3.3's reagent-preparation example is two radical additions plus abstractions and a
+      transition-metal H2 elimination. The dissipation of the first class is stated open here;
+      13.3.7 assumes preparation near-reversible. Adjudicate at audit (a DFT calculation of the
+      kind the author asks for would settle it).
+    consumed_by: ["13.3.7b"]
+
+  - id: 8.5.5a/positioning-stiffness-5-10
+    type: parameter
+    section: "8.5.5"
+    statement: >
+      Aryl radical attack on an alkene: alternative positions 0.177 nm apart (TS geometry, Arnaud
+      and Subra 1982), "toward the low end of the range of anticipated typical cases". ">180 maJ can
+      be achieved with a stiffness of ~12 N/m"; with 6 N/m and a 0.1 nm bias away from the
+      alternative, ~200 maJ difference "while raising the energy of the favored transition by only
+      25 maJ. Accordingly, stiffnesses in the 5 to 10 N/m range should prove adequate to suppress
+      misreactions with high reliability in a wide range of synthetic operations."
+    hedge: "should prove adequate ... in a wide range"
+    support: EXT
+    refs: ["Arnaud and Subra 1982", "8.3.3f"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 8.3.3f/error-conditions
+    spot_check: >
+      ½ × 12 × 0.177^2 = 188 maJ; bias: ½ × 6 × 0.1^2 = 30 maJ (book 25), ½ × 6 × 0.277^2 - 30 =
+      200 maJ (tests).
+    consumed_by: ["13.4.1", "13.4.1e"]
+
+  # ---- 8.5.6-8.5.9 ------------------------------------------------------------------------------
+
+  - id: 8.5.6/pi-bond-torsion
+    type: construction
+    section: "8.5.6"
+    statement: >
+      Twisting an alkene weakens adjacent sigma bonds: 453 maJ for ethene (Ichikawa et al. 1985),
+      ~410-440 maJ from thermochemistry (Kerr 1990), so a ~550-650 maJ R-group bond "drops
+      dramatically". Cycle: abstract, twist, deliver to a weaker site; with steps 1-2 each 145 maJ
+      exoergic the moiety's energy rises >= 120 maJ. "by modulation of the torsion angle during
+      (rather than between) reaction steps, the transition states ... can be approached forcibly
+      under conditions that make the transitions endoergic or isoergic, with separation under
+      exoergic conditions. This meets the conditions stated in Section 8.5.2b for a
+      low-dissipation process". With conditional repetition the rise can be > 400 maJ. Spin
+      pairing needed: a nearby high-Z atom (bismuth) to speed ISC. "appear to have broad
+      applications".
+    hedge: "appear to have broad applications"
+    support: EXT
+    refs: ["Ichikawa et al. 1985", "Kerr 1990", "8.5.2b", "8.4.4b"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 8.5.2b/near-reversible-reliable-operations
+      - 8.5.3c/spin-dissipation
+      - 8.3.4e/isc-condition
+      - "torsion modulable mid-reaction by >= 150 maJ (argued, no PES)"
+    spot_check: "410 - 2 × 145 = 120 maJ (tests)."
+    consumed_by: ["13.2.3c", "13.3.1b"]
+
+  - id: 8.5.7/radical-displacement
+    type: proposition
+    section: "8.5.7"
+    statement: >
+      Radical addition to an alkyne weakens the alkynyl C-H (Fig. 8.14), enabling a cycle that
+      abstracts a tightly bound atom, delivers it to a moderately bound site, and regenerates the
+      alkynyl radical by cleaving a weak bond: "each of these steps should proceed rapidly and
+      reliably under moderate mechanical loads. [Note that step (b) -> (c) requires spin
+      pairing.]"
+    hedge: "should proceed"
+    support: BARE
+    polarity: "-"
+    hypotheses:
+      - 8.5.3c/spin-dissipation
+
+  - id: 8.5.8/carbene-dissipation-unclear
+    type: scope-condition
+    section: "8.5.8"
+    statement: >
+      Carbene additions and insertions are highly exoergic, so "single-step reactions can be highly
+      reliable"; triplet carbenes can require fast ISC. "The potential for low-dissipation carbene
+      reactions is at present unclear."
+    support: BARE
+    polarity: "+"
+    notes: 8.6.4c's diamond synthesis uses carbene insertion (not extracted).
+
+  - id: 8.5.9/cycloadditions
+    type: parameter
+    section: "8.5.9"
+    statement: >
+      Diels-Alder: ΔV‡ ~ -0.05 to -0.07 nm^3, barriers < 60 to > 130 maJ, "piezochemical rate
+      accelerations under modest loads should make them consistent with t_trans = 1e-7 s";
+      exoergicity ~280 maJ (Eq. 8.15) "is sufficient to yield stable intermediate products ... in a
+      reliable process". Thermally forbidden [2+2] forced piezochemically; ethene dimerization
+      barrier ~305 maJ (Huisgen 1977).
+    hedge: "should make them consistent"
+    support: EXT
+    refs: ["Huisgen 1977"]
+    vintage: "OK"
+    polarity: "-"
+
+  # ---- 8.5.10 Transition metals -----------------------------------------------------------------
+
+  - id: 8.5.10/transition-metal-flexibility
+    type: design-license
+    section: "8.5.10"
+    statement: >
+      M-C bonds ~210-450 maJ, M-H ~100-200 maJ stronger (Crabtree 1987); stability with >= 230 maJ
+      or cyclic stabilisation. M-H stretching stiffnesses 130-225 N/m, ~0.25-0.5 of C-H or C-C.
+      "Given that bonds as stiff as C-C can be cleaved in a low-dissipation process (Section
+      8.5.3), a wide range of mechanochemical processes involving transition metals can presumably
+      be carried out in a positive-stiffness, zero-barrier manner". Trans-effect ~1e4 in rate,
+      ~40 maJ (Masters 1981). Transition metals are "unlikely to expand the range of structures
+      that can be built; it is, however, likely to expand greatly the range of structures that can
+      be built with low dissipation, in a nearly thermodynamically reversible fashion."
+    hedge: "presumably ... likely"
+    support: EXT
+    refs: ["Crabtree 1987", "Masters 1981", "Nugent and Mayer 1988", "8.5.3"]
+    vintage: "OK"
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 8.5.3b/low-dissipation-cleavage
+      - 8.5.3d/atomic-stiffness-90
+      - 8.5.2b/near-reversible-reliable-operations
+      - "lower-stiffness bonds need proportionally lower k_s,struct (true of Eq. 8.26's negative-stiffness criterion)"
+    spot_check: "kT ln 1e4 = 38 maJ (tests)."
+    notes: >
+      The basis of 13.3.8's near-reversible H2 + O2 and of 13.3.3's tool regeneration (Eq. 8.33).
+      Argued by analogy from the single worked cleavage case; no transition-metal PES is shown.
+    consumed_by: ["13.3.3", "13.3.8"]
+
+imports:
+
+  - from: "3.3.1/mm2-adopted"
+    used_for: MM2/CSC stiffnesses and electrostatics (Figs. 8.1, 8.2, 8.5, 8.9; 8.5.10b supports)
+    at: ["8.3.3b", "8.3.3f", "8.5.3d", "8.5.10b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm2-known-defects"
+    used_for: MM2 bending stiffness × 1.49 to approximate MM3 in the k_sz estimate
+    at: ["8.5.3d"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.2/mm2-angle-bend"
+    used_for: ~20-30 N/m transverse stiffness of a carbon w.r.t. sp3 carbon (3.3.2b)
+    at: ["8.3.3a", "8.3.3c", "8.3.3f"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.3/loaded-contact-radii"
+    used_for: ~0.1 nm atomic radius under load (Fig. 3.9) in Eq. 8.9-8.10
+    at: ["8.3.3c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.3/stiffness-and-energy-vs-load"
+    used_for: 2-3 nN stores 70 maJ in a nonbonded contact; > 100 maJ at 4 nN (Fig. 3.8)
+    at: ["8.3.3c", "8.5.2a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.3.3/morse-potential"
+    used_for: C-C Morse (Table 3.8) for force-energy and cleavage-load estimates
+    at: ["8.5.2a", "8.5.3a", "8.5.3b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "3.4.3/leps-potential"
+    used_for: extended LEPS model of piezochemical abstraction (Fig. 8.10-8.11)
+    at: ["8.5.4a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.2.2/effective-volume"
+    used_for: Eq. 6.5 effective width -> local number density ~2e4 nm^-3
+    at: ["8.3.3a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.2.2/classical-tst"
+    used_for: one-dimensional TST bound (Eq. 8.11)
+    at: ["8.3.4e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.3.3/switched-coupling-error-model"
+    used_for: worst-case decoupling model for misreactions (8.3.3f); equilibrium at the kinetic-decoupling time for omissions (8.3.4e)
+    at: ["8.3.3f", "8.3.4e"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: >
+      8.3.3f uses the conservative worst-case model 6.3.3 recommends; 8.3.4e's omission
+      criterion uses the equilibrium form, which is what Ch. 12 and Ch. 13 carry forward.
+
+  - from: "6.4.3/solid-cage-effect"
+    used_for: angle-strain resistance (~300 maJ) to back-bond cleavage
+    at: ["8.5.3a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.4.4/stressed-bond-cleavage"
+    used_for: Fig. 6.11 lifetime curves -> 4.2 nN cleavage load
+    at: ["8.3.3c", "8.5.3a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.1/mechanism-inventory"
+    used_for: acoustic radiation, well compression, phonon scattering "minimal" at 1e-6 s
+    at: ["8.5.2b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.2/merging-wells-free-energy-model"
+    used_for: dissipation classes (1)-(3) and the equilibration condition for low-dissipation cleavage
+    at: ["8.5.2b", "8.5.3b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.4/asymmetrical-merging"
+    used_for: route (1) >= 145 maJ dissipated; route (3) negligible
+    at: ["8.5.2b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "13.3.1/conditional-repetition"
+    used_for: the mill implementation of conditional repetition
+    at: ["8.3.4f"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "13.3.6/fail-stop-gauging"
+    used_for: failed manufacturing modules stopped and replaced by backups
+    at: ["8.3.4d"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  # pending
+
+  - from: "2/continuum-stress-scale-independent"
+    used_for: device pressures equal diamond-anvil pressures
+    at: ["8.3.3c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.4.4b/intersystem-crossing-slow"
+    used_for: high-Z atom (Bi) to speed ISC in torsion cycles
+    at: ["8.5.6"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11.7.2a/contact-potentials"
+    used_for: fields of ~2e9 V/m from contact potentials
+    at: ["8.3.3b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11/measurement"
+    used_for: the measurement that conditional repetition depends on
+    at: ["8.3.4f"]
+    cited: yes
+    hypotheses_discharged: unknown

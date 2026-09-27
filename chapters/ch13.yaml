@@ -801,6 +801,9 @@ exports:
       - 13.3.6/error-rates
       - "the 1 / 15 / 100 maJ mix and its ~30 maJ mean (no distribution or example set given)"
       - "~1 (application) operation per atom of product; preparation steps near-reversible"
+      - 8.5.2b/near-reversible-reliable-operations
+      - 8.5.5/radical-addition-dissipation-open
+      - 8.5.3c/spin-dissipation
     spot_check: >
       30 maJ × 5.0e25 C/kg = 1.5e6 J/kg (tests): one 30-maJ operation per atom. 13.3.3 gives ~10
       preparation encounters per moiety. The reading consistent with the text: the 30 maJ mean is
@@ -1389,8 +1392,20 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "8.3.4/reliability-conditions"
-    used_for: 8.3.4(d-g) conditions for <= 1e-15 per operation
+  - from: "8.3.4e/single-trial-reliability"
+    used_for: 8.3.4(d-g) conditions for <= 1e-15 per operation; ΔF <= -145 maJ for single-trial reliability
+    at: ["13.2.3b", "13.3.6", "13.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.4g/reagent-stability-230maj"
+    used_for: reagent-instability errors <= 1e-15 (8.3.4g)
+    at: ["13.3.6"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.4d/error-rate-requirement"
+    used_for: the <= 1e-15 per-operation requirement adopted for Ch. 13-14
     at: ["13.3.6"]
     cited: yes
     hypotheses_discharged: unknown
@@ -1407,13 +1422,47 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "8.5.3b/radical-coupling-low-dissipation"
-    used_for: ~500 maJ bonds formed "without substantial energy dissipation"; small-molecule caveat in 13.2.3c
+  - from: "8.5.3b/low-dissipation-cleavage"
+    used_for: radical coupling as the time reversal of low-dissipation cleavage — ~500 maJ bonds "without substantial energy dissipation"; small-molecule caveat in 13.2.3c
     at: ["13.2.3c", "13.3.7b"]
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "8.5.3d/moiety-stiffness-90"
+  - from: "8.5.3c/spin-dissipation"
+    used_for: set aside in 13.3.7b ("aside from spin-pairing considerations")
+    at: ["13.3.7b"]
+    cited: yes
+    hypotheses_discharged: unknown
+    notes: >
+      8.5.3c: "slow intersystem crossing can cause large energy dissipation in mechanically
+      forced radical coupling, even when the reverse process has a dissipation < kT." The one
+      worked low-dissipation case is invoked in its reverse direction with this caveat set aside.
+
+  - from: "8.5.5/radical-addition-dissipation-open"
+    used_for: preparation near-reversible, though 13.3.3's example uses radical additions whose dissipation 8.5.5 leaves open
+    at: ["13.3.7b"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "8.5.4c/hydrogen-tools"
+    used_for: hydrogen abstractions in the 13.3.3 preparation example (single-step, exoergic by design)
+    at: ["13.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.5.5/radical-addition"
+    used_for: two radical additions in the 13.3.3 preparation example
+    at: ["13.3.3"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "8.3.4c/cycle-times"
+    used_for: 1e6 operations/s reference rate; ~1 atom per operation
+    at: ["13.3.7"]
+    cited: no
+    hypotheses_discharged: unknown
+
+  - from: "8.5.3d/atomic-stiffness-90"
     used_for: ~90 N/m moiety-moiety stiffness with stiff bearings
     at: ["13.3.1a"]
     cited: yes
@@ -1425,7 +1474,7 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "8.5.6/low-dissipation-bond-formation"
+  - from: "8.5.6/pi-bond-torsion"
     used_for: pi-bond torsion encounters; strategies for strong bonds with little dissipation
     at: ["13.2.3c", "13.3.1b"]
     cited: yes
