@@ -78,6 +78,11 @@ exports:
       PDF; the audit question is whether an error criterion defined on a ~10 ps window
       (12.3.7's probe passage) is a "statistical distribution of dynamical quantities" in this
       sense or a finite-bandwidth property that depends on the coupling. Adjudicate at 12.3.7.
+    verdict: verified
+    verdict_notes: >
+      at: 12.3.7 — displacement statistics are damping-independent (FDT; Langevin check over 1e4-1e5x
+      damping); Prase C.2's force-noise error estimate does not carry to displacement errors. See
+      the ch12 import and nsaudit/audit_fdt_rod_errors.py.
 
   - id: 5.3.2/classical-adequate-when-kt-exceeds-hbar-omega
     type: proposition

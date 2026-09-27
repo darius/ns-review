@@ -376,6 +376,13 @@ exports:
       - 12.3.7/error-threshold-0.7nm
     consumed_by: ["12.3.8"]
     aliases: ["1e-64 error rate", "rod-logic error rate"]
+    verdict: verified
+    verdict_notes: >
+      Eq. 12.25 reproduces (1.5e-67 vs 1.3e-67). Its two contested inputs are verified at this
+      site: bath coupling (5.3.1; Prase C.2's force-noise argument does not carry to
+      displacement) and the error-model form (6.3.3; the frozen-tail form is used). Margins:
+      169 kT in the alignment coordinate; effective probe-gate stiffness 15x above the 1e-15
+      level. nsaudit/audit_fdt_rod_errors.py
 
   # ---- 12.3.8 Summary observations -------------------------------------------
 
@@ -728,8 +735,21 @@ imports:
     used_for: treating the knob displacement PDF as independent of how the rod couples to its surroundings
     at: ["12.3.7"]
     cited: no
-    hypotheses_discharged: unknown
-    notes: The step Prase (2026) C.2 disputes; see 5.3.1/bath-coupling-irrelevant notes.
+    hypotheses_discharged: yes
+    verdict: verified
+    verdict_notes: >
+      Prase (2026) C.2 argues from force noise: S_FF = 2 m γ kT; σ_F ≈ 14 pN over 100 GHz with the
+      book's damping (reproduced), ~0.44 nN at 1000x (reproduced), "enough to cause an error in
+      0.1-1% of cycles". But an error is a displacement beyond 0.7 nm, and FDT ties the noise to
+      an equal increase in drag: the stationary displacement PDF is Boltzmann for any damping.
+      Langevin dynamics of the alignment coordinate at its hard stop reproduces exp(-F_al x/kT)
+      at 1e4x and 1e5x the book's damping (10-100x beyond Prase's case); at 0.7 nm the tail is
+      e^-169 whatever γ. Coupling to other modes enters equilibrium statistics only via the
+      potential of mean force: a 1e-15 Gaussian tail needs the effective probe-gate stiffness
+      below ~0.53 N/m, 15x under the book's 8 N/m series path before any credit for F_al.
+      Non-thermal excitation must put F_al Δx = 700 maJ (169 kT) into that one coordinate:
+      600x the exact residual vibration, 50x Prase's lag figure, 3x the worst edge-slip event.
+      5.3.1's claim holds at this use site. nsaudit/audit_fdt_rod_errors.py (tests/test_audit_fdt.py)
 
   - from: "6.3.1/time-dependent-pes-model"
     used_for: logic-state placement as the proper-potential-well problem (6.3.1 names Ch. 12 explicitly)
@@ -741,7 +761,14 @@ imports:
     used_for: the error model family; 12.3.7 uses the equilibrium PDF, i.e. the total-equilibrium limit
     at: ["12.3.7"]
     cited: no
-    hypotheses_discharged: unknown
+    hypotheses_discharged: yes
+    verdict: verified
+    verdict_notes: >
+      The equilibrium-vs-worst-case distinction in 6.3.3 concerns a barrier rising between wells
+      (errors at d_err/2 under instantaneous onset). 12.3.7's error is geometric: the fraction of
+      the pre-passage distribution beyond the 0.7 nm threshold at the moment the probe arrives,
+      which is the frozen-distribution (instantaneous-onset) tail for this geometry, re-sampled
+      up to 1e3 times per motion. The conservative form is the one used. nsaudit/audit_fdt_rod_errors.py (tests/test_audit_fdt.py)
     notes: >
       12.3.7 does not use the worst-case decoupling model that 6.3.3 recommends "for making
       conservative estimates"; it uses the equilibrium Boltzmann PDF (12.22-12.23). Audit item.

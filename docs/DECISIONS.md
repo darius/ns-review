@@ -530,6 +530,29 @@ Appendix C re-read from the PDF. Calculation: `nsaudit/audit_prase_rod_logic.py`
   logic (8.3.4g) covers it; energy cost negligible in the 14.4.8 scenarios. An accounting
   error, not a feasibility one.
 
+## Audit: fluctuation-dissipation (Prase C.2) against 12.3.7 (2026-09-27)
+
+`nsaudit/audit_fdt_rod_errors.py`, tests in `tests/test_audit_fdt.py`. Verdicts: 5.3.1 ->
+12.3.7 **verified**; 6.3.3 -> 12.3.7 **verified** (the conservative form is the one used);
+Prase C.2 **rebutted**.
+
+- Prase's numbers reproduce: σ_F ≈ 14 pN over 100 GHz with the book's friction plus bulk
+  Akhiezer, ~0.44 nN at 1000x damping. His error step treats that force as if it acted
+  undamped. An error is a 0.7 nm *displacement*, and FDT raises drag with noise: the
+  stationary displacement PDF is Boltzmann whatever the damping. Langevin dynamics of the
+  alignment coordinate reproduces exp(-F_al x/kT) at 1e4x and 1e5x the book's damping. At
+  0.7 nm the tail is e^-169, as 12.3.7 says.
+- What coupling to other modes can do is soften the potential of mean force: errors reach 1e-15
+  only if the effective probe-gate stiffness drops below ~0.53 N/m (book path 8 N/m, 15x
+  margin, before any credit for the 1 nN alignment force).
+- Non-thermal excitation needs 700 maJ (169 kT) in the alignment coordinate: 600x the exact
+  residual vibration, 50x Prase's lag figure, 3x the worst edge-slip event considered.
+- 12.3.7's P_err-disp is the frozen-distribution tail at the moment of passage, i.e. the
+  instantaneous-onset (conservative) form for a geometric threshold, so 6.3.3's
+  equilibrium-vs-worst-case concern does not bite here. It still applies to 13.2.3b/13.3.7b.
+- Consequence for Ch. 14: the rod-logic error rate is not an issue at any clock; what remains
+  for the control computers is energy (edge stick-slip), not reliability.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

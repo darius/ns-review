@@ -81,7 +81,12 @@
     numbers: not excluded at the rod's far end (edge negative stiffness ~6-110 N/m vs 4.9 N/m);
     if unstable, 50-900 maJ per switch. Recorded as uncertain (2.5 OOM) on a new inferred
     ch12 import of 10.12. Prase's point stands as an open, high-stakes item, on different
-    arithmetic from his. (e) FDT noise and errors (C.2): separate edge, 12.3.7, pending.
+    arithmetic from his. (e) FDT noise and errors (C.2):
+    rebutted (2026-09-27, nsaudit/audit_fdt_rod_errors.py). The force-noise numbers reproduce
+    (14 pN; 0.44 nN at 1000x damping), but an error needs a 0.7 nm displacement, and FDT pairs
+    the noise with drag: the displacement PDF is Boltzmann for any damping (Langevin check at
+    1e4-1e5x). The 0.7 nm tail is e^-169 regardless; coupling to other modes matters only if
+    the effective probe-gate stiffness falls below ~0.5 N/m (book path 8 N/m).
     Propagation: at 14.4.8 every speed-dependent penalty is discharged by clock choice (1e18
     instructions/s at 1 MHz per CPU is ~2e-4 kg of CPUs; Prase's full x100 at GHz, 2.2e7
     J/kg, becomes 2.5e5 at 100x slower), which Prase anticipates ("most problems ... can be
