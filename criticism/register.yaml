@@ -74,9 +74,14 @@
     <= 15%). What survives is (a)'s collective-mode question. (c) Eq. 7.40 sin 2θ -> sin θ: the
     arithmetic is right (7.5x at the 10.4.6 bearing, 35x at rod interfaces) but the reading is
     not; the text defines a mean power transmission coefficient and power incident from θ
-    carries cos θ, so sin θ cos θ is the standard weighting. Rebutted. (d) Edge friction: not
-    adjudicated (Qu et al. 2020 unread; the comparison spans 4 OOM of load and 7 of speed by
-    Prase's own account). (e) FDT noise and errors (C.2): separate edge, 12.3.7, pending.
+    carries cos θ, so sin θ cos θ is the standard weighting. Rebutted. (d) Edge friction: Qu et al.
+    2020 is paywalled and unread; the mechanism per open primary work (Gao et al.
+    arXiv:2411.04609, Wang-Ma-Tosatti arXiv:2306.00205) is stick-slip at incompletely
+    compensated edges, speed-independent. Recast as a Prandtl-Tomlinson check on the book's own
+    numbers: not excluded at the rod's far end (edge negative stiffness ~6-110 N/m vs 4.9 N/m);
+    if unstable, 50-900 maJ per switch. Recorded as uncertain (2.5 OOM) on a new inferred
+    ch12 import of 10.12. Prase's point stands as an open, high-stakes item, on different
+    arithmetic from his. (e) FDT noise and errors (C.2): separate edge, 12.3.7, pending.
     Propagation: at 14.4.8 every speed-dependent penalty is discharged by clock choice (1e18
     instructions/s at 1 MHz per CPU is ~2e-4 kg of CPUs; Prase's full x100 at GHz, 2.2e7
     J/kg, becomes 2.5e5 at 100x slower), which Prase anticipates ("most problems ... can be

@@ -690,8 +690,8 @@ imports:
       rod-logic loss, the book's and Prase's C.1 alike (drag, Akhiezer, relaxation), falls at
       least as 1/t_switch, so even Prase's full ">= 2 OOM" (2.2e7 J/kg at GHz) is 2.5e5 at a
       100x slower clock and 5e4 at 1000x; the floor is the register's ln 2 kT, 2.9e4 J/kg.
-      Hypothesis (GHz operation not required) discharged. Not covered: edge friction if
-      speed-independent (Qu et al. 2020 unread); Prase's noise and error argument (C.2), which
+      Hypothesis (GHz operation not required) discharged. Not covered: edge stick-slip, which
+      is speed-independent (see the 10.12 import in ch12.yaml: uncertain, 2.5 OOM); Prase's noise and error argument (C.2), which
       bears on control-computation reliability, not energy. math_correct: no (the
       per-interlock figure); inputs_adequate: yes. nsaudit/audit_14_4_8_budget.py,
       nsaudit/audit_prase_rod_logic.py

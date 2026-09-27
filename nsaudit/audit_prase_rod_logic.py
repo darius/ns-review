@@ -126,3 +126,38 @@ def energy_per_instruction(rod_term_at_ghz: float, slowdown: float) -> float:
 
 def computation_term(rod_term_at_ghz: float, slowdown: float) -> float:
     return energy_per_instruction(rod_term_at_ghz, slowdown) * INSTR_PER_KG
+
+
+# ---- 4. edge friction as a Prandtl-Tomlinson question ----------------------------------------------
+# Superlubric edge friction (Qu et al. 2020, unread; Gao et al. arXiv:2411.04609, Wang, Ma and
+# Tosatti arXiv:2306.00205) is stick-slip at incompletely compensated edges: speed-independent
+# when present. The book's smooth-sliding licence (10.12) rests on symmetry cancellation, which
+# rod ends and knob edges break. Stick-slip occurs if the edge corrugation's maximum negative
+# stiffness (Eq. 10.9: 3 ΔV (π/d_a)²) exceeds the stiffness holding the edge.
+
+D_A = 0.25e-9                 # m, typical d_a (10.3.5)
+SURFACE_ATOM_DENSITY = 1.8e19  # m^-2, (111)-like (6.4.4c)
+
+
+def corrugation_from_stiffness(k_atom: float, d_a: float = D_A) -> float:
+    """Per-atom corrugation ΔV1 whose Eq. 10.9 bound equals k_atom (10.3.4's 'several N/m per
+    atom' read as a corrugation curvature; an interpretation, not a book number)."""
+    return k_atom / (3 * (math.pi / d_a)**2)
+
+
+def edge_negative_stiffness(n_edge: int, dV1: float, coherent: bool = False, d_a: float = D_A) -> float:
+    """Eq. 10.9 for the summed edge corrugation: amplitudes add as n (coherent) or √n (random phase)."""
+    dV = (n_edge if coherent else math.sqrt(n_edge)) * dV1
+    return 3 * dV * (math.pi / d_a)**2
+
+
+def rod_edge_atoms(p: Exemplar = EX, edge_fraction: float = 0.01) -> float:
+    """Interface atoms on the rod's sliding area (Eq. 12.16) × Prase's optimistic 1% edge share."""
+    return ch12.contact_area(p) * SURFACE_ATOM_DENSITY * edge_fraction
+
+
+def stick_slip_energy_per_switch(n_edge: int, dV1: float, coherent: bool = False,
+                                 travel: float = 1e-9, d_a: float = D_A) -> float:
+    """If unstable, ~ΔV_edge dissipated per d_a of travel, independent of speed."""
+    dV = (n_edge if coherent else math.sqrt(n_edge)) * dV1
+    return dV * travel / d_a

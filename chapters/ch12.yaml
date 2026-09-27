@@ -745,3 +745,28 @@ imports:
     notes: >
       12.3.7 does not use the worst-case decoupling model that 6.3.3 recommends "for making
       conservative estimates"; it uses the equilibrium Boltzmann PDF (12.22-12.23). Audit item.
+
+  - from: "10.12/smooth-sliding-conditions"
+    used_for: >
+      12.3.4c's sliding drag (Eq. 12.17, via 10.4.6) presumes smooth sliding over the rod's
+      whole interface; 10.12 licenses it by symmetry cancellation, which the rod's ends and
+      knob edges break. Added 2026-09-27 (Prase audit).
+    at: ["12.3.4c"]
+    cited: no
+    hypotheses_discharged: no
+    verdict: uncertain
+    uncertainty_oom: 2.5
+    verdict_notes: >
+      Superlubric edge friction is stick-slip at incompletely compensated edges and is
+      speed-independent when present (Gao et al. arXiv:2411.04609; Wang, Ma and Tosatti
+      arXiv:2306.00205; Qu et al. 2020 cited by Prase, unread). In the book's terms it occurs if
+      the edge corrugation's negative stiffness (Eq. 10.9) exceeds the stiffness holding the
+      edge. Reading 10.3.4's "several N/m per atom" as corrugation curvature gives 2-6 maJ per
+      atom; with ~36 uncompensated edge atoms (1% of the ~3600 on the Eq. 12.16 area) the edge
+      negative stiffness is ~6 N/m (random phase) to ~110 N/m (coherent), against 4.9 N/m holding
+      the far end (Eq. 12.5; the driven end is held by a constant-force spring). So stability is
+      not shown; if unstable, ~50-900 maJ per switch, 20-400x the book's cycle, not reduced by a
+      slower clock. The book gives no rod-end corrugation; an atomistic calculation of a
+      terminated rod end in its channel would settle it. Mitigations exist (tapered or
+      compliant ends, end clearance, 10.8-style compensation) but are not designed.
+      nsaudit/audit_prase_rod_logic.py (test_edge_stick_slip_not_excluded).

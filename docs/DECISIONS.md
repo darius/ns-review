@@ -497,10 +497,19 @@ Appendix C re-read from the PDF. Calculation: `nsaudit/audit_prase_rod_logic.py`
   rod-logic loss (book and Prase C.1) falls at least as 1/t_switch; a 100x slower clock costs
   ~2e-5 kg of CPUs and turns even the full ">= 2 OOM" (2.2e7 J/kg at GHz) into 2.5e5. Floor:
   12.4.3's ln 2 kT per register cell, 2.9e4 J/kg. Recorded on the 12.7.4 -> 14.4.8 import.
-- **Open:** edge friction if speed-independent (Qu et al. 2020 unread; at Prase's graphite
-  values and ~1% edge atoms it would be tens of maJ per switch regardless of clock, i.e.
-  ~1e6-1e7 J/kg, so this is the one Prase mechanism that could still reach the budget); the
-  collective-mode question; the FDT error argument (12.3.7 edge).
+- **Edge friction: open, and the largest remaining lever.** Qu et al. 2020 is paywalled
+  (unread). Open primary work (Gao et al. arXiv:2411.04609; Wang, Ma and Tosatti
+  arXiv:2306.00205) puts superlubric edge friction in stick-slip at incompletely compensated
+  edges: speed-independent. The book's smooth-sliding licence (10.12) is symmetry
+  cancellation, which rod ends break. As a Prandtl-Tomlinson check on the book's own numbers
+  (10.3.4's "several N/m per atom" -> 2-6 maJ corrugation; ~36 edge atoms): edge negative
+  stiffness ~6-110 N/m against 4.9 N/m holding the rod's far end. Not excluded; if unstable,
+  50-900 maJ per switch, 20-400x the book's cycle, and a slower clock does not help. At
+  14.4.8 that would be ~1e7-2e8 J/kg. Verdict on the new inferred ch12 import of 10.12:
+  uncertain, 2.5 OOM. Mills are less exposed (rolling belts, edge-free rotary bearings) but
+  their sliding backing surfaces and cam followers have edges. An atomistic calculation of a
+  terminated rod end in its channel would settle it. Also open: collective modes; FDT
+  (12.3.7 edge).
 - **Credit:** Prase fn. 49 found the Eq. 7.29 π and the 7.3.5e d_n sign before this audit.
 
 ## Known inaccuracies from the design session, corrected

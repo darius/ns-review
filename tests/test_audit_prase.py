@@ -66,3 +66,21 @@ def test_prase_penalty_absorbed_by_clock():
     assert close(a.computation_term(100 * rod, 100), 2.46e5, 0.01)
     assert close(a.computation_term(100 * rod, 1000), 5.05e4, 0.01)
     assert close(a.REGISTER_FLOOR * a.INSTR_PER_KG, 2.87e4, 0.01)
+
+
+def test_edge_stick_slip_not_excluded():
+    """Open item, not a verdict: with 10.3.4's 'several N/m per atom' (1-5 N/m -> 2-11 maJ of
+    corrugation by Eq. 10.9) and ~36 uncompensated edge atoms, the edge's negative stiffness is
+    ~6-110 N/m (random to coherent phase), against 4.9 N/m holding the rod's far end (Eq. 12.5;
+    the drive end is held by a constant-force spring). If unstable: ~50-900 maJ per switch,
+    speed-independent — 20-400× the book's whole cycle, and not removed by a slower clock."""
+    assert close(ch12.k_s(EX, EX.l_rod), 4.85, 0.01)
+    n = round(a.rod_edge_atoms())
+    assert n == 36
+    dV_lo, dV_hi = a.corrugation_from_stiffness(1.0), a.corrugation_from_stiffness(3.0)
+    assert close(dV_lo, 2.1 * MAJ, 0.02) and close(dV_hi, 6.3 * MAJ, 0.02)
+    k_lo = a.edge_negative_stiffness(n, dV_lo)
+    k_hi = a.edge_negative_stiffness(n, dV_hi, coherent=True)
+    assert k_lo > ch12.k_s(EX, EX.l_rod) and close(k_hi, 107, 0.02)
+    assert close(a.stick_slip_energy_per_switch(n, dV_lo), 51 * MAJ, 0.02)
+    assert close(a.stick_slip_energy_per_switch(n, dV_hi, coherent=True), 900 * MAJ, 0.02)

@@ -1358,6 +1358,11 @@ imports:
     at: ["13.3.7a", "13.4.1f"]
     cited: no
     hypotheses_discharged: unknown
+    notes: >
+      See the 10.12 import in ch12.yaml (edge stick-slip, 2026-09-27). Belt-over-roller contacts
+      roll and rotary bearings have no edge in the sliding direction; reagent devices sliding
+      between backing surfaces and cam followers in grooves do. Speed-independent, so the mill
+      rate does not protect it. Adjudicate at audit.
 
   - from: "12.3.3/exemplar-parameters"
     used_for: encounter mechanism volume "four times the volume of the exemplar interlock"
