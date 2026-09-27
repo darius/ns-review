@@ -349,11 +349,14 @@ reconciled and none of the 34 remaining pending imports bears on it.
 52 exports; nine chapters now reconciled. Every Ch. 13 number is reproduced or checked in
 `nsaudit/ch13.py`. Spot checks, not verdicts:
 
-- **The 1.5e6 J/kg mill term is one 30 maJ operation per atom.** 13.3.3 estimates ~10
-  preparation encounters per moiety, and 13.3.7b's own naive estimates use ten steps per atom.
-  If the ~30 maJ mean covers all operations, the term is ~1.65e7 J/kg, the whole ~1.5e7 J/kg
-  free energy of 14.4.8. The other reading (preparation near-reversible, the mean is over
-  application steps) keeps 1.5e6. The 1 / 15 / 100 maJ mix is asserted, with no example set.
+- **The 1.5e6 J/kg mill term is one 30 maJ operation per atom; the lever is preparation
+  reversibility.** 13.3.3 estimates ~10 preparation encounters per moiety. The text assumes
+  them near-reversible (~1 maJ each), giving ~2.0e6 J/kg, +33%. (A first pass read the 30 maJ
+  as a mean over all ~11 operations, ~1.65e7 J/kg; that needs application steps averaging
+  ~320 maJ, contradicting the stated mix, so it is not a live reading.) If preparation steps
+  dissipate in snaps (well merging, 7.6.4) at the 145 maJ reliability exoergicity, the term is
+  13.3.7b's naive ~7e7 J/kg, ~5× the free energy. Whether near-reversibility is earned rests on
+  8.5.2b and 8.3.4f. The 1 / 15 / 100 maJ mix is asserted, with no example set.
 - **Energy and mass estimates are for different mechanisms.** The low-dissipation classes rely
   on conditional repetition and cam-driven strain relief; 13.3.5's mass (reused in Table 14.1)
   explicitly excludes conditionally repeated complex-encounter mechanisms as larger.

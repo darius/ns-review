@@ -90,9 +90,10 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
 - Priority (Darius, 2026-09-18): the path into Ch. 14. Ch. 15–16 matter only if Ch. 14 works.
-- Ch. 13 findings on that path (DECISIONS.md "Ch. 13"): the 1.5e6 J/kg mill term is one 30 maJ
-  operation per atom, while 13.3.3 has ~10 preparation encounters per moiety (×11 would
-  consume the whole ~1.5e7 J/kg free energy); its low-dissipation mechanisms are the ones
+- Ch. 13 findings on that path (DECISIONS.md "Ch. 13"): the 1.5e6 J/kg mill term assumes 13.3.3's ~10
+  preparation steps per moiety are near-reversible (~2e6 J/kg with them counted at ~1 maJ);
+  if they dissipate in snaps at the 145 maJ reliability exoergicity it is ~7e7, ~5× the free
+  energy, so preparation reversibility (8.5.2b, 8.3.4f) is the lever; its low-dissipation mechanisms are the ones
   13.3.5's mass estimate excludes; 1e-15 per operation is radiation-dominated at 1e4 /s but not
   at the 1e6 Hz Table 14.1 uses for reagent prep; 13.3.8's 475 maJ is ΔH, not ΔG.
 - 13.3.7's mix rests on Ch. 8: conditional repetition (8.3.4f), near-reversible steps (8.5.2b),

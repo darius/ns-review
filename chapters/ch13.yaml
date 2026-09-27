@@ -800,13 +800,16 @@ exports:
       - 13.3.4/application-constrained
       - 13.3.6/error-rates
       - "the 1 / 15 / 100 maJ mix and its ~30 maJ mean (no distribution or example set given)"
-      - "~1 operation per atom of product"
+      - "~1 (application) operation per atom of product; preparation steps near-reversible"
     spot_check: >
-      30 maJ × 5.0e25 C/kg = 1.5e6 J/kg (tests). The figure is one 30-maJ operation per atom;
-      13.3.3 gives ~10 preparation encounters per moiety and 13.3.7b's naive estimates use ten
-      steps per atom. At 11 operations per atom and the same mean, 1.65e7 J/kg, the whole ~1.5e7
-      J/kg free energy of 14.4.8. The two readings are "mean over application operations, with
-      preparation near-reversible" and "mean over all operations". Not a verdict.
+      30 maJ × 5.0e25 C/kg = 1.5e6 J/kg (tests): one 30-maJ operation per atom. 13.3.3 gives ~10
+      preparation encounters per moiety. The reading consistent with the text: the 30 maJ mean is
+      over application operations and preparation is near-reversible ("it seems reasonable to
+      assume that nearly reversible pathways can be followed in reagent preparation"), adding
+      ~10 × 1 maJ, so ~40 maJ/atom = 2.0e6 J/kg (+33%). A 30 maJ mean over all ~11 operations
+      would need application steps averaging ~320 maJ, contradicting the stated mix, so that
+      reading is not live. The lever is preparation reversibility: at 13.3.7b's naive 145 maJ per
+      step it is ~7e7 J/kg, ~5× the ~1.5e7 J/kg free energy of 14.4.8. Not a verdict.
     notes: >
       The load-bearing input to 14.4.8 (the largest dissipation term). 14.4.8's surplus vanishes
       if this term grows ~8×; waste heat grows in proportion from the start. The mix is

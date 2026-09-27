@@ -98,11 +98,16 @@ def test_mill_dissipation_per_kg():
     assert close(ch13.per_kg(30 * MAJ, 1), 1.5e6, 0.01)
 
 
-def test_mill_dissipation_ops_per_atom_lever():
-    """Spot check, not a verdict: the 1.5e6 figure is one 30 maJ operation per atom. With the
-    ~10 preparation encounters per moiety of §13.3.3 plus one application at the same mean,
-    it is ~1.65e7 J/kg — the whole ~1.5e7 J/kg free energy of §14.4.8."""
-    assert close(ch13.per_kg(30 * MAJ, 11), 1.65e7, 0.01)
+def test_mill_dissipation_preparation_lever():
+    """Spot check, not a verdict: the 1.5e6 figure is one 30 maJ (application) operation per
+    atom. With §13.3.3's ~10 preparation steps near-reversible (~1 maJ each, as the text
+    assumes) it is ~2.0e6 J/kg. A 30 maJ mean over all 11 operations would need application
+    steps averaging ~320 maJ, contradicting the stated 1/15/100 maJ mix. If preparation steps
+    instead dissipate the 145 maJ reliability exoergicity, ~7e7 J/kg (the naive estimate)."""
+    assert close(ch13.per_kg(30 * MAJ + 10 * MAJ, 1), 2.0e6, 0.01)
+    app_mean_needed = (30 * 11 - 10 * 1) / 1
+    assert close(app_mean_needed, 320, 1e-9)
+    assert close(ch13.per_kg(145 * MAJ, 10), 7e7, 0.05)
 
 
 def test_conditional_repetition():
