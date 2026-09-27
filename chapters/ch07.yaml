@@ -693,6 +693,10 @@ exports:
       calculation and numbers in chapters/ch12.yaml (import from this id) and
       nsaudit/audit_phonon_viscosity_rod_logic.py. The BARE tau_relax (7.4.2/tau-relax-1e-13) is
       the input that decides whether the exception fires, but not the magnitude.
+      2026-09-27, the other sites: 10.4.6 sample bearing, hypothesis-violated under modern τ,
+      <= +5% on drag; 13.4.1f worm drive, same regime, <= ~5%; 13.3.7a mills, outside the
+      regime (verified). Across all four sites the omission is real and never larger than +15%
+      (nsaudit/audit_phonon_viscosity_sites.py).
 
   # ---- 7.4.3 Moving parts and alignment bands -------------------------------
 

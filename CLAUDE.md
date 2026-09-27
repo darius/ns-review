@@ -117,8 +117,7 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   corrugation vs 4.9 N/m) would settle the one open lever that no clock choice removes;
   Qu et al. 2020 is paywalled — ask Darius for access; (3) [done 2026-09-27: lifetime model —
   hypothesis-violated, prep stages fail ~1000x faster than radiation at 1e6 Hz, fixed by +6-16
-  maJ on the weakest step]; (4) the single-edge audits: [done: 12.3.7 on 5.3.1 and 6.3.3]; the equilibrium
-  limit of `6.3.3/switched-coupling-error-model` at 13.2.3b/13.3.7b (reaction reliability,
-  where the barrier-rise picture does apply); and 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;
-  (5) the 7.4.2 exception at 10.4.6, 13.3.7a and 13.4.1f (the 12.3.4 bound should transfer).
+  maJ on the weakest step]; (4) the single-edge audits: [done: 12.3.7 on 5.3.1 and 6.3.3; 6.3.3 at
+  13.2.3b/13.3.7b, verified]; remaining: 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;
+  (5) [done: 7.4.2 at 10.4.6, 13.3.7a, 13.4.1f — at most +15% anywhere].
   Ch. 11 (cooling, power, gauges 11.2.3) if 14.4.1's "supporting systems peripheral" needs it.

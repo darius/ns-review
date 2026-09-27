@@ -553,6 +553,20 @@ Prase C.2 **rebutted**.
 - Consequence for Ch. 14: the rod-logic error rate is not an issue at any clock; what remains
   for the control computers is energy (edge stick-slip), not reliability.
 
+## Audits: the equilibrium criterion in Ch. 13, and the 7.4.2 exception at its other sites (2026-09-27)
+
+- **6.3.3 -> 13.2.3b / 13.3.7b: verified.** 8.3.4e's criterion is ΔF <= -145 maJ *at the time
+  of kinetic decoupling*; the worst-case variant is a design constraint on when the margin
+  must exist (the basis of 8.5.2b), not a different number. At 13.2.3b the binding free
+  energy is static at capping. For energy the concern inverts: a route-(1) step dissipates its
+  final exoergicity, >= 145 maJ, so the 14.4.8 audit's scenario C is a floor.
+- **7.4.2 at 10.4.6, 13.3.7a, 13.4.1f** (`nsaudit/audit_phonon_viscosity_sites.py`). Eq. 7.53
+  on the 10.4.6d band-flutter stress (shear Δp/2), capped at the relaxation-strength bound.
+  Sample bearing at 1 m/s: ωτ ≈ 0.3 with the f·Q-implied τ, inside the exception; +5% on drag
+  in the Δk/k = 0.4 case, ~1e-4 in the 0.003 case (band stress scales with Δk; the earlier
+  note expected the reverse). Worm drive (13.4.1f): same regime, <= 5%. Mills (13.3.7a):
+  ωτ ≈ 5e-4, outside it. Across all four sites the omission is real and at most +15%.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

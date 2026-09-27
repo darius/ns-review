@@ -1145,7 +1145,18 @@ imports:
       step; 5 + 145/N) — the total-equilibrium limit
     at: ["13.2.3b", "13.3.7b"]
     cited: no
-    hypotheses_discharged: unknown
+    hypotheses_discharged: yes
+    verdict: verified
+    verdict_notes: >
+      2026-09-27. The criterion is 8.3.4e's: ΔF <= -145 maJ "at the time of kinetic
+      decoupling", which is the 6.3.3 model family; the worst-case variant only requires that
+      the margin hold from the moment a barrier forms, which is a design constraint (and the
+      basis of 8.5.2b's mid-transformation well-depth modulation), not a different number. At
+      13.2.3b the binding free energy is static when the receptor is capped, so equilibrium at
+      decoupling is exact. At 13.3.7b the energy consequence runs the other way from the
+      concern: in a single-step (route 1) reaction the dissipated energy is the final
+      exoergicity, >= the 145 maJ needed at decoupling, so the 14.4.8 audit's scenario C
+      (145 maJ per step) is a floor. Numbers: tests/test_ch13.py, tests/test_ch08.py.
     notes: >
       As at 12.3.7: 6.3.3 recommends the worst-case decoupling model for conservative error
       estimates; Ch. 13 uses the equilibrium Boltzmann limit throughout. Here it also sets the
@@ -1242,14 +1253,26 @@ imports:
     hypotheses_discharged: unknown
 
   - from: "7.4.2/phonon-viscosity-small-except"
-    used_for: omitted from the 13.3.7a mill inventory and the 13.4.1f arm estimate
-    at: ["13.3.7a", "13.4.1f"]
+    used_for: omitted from the 13.3.7a mill inventory
+    at: ["13.3.7a"]
     cited: no
-    hypotheses_discharged: unknown
-    notes: >
-      Third and fourth sites of the 7.4.2 pattern (after 12.3.4, 10.4.6). At ~1e6 Hz the
-      "very high frequency" branch is ω·τ ~ 1e-6 even on f·Q-derived τ; the 13.4.1f worm-drive
-      interface is the "nearly pure shear" branch at ~1 m/s. The 12.3.4 bound should transfer.
+    hypotheses_discharged: yes
+    verdict: verified
+    verdict_notes: >
+      2026-09-27. Mill roller bearings slide at ~0.0016 m/s: ωτ ≈ 5e-4 even with the f·Q-implied
+      τ, outside the exception; the omitted term is ~5% of a drag already ~1e-24 J per moiety.
+      nsaudit/audit_phonon_viscosity_sites.py (tests/test_audit_phonon_viscosity_sites.py)
+
+  - from: "7.4.2/phonon-viscosity-small-except"
+    used_for: omitted from the 13.4.1f arm estimate
+    at: ["13.4.1f"]
+    cited: no
+    hypotheses_discharged: no
+    verdict: hypothesis-violated
+    verdict_notes: >
+      2026-09-27. The J2 worm-drive interface slides at ~1 m/s, the "nearly pure shear" branch,
+      in the same regime as the 10.4.6 sample bearing (ωτ ≈ 0.3 with modern τ): <= ~5% on the
+      ~10 maJ per motion, on a manipulator term that is < 1% of 14.4.8. nsaudit/audit_phonon_viscosity_sites.py (tests/test_audit_phonon_viscosity_sites.py)
 
   - from: "7.5.1/nonisothermal-compression"
     used_for: reactive-encounter compression losses <= 0.1 maJ per cycle "with good design practice"
