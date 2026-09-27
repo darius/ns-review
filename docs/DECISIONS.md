@@ -449,10 +449,10 @@ total in every case) by how preparation steps reach 1e-15 reliability:
 |---|---|---|---|
 | mill (13.3.7) | 2.0e6 | 8.7e6 | 7.3e7 |
 | block assembly (14.2.1c <- 9.7.3) | 5e5 | 2.4e6 | 8.6e6 |
-| computation (12.7.4, corrected) | 2.0e5 | 2.9e5 | 2.9e5 |
+| computation (12.7.4, corrected) | 2.9e5 | 4.4e5 | 4.4e5 |
 | sorting + manipulators ("negligible") | 1.2e5 | 1.2e5 | 1.2e5 |
-| **dissipated** (book: 3.1e6) | **2.8e6** | **1.2e7** | **8.2e7** |
-| surplus, ΔG = 1.43e7 (book: 1.2e7) | +1.1e7 | +2.8e6 | -6.8e7 |
+| **dissipated** (book: 3.1e6) | **2.9e6** | **1.2e7** | **8.2e7** |
+| surplus, ΔG = 1.43e7 (book: 1.2e7) | +1.1e7 | +2.6e6 | -6.8e7 |
 | waste heat per kg/hr (book 1.3 kW; air 1.8 kW) | 1.5 kW | 3.9 kW | 23.5 kW |
 
 - `14.4.8/dissipation-budget`: **uncertain, ~1.5 OOM, upward only.** Under the book's intended
@@ -465,14 +465,43 @@ total in every case) by how preparation steps reach 1e-15 reliability:
 - Import verdicts: 13.3.7 -> 14.4.8 uncertain (1.6 OOM; the near-reversibility of
   preparation is assumed, demonstrated for one bond-cleavage case); 9.7.3 -> 14.2.1c
   uncertain (1.2 OOM; no efficiency for the recovery mechanisms); 12.7.4 -> 14.4.8
-  verified-modified (1e5 -> 2-3e5 J/kg from Ch. 12's own per-interlock figures and the 7.4.2
-  bound); 13.4.1f -> 14.4.8 verified (manipulators place blocks: ~1.5e4 J/kg); 13.2.1 ->
+  verified-modified (1e5 -> 3-4e5 J/kg from Ch. 12's own per-interlock figures, the exact rod
+  vibration and the 7.4.2 bound; see the Prase section for why the clock rate is free); 13.4.1f -> 14.4.8 verified (manipulators place blocks: ~1.5e4 J/kg); 13.2.1 ->
   14.4.8 verified-modified ("negligible" is ~1e5 J/kg, ~4% of the low end).
 - What would move it: a DFT energy surface for a radical addition and a hydrogen-transfer
   step under load (8.5.5's own "interesting ab initio study"), with the supporting stiffness
-  of 8.5.3d recomputed beyond MM2. That decides between A and B/C. Prase's rod-logic penalty
-  would enter only through the computation term, which is <= 10% of the budget in A; at his
-  2-3 OOM it would dominate, so that claim is the next largest lever and is not adjudicated.
+  of 8.5.3d recomputed beyond MM2. That decides between A and B/C. (Numbers above include the
+  exact rod vibration found in the Prase audit below, which raised the computation term.)
+
+## Audit: Prase (2026) Appendix C against rod logic, and into 14.4.8 (2026-09-27)
+
+Appendix C re-read from the PDF. Calculation: `nsaudit/audit_prase_rod_logic.py`, tests in
+`tests/test_audit_prase.py`. Register status now `partially-rebutted`; details in the entry's
+`adjudication`.
+
+- **Molecular relaxation (single rod): rebutted as an estimate, but it found a book error.**
+  For a linear elastic rod the net work of a rest-to-rest motion is the vibrational energy left
+  in it. Exact modal sum, stiffly driven end: 1.20 maJ per switch. Prase's lumped
+  delayed-force model gives 14.5 maJ (12x); the book's Eq. 12.15 gives 0.56 (2.1x low; its
+  "average over phase" does not apply to a fixed geometry). Verdict on
+  `12.3.4/vibrational-excitation-0.56maj`: verified-modified; 12.3.8b's cycle is ~3.45 maJ.
+- **"Molecular solid" Akhiezer (>= 2 OOM): the model misdescribes the architecture.** Rods
+  slide in covalent housing channels; the logic coordinate is a translation against
+  near-zero tangential interface stiffness, not a strain of vdW bonds. What is real is the
+  collective-mode question (fn. 32 vs 12.3.4h), which neither side quantifies: left open, no
+  verdict on `12.3.3/bounded-continuum-applies` or `12.3.4/nonthermal-vibrations-by-design`.
+- **Eq. 7.40's sin 2θ is correct.** Prase's factor (7.5x at the bearing, 35x at rod
+  interfaces) is arithmetically right for the sin θ reading, but a *power* transmission
+  coefficient carries the cos θ flux factor. No change to Ch. 7/10/12 drag numbers.
+- **At 14.4.8 the penalty is movable.** Ch. 14 needs ~1e18 instructions/s. Every identified
+  rod-logic loss (book and Prase C.1) falls at least as 1/t_switch; a 100x slower clock costs
+  ~2e-5 kg of CPUs and turns even the full ">= 2 OOM" (2.2e7 J/kg at GHz) into 2.5e5. Floor:
+  12.4.3's ln 2 kT per register cell, 2.9e4 J/kg. Recorded on the 12.7.4 -> 14.4.8 import.
+- **Open:** edge friction if speed-independent (Qu et al. 2020 unread; at Prase's graphite
+  values and ~1% edge atoms it would be tens of maJ per switch regardless of clock, i.e.
+  ~1e6-1e7 J/kg, so this is the one Prase mechanism that could still reach the budget); the
+  collective-mode question; the FDT error argument (12.3.7 edge).
+- **Credit:** Prase fn. 49 found the Eq. 7.29 π and the 7.3.5e d_n sign before this audit.
 
 ## Known inaccuracies from the design session, corrected
 

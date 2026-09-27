@@ -80,7 +80,7 @@ Ten chapters extracted and mutually reconciled (3, 5, 6, 7, 9, 13, 14 full; 8, 1
 one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
 
 - Equation errors found so far: Eq. 7.29 missing a π (in the book: its own quoted 1570 K
-  follows the printed form); §7.3.5e d_n exponent sign and Eq. 6.24 missing k_s and off by 2
+  follows the printed form; both this and the next were first noted by Prase fn. 49); §7.3.5e d_n exponent sign and Eq. 6.24 missing k_s and off by 2
   (not checked against the print: could be transcription; the nanosyste.ms PDF is built from
   the same Markdown, so a scan is needed). Arithmetic inconsistencies: 12.3.8b per-interlock
   energy; 14.4.8 dissipation sum and entropy term; Table 13.1 rocking compliance (10× low on a
@@ -88,7 +88,7 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
 - Verdicts: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated, ≤ +15% on
   the switching budget (DECISIONS.md "Spike"). The 14.4.8 budget (DECISIONS.md "Audit: the
   14.4.8 energy budget"; provisional on 11/measurement, 8.4.4b): dissipation uncertain by
-  ~1.5 OOM upward, 2.8e6 (book's intended physics; budget holds) to 8.2e7 J/kg (net energy
+  ~1.5 OOM upward, 2.9e6 (book's intended physics; budget holds) to 8.2e7 J/kg (net energy
   consumer, 13× the stated cooling), set by whether preparation steps are near-reversible.
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
@@ -106,9 +106,13 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   13.3.7's radical coupling sets aside 8.5.3c's spin caveat. Rest of Ch. 8 (8.4, 8.6) not needed yet.
 - 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes, but waste
   heat grows in proportion from the start, so cooling (Ch. 11, 14.4.1) may bind first.
-- Next, in order: (1)-(2) [done 2026-09-27: partial Ch. 8; the 14.4.8 budget]; (2b) Prase's
-  rod-logic claim (`12.3.3/bounded-continuum-applies`, `12.3.4/nonthermal-vibrations-by-design`)
-  — now the largest unadjudicated lever on 14.4.8, via the computation term; (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
+- Prase (2026): partially rebutted (DECISIONS.md "Audit: Prase"). Single-rod relaxation 12x
+  overstated (but the book's Eq. 12.15 is 2.1x low); Eq. 7.40 sin 2θ correct; the molecular-solid
+  model misdescribes sliding rods; at 14.4.8 every speed-dependent penalty is discharged by a
+  slower clock. Open: edge friction (read Qu et al. 2020), collective modes, FDT (12.3.7).
+- Next, in order: (1)-(2b) [done 2026-09-27: partial Ch. 8; the 14.4.8 budget; Prase]; (2c) edge
+  friction: read Qu et al. 2020 for load and speed dependence — the one Prase mechanism that
+  could still reach 14.4.8 (~1e6-1e7 J/kg if speed-independent); (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
   1e-15 at 1e6 Hz; (4) the single-edge audits: 12.3.7 on `5.3.1/bath-coupling-irrelevant`
   (Prase FDT), the equilibrium limit of `6.3.3/switched-coupling-error-model` (12.3.7, and now
   13.2.3b/13.3.7b), and 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;

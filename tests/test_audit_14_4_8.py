@@ -21,11 +21,12 @@ def test_mill_term_scenarios():
 
 def test_computation_term_from_ch12():
     """12.7.4's 0.03 maJ/interlock gives 7.4e4 J/kg (book rounds to 1e5); Ch. 12's own
-    per-interlock and per-rod counts with the +15% 7.4.2 bound give 2.0e5 and 2.9e5."""
+    per-interlock and per-rod counts, with the exact rod vibration (audit_prase_rod_logic) and
+    the +15% 7.4.2 bound, give 2.9e5 and 4.4e5."""
     t = {k: a.computation_term(v) for k, v in a.interlock_terms().items()}
     assert close(t["book"], 7.4e4, 0.01)
-    assert close(t["per-interlock"], 2.0e5, 0.02)
-    assert close(t["per-rod"], 2.9e5, 0.02)
+    assert close(t["per-interlock"], 2.9e5, 0.02)
+    assert close(t["per-rod"], 4.4e5, 0.02)
 
 
 def test_negligible_terms_are_small():
@@ -42,21 +43,21 @@ def test_book_itemisation_vs_total():
 
 
 def test_scenario_A_matches_book():
-    """Under the book's intended physics the budget holds: 2.8e6 dissipated (< the 3.1e6
-    carried), surplus 1.14e7 (book 1.2e7), waste 1.5 kW per kg/hr, within 1.8 kW air cooling."""
+    """Under the book's intended physics the budget holds: 2.9e6 dissipated (< the 3.1e6
+    carried), surplus 1.13e7 (book 1.2e7), waste 1.5 kW per kg/hr, within 1.8 kW air cooling."""
     b = a.budget("A")
-    assert close(b.dissipated, 2.83e6, 0.01)
-    assert close(b.surplus, 1.14e7, 0.01)
+    assert close(b.dissipated, 2.92e6, 0.01)
+    assert close(b.surplus, 1.13e7, 0.01)
     assert b.waste_power() < a.AIR_COOLING
 
 
 def test_scenario_B_net_producer_but_cooling_short():
-    """B: still a net producer (+2.8e6 J/kg) but 3.9 kW of waste heat, ~2.1× the stated air
+    """B: still a net producer (+2.6e6 J/kg) but 3.9 kW of waste heat, ~2.2× the stated air
     cooling."""
     b = a.budget("B")
     assert b.surplus > 0
     assert close(b.waste_power(), 3.9e3, 0.02)
-    assert close(b.waste_power() / a.AIR_COOLING, 2.1, 0.05)
+    assert close(b.waste_power() / a.AIR_COOLING, 2.2, 0.02)
 
 
 def test_scenario_C_net_consumer():
@@ -69,7 +70,7 @@ def test_scenario_C_net_consumer():
 
 
 def test_uncertainty_span():
-    """Dissipation spans 2.8e6 to 8.2e7 J/kg: ~1.5 orders of magnitude, upward only."""
+    """Dissipation spans 2.9e6 to 8.2e7 J/kg: ~1.5 orders of magnitude, upward only."""
     import math
     span = math.log10(a.budget("C").dissipated / a.budget("A").dissipated)
-    assert close(span, 1.46, 0.02)
+    assert close(span, 1.45, 0.02)

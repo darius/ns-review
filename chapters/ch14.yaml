@@ -362,7 +362,7 @@ exports:
       and its own dissipation) and 8.4.4b (intersystem crossing) bear on scenarios B and A. The
       itemised terms sum to 2.1e6 J/kg, carried as 3.1e6 (conservative). With each import carried
       as what its chapter establishes (13.3.7 interval, 9.7.3 interval, 12.7.4 corrected, sorting
-      and manipulators given numbers): A 2.8e6 (book intent; the 3.1e6 covers it), B 1.2e7, C
+      and manipulators given numbers): A 2.9e6 (book intent; the 3.1e6 covers it), B 1.2e7, C
       8.2e7 J/kg. Uncertain by ~1.5 OOM, upward only; the mill term is 70-90% of it in every
       scenario. math_correct: no (sum); inputs_adequate: no. nsaudit/audit_14_4_8_budget.py
       (tests/test_audit_14_4_8.py)
@@ -400,9 +400,9 @@ exports:
     verdict_notes: >
       Provisional (2026-09-27): pending imports 11/measurement (conditional-repetition reliability
       and its own dissipation) and 8.4.4b (intersystem crossing) bear on scenarios B and A. With
-      the entropy term corrected (8.2e3 J/kg K, ΔG 1.43e7): A surplus +1.14e7 J/kg (book 1.2e7),
-      waste heat 1.5 kW per kg/hr within the stated 1.8 kW air cooling; B surplus +2.8e6, 3.9 kW
-      (2.1x the air cooling); C net consumer of 6.8e7 J/kg (dissipation 5.7x ΔG), 23.5 kW (13x).
+      the entropy term corrected (8.2e3 J/kg K, ΔG 1.43e7): A surplus +1.13e7 J/kg (book 1.2e7),
+      waste heat 1.5 kW per kg/hr within the stated 1.8 kW air cooling; B surplus +2.6e6, 3.9 kW
+      (2.2x the air cooling); C net consumer of 6.8e7 J/kg (dissipation 5.7x ΔG), 23.5 kW (13x).
       'Net energy producer' and the cooling specification hold only if 8.5.2b's near-reversibility
       holds for preparation steps; manufacturing itself is not refuted in any scenario (energy can
       be supplied), but 14.5.1 and the 1.3 kW / 0.1 m^3/s claims are. Surplus delivery as
@@ -633,7 +633,7 @@ imports:
       a 1.5x MM2 stiffness margin (8.5.3d); radical addition, which 13.3.3's example uses, is left
       open (8.5.5); 13.3.7b's radical coupling sets aside 8.5.3c's spin caveat. math_correct: yes
       (arithmetic of the stated mix); inputs_adequate: no (the near-reversibility of preparation
-      is assumed). Downstream: the 14.4.8 total spans 2.8e6 to 8.2e7 J/kg (1.5 OOM, upward only).
+      is assumed). Downstream: the 14.4.8 total spans 2.9e6 to 8.2e7 J/kg (1.5 OOM, upward only).
       nsaudit/audit_14_4_8_budget.py (tests/test_audit_14_4_8.py)
 
   - from: "13.3.6/error-rates"
@@ -682,12 +682,19 @@ imports:
     inputs_adequate: yes
     verdict_notes: >
       At 14.4.8. 12.7.4's 74 aJ per clock uses 0.03 maJ per interlock; Ch. 12's own figures give
-      0.136 maJ per interlock (12.3.8b: 2.17 maJ / 16) or 2.17 maJ per rod x 1e5 rods, and the
-      7.4.2 -> 12.3.4 verdict adds at most 15%. The computation term becomes 2.0e5 to 2.9e5 J/kg
-      (book 1e5, itself a rounding of 7.4e4): ~3x, and <= 10% of even the low-end budget.
-      math_correct: no (the per-interlock figure); inputs_adequate: yes on the book's own physics.
-      Prase's collective-mode penalty (register) is not adjudicated here; it would enter through
-      this term. nsaudit/audit_14_4_8_budget.py (tests/test_audit_14_4_8.py)
+      the 12.3.8b cycle / 16 per interlock or the cycle x 1e5 rods; with the exact rod vibration
+      (cycle 3.45 maJ, not 2.17) and the 7.4.2 -> 12.3.4 bound (+15%), the computation term
+      becomes 2.9e5 to 4.4e5 J/kg at the book's clock (book 1e5, a rounding of 7.4e4), <= 15% of
+      even the low-end budget. Prase (2026) at this use site: 14.4.8 needs ~1e18 instructions/s,
+      not GHz clocks; at 1e6 instead of 1e9 per CPU that is 1e12 CPUs, ~2e-4 kg. Every identified
+      rod-logic loss, the book's and Prase's C.1 alike (drag, Akhiezer, relaxation), falls at
+      least as 1/t_switch, so even Prase's full ">= 2 OOM" (2.2e7 J/kg at GHz) is 2.5e5 at a
+      100x slower clock and 5e4 at 1000x; the floor is the register's ln 2 kT, 2.9e4 J/kg.
+      Hypothesis (GHz operation not required) discharged. Not covered: edge friction if
+      speed-independent (Qu et al. 2020 unread); Prase's noise and error argument (C.2), which
+      bears on control-computation reliability, not energy. math_correct: no (the
+      per-interlock figure); inputs_adequate: yes. nsaudit/audit_14_4_8_budget.py,
+      nsaudit/audit_prase_rod_logic.py
     notes: The one import from the GHz-regime analysis; propagation path for Prase's critique. Per-interlock arithmetic in 12.3.8b/12.7.4 already differs by x3.3.
 
   - from: "12.6.4/tape-storage-density"

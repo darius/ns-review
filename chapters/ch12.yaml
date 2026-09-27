@@ -131,6 +131,17 @@ exports:
       - "factor-of-two averaging over in-phase/cancelling deceleration"
     spot_check: "Eq. 12.15 with exemplar parameters = 0.56 maJ. v_s = 10.7 km/s. (nsaudit/ch12.py)"
     consumed_by: ["12.3.8"]
+    verdict: verified-modified
+    math_correct: yes
+    inputs_adequate: yes
+    verdict_notes: >
+      Exact modal calculation (fixed-free rod in the frame of a stiffly driven end, Eq. 12.7
+      motion, 60 modes): 1.20 maJ per switch, 2.1x Eq. 12.15's phase-averaged 0.56 maJ (for this
+      geometry the acceleration and deceleration excitations add rather than average); 12.3.8b's
+      cycle becomes ~3.45 maJ, not ~2.17. Residual scales as t_switch^-4.2. Prase's
+      molecular-relaxation estimate for the same rod (lumped delayed force, 0.6 x ½ m v^2 = 14.5
+      maJ) is 12x the exact value: it counts elastic energy stored during acceleration and
+      returned during deceleration. nsaudit/audit_prase_rod_logic.py (tests/test_audit_prase.py).
 
   - id: 12.3.4/higher-modes-and-housing-negligible
     type: proposition
@@ -495,9 +506,10 @@ exports:
       the total); the register term (60%) is dominated by the irreducible ln(2) kT.
     verdict: verified-modified
     verdict_notes: >
-      at: 14.4.8 — per-interlock 0.03 maJ vs Ch. 12's own 0.136 maJ (or per-rod count): 74 aJ ->
-      180-290 aJ per clock with the +15% 7.4.2 bound (see the ch14 import and
-      nsaudit/audit_14_4_8_budget.py).
+      at: 14.4.8 — per-interlock 0.03 maJ vs Ch. 12's own cycle / 16 (or per-rod count), with the
+      exact rod vibration and the +15% 7.4.2 bound: 74 aJ -> 290-440 aJ per clock at the book's
+      clock; reducible toward the 29 aJ ln 2 kT register floor by a slower clock (see the ch14
+      import, nsaudit/audit_14_4_8_budget.py and nsaudit/audit_prase_rod_logic.py).
 
 imports:
 

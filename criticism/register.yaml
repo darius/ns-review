@@ -33,7 +33,7 @@
     dissipation: the low dissipation and the 1e-64 error rate are not independent; a 3-OOM
     dissipation increase drives noise force to ~0.5 nN vs ~1 nN alignment force -> errors in
     1e-3 to 1e-2 of cycles. Also: predictions that Drexler (10-40%) vs a peer (95%) would concede.
-  status: unrebutted
+  status: partially-rebutted
   axis: omitted-channel; stated-exception-not-honoured; material-choice
   notes: >
     Read in full 2026-09-18 (Appendix C, pp. 17-25 of the PDF). Our reading (see ch07.yaml
@@ -60,6 +60,28 @@
     mills at 1 MHz are largely insulated (our analysis: ~2 OOM margin even granting the full
     correction). The propagation into Ch. 14 runs through the control-computation term
     (14.4.8 <- 12.7.4), not the machinery.
+  adjudication: >
+    2026-09-27, Appendix C re-read from the PDF; nsaudit/audit_prase_rod_logic.py. (a) Molecular
+    relaxation, single rod: the lumped delayed-force model (14.5 maJ per switch) is 12x the
+    exact continuum residual (1.2 maJ), which falls as t_switch^-4.2; it counts elastic energy
+    stored and returned within the motion. Rebutted as a single-rod estimate; it did expose that
+    the book's Eq. 12.15 is 2.1x low (12.3.4 verdict). The collective-mode version (fn. 32:
+    chains of rods through the housing with modes below 1 GHz, vs 12.3.4h's "good design
+    practices") is quantified by neither party: open. (b) ">= 2 OOM" Akhiezer in a "molecular
+    solid" (fn. 31: rods as 1e-21 kg atoms on 40 N/m bonds, 1 km/s): the logic coordinate is a
+    sliding translation in a covalent housing channel, with near-zero tangential interface
+    stiffness, not a strain of vdW bonds; the strained paths are covalent (bulk f·Q, the spike's
+    <= 15%). What survives is (a)'s collective-mode question. (c) Eq. 7.40 sin 2θ -> sin θ: the
+    arithmetic is right (7.5x at the 10.4.6 bearing, 35x at rod interfaces) but the reading is
+    not; the text defines a mean power transmission coefficient and power incident from θ
+    carries cos θ, so sin θ cos θ is the standard weighting. Rebutted. (d) Edge friction: not
+    adjudicated (Qu et al. 2020 unread; the comparison spans 4 OOM of load and 7 of speed by
+    Prase's own account). (e) FDT noise and errors (C.2): separate edge, 12.3.7, pending.
+    Propagation: at 14.4.8 every speed-dependent penalty is discharged by clock choice (1e18
+    instructions/s at 1 MHz per CPU is ~2e-4 kg of CPUs; Prase's full x100 at GHz, 2.2e7
+    J/kg, becomes 2.5e5 at 100x slower), which Prase anticipates ("most problems ... can be
+    addressed by making the device both slower and larger"). Prior art: Prase fn. 49 noted the
+    Eq. 7.29 pi and the 7.3.5e d_n exponent before this audit did.
 
 - id: moriarty-phoenix-2005
   kind: technical-critique

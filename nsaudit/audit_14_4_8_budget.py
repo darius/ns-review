@@ -69,9 +69,11 @@ def energy_per_instruction(interlock_term) -> float:
 
 def interlock_terms() -> dict:
     """Per-clock interlock term by the three counts available in Ch. 12 (J):
-    book (12.7.4: 1e6 × 0.03 maJ), per-interlock (12.3.8b: 2.17 maJ / 16 = 0.136 maJ),
-    per-rod (1e5 rods × 2.17 maJ), each worst case ×1.15 for the 7.4.2 verdict."""
-    e_cycle = ch12.e_switching_cycle(EX)
+    book (12.7.4: 1e6 × 0.03 maJ), per-interlock (12.3.8b's cycle / 16), per-rod (1e5 rods ×
+    the cycle), each worst case ×1.15 for the 7.4.2 verdict. The cycle uses the exact rod
+    vibration (audit_prase_rod_logic: 3.45 maJ, vs the book's 2.17)."""
+    from .audit_prase_rod_logic import cycle_with_exact_vibration
+    e_cycle = cycle_with_exact_vibration(EX)
     return {
         "book": 1e6 * 0.03 * MAJ,
         "per-interlock": 1e6 * e_cycle / 16 * 1.15,
