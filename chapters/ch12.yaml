@@ -493,6 +493,11 @@ exports:
       instructions per block and 1e15 blocks (docs/DECISIONS.md, Ch. 14 analysis). Any correction
       to 12.3.8/energy-per-cycle-2maj propagates here linearly for the interlock term (40% of
       the total); the register term (60%) is dominated by the irreducible ln(2) kT.
+    verdict: verified-modified
+    verdict_notes: >
+      at: 14.4.8 — per-interlock 0.03 maJ vs Ch. 12's own 0.136 maJ (or per-rod count): 74 aJ ->
+      180-290 aJ per clock with the +15% 7.4.2 bound (see the ch14 import and
+      nsaudit/audit_14_4_8_budget.py).
 
 imports:
 

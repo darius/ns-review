@@ -85,8 +85,11 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   the same Markdown, so a scan is needed). Arithmetic inconsistencies: 12.3.8b per-interlock
   energy; 14.4.8 dissipation sum and entropy term; Table 13.1 rocking compliance (10× low on a
   ring-of-springs model).
-- One verdict (no longer provisional): `7.4.2/phonon-viscosity-small-except` → 12.3.4,
-  hypothesis-violated, impact ≤ +15% on the switching budget. See DECISIONS.md "Spike".
+- Verdicts: `7.4.2/phonon-viscosity-small-except` → 12.3.4, hypothesis-violated, ≤ +15% on
+  the switching budget (DECISIONS.md "Spike"). The 14.4.8 budget (DECISIONS.md "Audit: the
+  14.4.8 energy budget"; provisional on 11/measurement, 8.4.4b): dissipation uncertain by
+  ~1.5 OOM upward, 2.8e6 (book's intended physics; budget holds) to 8.2e7 J/kg (net energy
+  consumer, 13× the stated cooling), set by whether preparation steps are near-reversible.
 - Prase (2026) read in full and retargeted; its ≥ 2 OOM claim now points at the
   bounded-continuum application and the collective-mode deferral, not at 7.4.2.
 - Priority (Darius, 2026-09-18): the path into Ch. 14. Ch. 15–16 matter only if Ch. 14 works.
@@ -103,11 +106,9 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   13.3.7's radical coupling sets aside 8.5.3c's spin caveat. Rest of Ch. 8 (8.4, 8.6) not needed yet.
 - 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes, but waste
   heat grows in proportion from the start, so cooling (Ch. 11, 14.4.1) may bind first.
-- Next, in order: (1) [done 2026-09-27: partial Ch. 8] (2)
-  adjudicate the 14.4.8 budget as a unit, carrying the mill term as an interval (~2e6 to ~7e7
-  J/kg, the ends set by whether 8.5.2b holds for preparation steps), with its imports (13.3.7, 9.7.3 recovery, 12.7.4
-  computation, and the inferred 13.4.1f manipulator and 13.2.1 sorting terms) and the
-  arithmetic inconsistencies above; (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
+- Next, in order: (1)-(2) [done 2026-09-27: partial Ch. 8; the 14.4.8 budget]; (2b) Prase's
+  rod-logic claim (`12.3.3/bounded-continuum-applies`, `12.3.4/nonthermal-vibrations-by-design`)
+  — now the largest unadjudicated lever on 14.4.8, via the computation term; (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
   1e-15 at 1e6 Hz; (4) the single-edge audits: 12.3.7 on `5.3.1/bath-coupling-irrelevant`
   (Prase FDT), the equilibrium limit of `6.3.3/switched-coupling-error-model` (12.3.7, and now
   13.2.3b/13.3.7b), and 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;

@@ -437,6 +437,43 @@ Moriarty-Phoenix's Fig. 8.14 target moved from 8.5.4 to 8.5.7, where the figure 
 build.py: ids with a letter suffix (8.3.3c) now count as inside section 8.3.3 under partial
 coverage (previously they could never leave pending).
 
+## Audit: the 14.4.8 energy budget as a unit (2026-09-27)
+
+Verdicts, provisional on pending 11/measurement and 8.4.4b (they bear on scenarios B and A).
+Calculation: `nsaudit/audit_14_4_8_budget.py`, tests in `tests/test_audit_14_4_8.py`.
+
+Each term is carried as what its source chapter establishes; the mill term (70-90% of the
+total in every case) by how preparation steps reach 1e-15 reliability:
+
+| | A: 8.5.2b near-reversible | B: conditional repetition only | C: single-step (route 1) |
+|---|---|---|---|
+| mill (13.3.7) | 2.0e6 | 8.7e6 | 7.3e7 |
+| block assembly (14.2.1c <- 9.7.3) | 5e5 | 2.4e6 | 8.6e6 |
+| computation (12.7.4, corrected) | 2.0e5 | 2.9e5 | 2.9e5 |
+| sorting + manipulators ("negligible") | 1.2e5 | 1.2e5 | 1.2e5 |
+| **dissipated** (book: 3.1e6) | **2.8e6** | **1.2e7** | **8.2e7** |
+| surplus, ΔG = 1.43e7 (book: 1.2e7) | +1.1e7 | +2.8e6 | -6.8e7 |
+| waste heat per kg/hr (book 1.3 kW; air 1.8 kW) | 1.5 kW | 3.9 kW | 23.5 kW |
+
+- `14.4.8/dissipation-budget`: **uncertain, ~1.5 OOM, upward only.** Under the book's intended
+  physics (A) the budget holds and the carried 3.1e6 even covers it. B uses only mechanisms
+  whose arithmetic Ch. 8 shows (conditional repetition), and C is the book's own "naive"
+  estimate.
+- `14.4.8/energy-balance`: **uncertain.** "Net energy producer" (14.5.1) holds in A and B,
+  fails in C; the 1.3 kW / 0.1 m^3/s air-cooling claim holds only in A. No scenario refutes
+  manufacturing itself; energy can be supplied and heat removed with more plant.
+- Import verdicts: 13.3.7 -> 14.4.8 uncertain (1.6 OOM; the near-reversibility of
+  preparation is assumed, demonstrated for one bond-cleavage case); 9.7.3 -> 14.2.1c
+  uncertain (1.2 OOM; no efficiency for the recovery mechanisms); 12.7.4 -> 14.4.8
+  verified-modified (1e5 -> 2-3e5 J/kg from Ch. 12's own per-interlock figures and the 7.4.2
+  bound); 13.4.1f -> 14.4.8 verified (manipulators place blocks: ~1.5e4 J/kg); 13.2.1 ->
+  14.4.8 verified-modified ("negligible" is ~1e5 J/kg, ~4% of the low end).
+- What would move it: a DFT energy surface for a radical addition and a hydrogen-transfer
+  step under load (8.5.5's own "interesting ab initio study"), with the supporting stiffness
+  of 8.5.3d recomputed beyond MM2. That decides between A and B/C. Prase's rod-logic penalty
+  would enter only through the computation term, which is <= 10% of the budget in A; at his
+  2-3 OOM it would dominate, so that claim is the next largest lever and is not adjudicated.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

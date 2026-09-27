@@ -821,6 +821,11 @@ exports:
       with 8.3.4f, 8.5.2b, 8.5.3b.
     consumed_by: ["13.3.8", "14.4.8"]
     aliases: ["1.5e6 J/kg", "~30 maJ per operation"]
+    verdict: uncertain
+    uncertainty_oom: 1.6
+    verdict_notes: >
+      Provisional. at: 14.4.8 — 2.0e6 to 7.3e7 J/kg by how preparation steps reach 1e-15 (see the
+      ch14 import and nsaudit/audit_14_4_8_budget.py).
 
   - id: 13.3.7/errors-only-affect-energy
     type: proposition

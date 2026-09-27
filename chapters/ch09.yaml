@@ -552,6 +552,11 @@ exports:
       5e5 J/kg — a factor of ~18 feeding the nanofactory's total dissipation. That factor traces
       here, to four qualitative, unquantified, uncited mechanisms. Independent of the friction
       dispute.
+    verdict: uncertain
+    uncertainty_oom: 1.2
+    verdict_notes: >
+      Provisional. at: 14.2.1c — block assembly 5e5 to 8.6e6 J/kg; no efficiency stated for the
+      four mechanisms (see the ch14 import and nsaudit/audit_14_4_8_budget.py).
 
   # ---- 9.8 Conclusions and open problems ------------------------------------
 
