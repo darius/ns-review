@@ -512,6 +512,24 @@ Appendix C re-read from the PDF. Calculation: `nsaudit/audit_prase_rod_logic.py`
   (12.3.7 edge).
 - **Credit:** Prase fn. 49 found the Eq. 7.29 π and the 7.3.5e d_n sign before this audit.
 
+## Audit: the 14.3.3 / 14.4.5 lifetime model vs 1e-15 per operation (2026-09-27)
+
+`nsaudit/audit_14_4_5_lifetime.py`, tests in `tests/test_audit_14_4_5.py`. Verdict on the
+13.3.6 -> 14.3.3/14.4.5 import: **hypothesis-violated, small and remediable** (provisional on
+11.2.3's fail-stop gauging).
+
+- 13.3.6 assumes step errors are "dominated by radiation damage"; 14.3.3 and fn. 34 check this
+  only at 1e4 operations/s per unit. Table 14.1's input-ordering and prep units run at 1e6 Hz,
+  and 14.4.5 skips them ("massively redundant").
+- Prep units (10 steps, 6e-20 kg): on fn. 34's own assumption (one step at 1e-15, the rest
+  <= 1e-18), MTTF 31 years, ~1000x the radiation hazard; with every step at 1e-15, 3.2 years.
+- Installed capacity is 2x demand and survivors absorb load (fn. 36), so throughput falls
+  short at ~22 years (fn. 34 reading) or ~2 years (uniform). 14.4.5's 10-year claim survives
+  the first reading; its "over a century" does not hold for the whole system in either.
+- Fix: +6 maJ on the weakest prep step for 100 years, +16 for 1000. The book's own margin
+  logic (8.3.4g) covers it; energy cost negligible in the 14.4.8 scenarios. An accounting
+  error, not a feasibility one.
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

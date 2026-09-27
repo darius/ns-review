@@ -114,8 +114,9 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
 - Next, in order: (1)-(2b) [done 2026-09-27: partial Ch. 8; the 14.4.8 budget; Prase]; (2c) edge
   stick-slip: an MM calculation of a terminated rod end sliding in its channel (edge
   corrugation vs 4.9 N/m) would settle the one open lever that no clock choice removes;
-  Qu et al. 2020 is paywalled — ask Darius for access; (3) the 14.3.3/14.4.5 lifetime model against 13.3.6's
-  1e-15 at 1e6 Hz; (4) the single-edge audits: 12.3.7 on `5.3.1/bath-coupling-irrelevant`
+  Qu et al. 2020 is paywalled — ask Darius for access; (3) [done 2026-09-27: lifetime model —
+  hypothesis-violated, prep stages fail ~1000x faster than radiation at 1e6 Hz, fixed by +6-16
+  maJ on the weakest step]; (4) the single-edge audits: 12.3.7 on `5.3.1/bath-coupling-irrelevant`
   (Prase FDT), the equilibrium limit of `6.3.3/switched-coupling-error-model` (12.3.7, and now
   13.2.3b/13.3.7b), and 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;
   (5) the 7.4.2 exception at 10.4.6, 13.3.7a and 13.4.1f (the 12.3.4 bound should transfer).

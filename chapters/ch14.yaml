@@ -640,7 +640,24 @@ imports:
     used_for: fail-stop units, 1e-15 per-step failure rate, <= 0.01 failure per unit in 10 years
     at: ["14.3.3", "14.4.5"]
     cited: yes
-    hypotheses_discharged: unknown
+    hypotheses_discharged: no
+    verdict: hypothesis-violated
+    verdict_notes: >
+      Provisional on 11.2.3 (fail-stop gauging, pending), which the survivors-absorb-load
+      argument needs. 13.3.6's "error rates ... dominated by radiation damage" is checked by
+      14.3.3 and fn. 34 only at 1e4 operations/s per unit (mill stages). Table 14.1's
+      input-ordering and reagent-preparation units run at 1e6 Hz and 14.4.5 does not analyse
+      them ("massively redundant"). With fn. 34's own assumption (one step at 1e-15, others
+      <= 1e-18) a 10-step prep unit fails at ~1000x its radiation hazard: MTTF 31 yr, P_fail 0.27
+      in 10 yr; with every step at 1e-15, MTTF 3.2 yr. Installed prep capacity is ~2x demand
+      and survivors absorb load (fn. 36), so throughput falls short after ~22 yr (fn. 34
+      reading) or ~2.2 yr (uniform reading). The 10-year P_syst ≈ 1 survives on the fn. 34
+      reading; "over a century" (N_unit = 20) does not hold for the system as a whole under
+      either. Impact is small if designed for: 100 years needs the weakest prep step at
+      ~2e-16 (+6 maJ over 143), 1000 years ~2e-17 (+16 maJ), within 8.3.4g's own margin logic
+      and energetically negligible in the 14.4.8 scenarios. The error is in the accounting
+      (radiation dominance asserted at the wrong rate), not in the feasibility.
+      nsaudit/audit_14_4_5_lifetime.py (tests/test_audit_14_4_5.py)
 
   - from: "13.3.2b/transport-network"
     used_for: belts, pallets, fair nonblocking junctions for the redundant architecture

@@ -625,6 +625,12 @@ exports:
       the equilibrium reading). Not a verdict: radiation dominance holds at 1e4 /s, not at 1e6.
       Adjudicate at the 14.3.3 / 14.4.1 use sites.
     consumed_by: ["14.3.3", "14.4.5"]
+    verdict: hypothesis-violated
+    verdict_notes: >
+      Provisional. at: 14.4.5 — radiation dominance holds at 1e4 /s but not for Table 14.1's 1e6 Hz
+      input and prep stages (step errors ~1000x radiation even on fn. 34's reading; capacity
+      shortfall at ~22 yr, or ~2 yr if every step is at 1e-15); cheap to fix (+6 to +16 maJ on the
+      weakest step). See the ch14 import and nsaudit/audit_14_4_5_lifetime.py.
 
   - id: 13.3.6/damage-cascades
     type: proposition
