@@ -733,8 +733,8 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
-  - from: "11/measurement"
-    used_for: the measurement that conditional repetition depends on
+  - from: "11.2.3/gauge-mechanisms"
+    used_for: the measurement that conditional repetition depends on (Chapter 11; shape measurement of the group's presence)
     at: ["8.3.4f"]
     cited: yes
     hypotheses_discharged: unknown

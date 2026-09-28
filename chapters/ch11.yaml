@@ -1,0 +1,398 @@
+chapter: 11
+title: Intermediate Subsystems
+status: reconciled
+coverage: partial
+sections: ["11.2", "11.3", "11.4", "11.5", "11.7", "11.8"]
+source: source/ch11.txt
+history:
+  - date: 2026-09-27
+    note: >
+      Partial extraction: measurement (11.2, for 13.3.6 gauging and 8.3.4f conditional
+      repetition), stiff drives (11.3, for 13.4.1), fluids, seals and pumps (11.4, for 14.3.2),
+      convective cooling (11.5) and electrostatic motors and generators (11.7), the two
+      "supporting systems" 14.4.1 calls peripheral. 11.6 (electromechanical devices) not
+      extracted. Numbers reproduced in nsaudit/ch11.py (tests/test_ch11.py).
+  - date: 2026-09-27
+    note: >
+      Reconciled. Ch. 14's seal and pump imports had the sections swapped (11.4.2 is seals,
+      11.4.3 pumps): repointed. Ch. 8's generic "11/measurement" repointed to 11.2.3. New
+      imports: 11.2.4 at 13.3.6b (cited), 11.5.3 at 14.4.1/14.4.8 (inferred), 10.4.6's
+      efficiency claim at 11.7.4.
+
+exports:
+
+  # ---- 11.2 Measurement ----------------------------------------------------------------------
+
+  - id: 11.2.1/well-partitioning
+    type: construction
+    section: "11.2.1"
+    statement: >
+      Measurement latches an indicator by partitioning its potential well with a barrier (Fig.
+      11.1); smooth sliding potentials per 10.8.1. "At high speeds (~1e-9 s per operation) the
+      energy cost of well partitioning is likely to be dominated by nonisothermal compression
+      losses (Section 7.5)"; if the input is unchanged, merging "can be nearly thermodynamically
+      reversible (save for further nonisothermal losses)".
+    hedge: "is likely to be ... can be nearly"
+    support: INT
+    refs: ["10.8.1", "7.5", "7.6.2"]
+    polarity: "-"
+    hypotheses:
+      - 7.5.1/nonisothermal-compression
+      - 7.6.2/merging-wells-free-energy-model
+
+  - id: 11.2.2/force-discrimination
+    type: parameter
+    section: "11.2.2"
+    statement: >
+      Distinguishing forces differing by ΔF with bias ΔF/2 in a well of length ℓ: Eq. 11.1,
+      P_err ≈ exp(-ℓ ΔF / 4kT); "For ℓ = 1 nm, ΔF = 1 nN, P_err ≈ 6e-27 at 300 K." Square-well and
+      no-disturbance assumptions (the latter "overestimates the error rate").
+    support: BARE
+    polarity: "+"
+    spot_check: "Full Eq. 11.1: 6.1e-27 (tests)."
+
+  - id: 11.2.3/gauge-mechanisms
+    type: parameter
+    section: "11.2.3"
+    statement: >
+      A probe on a lever reads surface position. "A typical small difference in surface position
+      is ~0.1 nm; a typical probe load is ~2 nN; a typical stiffness associated with contact of the
+      probe tip is ~50 N/m ... A rough estimate of the error rate ... is ~1e-5. For many purposes,
+      error rates of this magnitude are unacceptable."
+    hedge: "rough estimate"
+    support: BARE
+    polarity: "+"
+    spot_check: >
+      Model not stated. A thermal-Gaussian reading (σ = √(kT/50 N/m) = 9 pm, threshold at 0.05 nm)
+      gives 2e-8; the book's 1e-5 is more conservative (tests).
+    consumed_by: ["8.3.4f", "13.3.6b"]
+    aliases: ["shape and position discrimination"]
+
+  - id: 11.2.4/iterated-measurement
+    type: construction
+    section: "11.2.4"
+    statement: >
+      A counter incremented on each positive and decremented on each negative measurement,
+      then read, "provides a measurement procedure that can reduce overall error rates to any
+      desired level."
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - "successive measurements independent"
+      - "the counter and its readout are themselves reliable"
+    spot_check: >
+      With a (4p(1-p))^(n/2) bound, 1e-15 from p = 1e-5 needs n = 7 measurements; from the
+      Gaussian 2e-8, n = 5 (tests).
+    consumed_by: ["13.3.6b"]
+    notes: >
+      This is what makes 13.3.6's fail-stop gauging and 8.3.4f's conditional repetition
+      reliable to 1e-15. No mechanism or dissipation per measurement is given.
+
+  # ---- 11.3 Stiff drives -------------------------------------------------------------------------
+
+  - id: 11.3.1/harmonic-drive
+    type: construction
+    section: "11.3.1"
+    statement: >
+      Harmonic drives (Fig. 11.2): a wave generator deforms a flexspline, advancing it two teeth
+      per revolution; "well suited to nanomechanical systems" given diamondoid elastic limits;
+      bonding-interaction teeth can lower loads on the circular spline.
+    support: BARE
+    polarity: "-"
+
+  - id: 11.3.2/toroidal-worm-drive
+    type: construction
+    section: "11.3.2"
+    statement: >
+      A triply-threaded torus whose inverting (smoke-ring) rotation "can occur essentially
+      without energy barriers"; strains "fall well within the elastic limit of diamondlike
+      structures" (> 0.2); "cyclic strains will not cause fatigue (Section 6.7.1a)". Individual
+      segments give "substantial residual fluctuations", but with N_seg phases the potential
+      has period 2π/N_seg: minor diameter 2 nm, N_seg = 50 -> ~8 nm^-1, "strong mutual
+      cancellation ... negligible barriers for motion of the torus as a whole." "it may be
+      novel".
+    hedge: "essentially without ... will almost inevitably exhibit ... can readily meet"
+    support: INT
+    refs: ["10.3.6", "10.4", "10.5", "6.7.1"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 10.3.6/coupled-sites-rigid-coupling
+      - 6.7.1/single-point-failure-assumption
+      - "torus strains within the elastic limit (no strain calculation for the stated geometry)"
+      - "segment phases distributed by design"
+    spot_check: "50 / (π × 2 nm) = 7.96 nm^-1 (tests)."
+    consumed_by: ["13.4.1"]
+
+  # ---- 11.4 Fluids, seals, pumps -------------------------------------------------------------------
+
+  - id: 11.4.1a/liquid-ordering-in-gaps
+    type: scope-condition
+    section: "11.4.1"
+    statement: >
+      Knudsen number: transition flow in air at atmospheric pressure for r <= 100 nm. Liquids in
+      gaps of <= 6-10 molecular diameters show oscillatory forces; "at a thickness of 7 to 10
+      layers or more, the bulk fluid viscosity gives a good description of shear stresses
+      (Israelachvili, 1992)". Shear rates of 1e9 /s leave viscosity little affected.
+    support: EXT
+    refs: ["Israelachvili 1992"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["13.2.1e"]
+
+  - id: 11.4.1/fluid-flow-formulas
+    type: parameter
+    section: "11.4.1"
+    statement: >
+      Laminar formulas hold at nanoscale: Stokes (Eq. 11.3; r = 100 nm, 1 nN -> ~0.5 m/s, ~0.5 nW,
+      Re 0.05), Hagen-Poiseuille (Eq. 11.4; r = 100 nm, 1000 nm, 1 MPa -> ~4e-14 m^3/s, 1.25 m/s),
+      Darcy-Weisbach (Eq. 11.5) for turbulent large tubes (Tapley and Poston 1990).
+    support: EXT
+    refs: ["Creighton 1984", "Tapley and Poston 1990"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "0.53 m/s, 0.53 nW, Re 0.053; 3.9e-14 m^3/s, 1.25 m/s (tests)."
+
+  - id: 11.4.2/walls-and-seals
+    type: proposition
+    section: "11.4.2"
+    statement: >
+      Nonbonded bearing interfaces serve as seals. MM2/CSC (with added H2, He parameters) between
+      N-terminated (111) surfaces: He interposition ~170 maJ, k_s ≈ 150 N/m; H2 ~470 maJ, 380 N/m.
+      Treating the seal as a zero-length aperture: effective width 0.013 nm × 1.5e-18 -> ~2e-29 m;
+      at ~1e20 He/m^3, "~1e-15 atom/nm·s", a 1000 nm seal passes one He atom per > 1e4 years;
+      "Leakage for H2 and larger species appears negligible." Ions: desolvation of ~800 maJ,
+      guard bands, interposition "can easily exceed 200 maJ". Walls: "it seems likely that walls
+      can be constructed that transmit gas molecules at negligible rates" (H into diamond >= 800
+      maJ, Chu and Estreicher 1990).
+    hedge: "appears negligible ... can easily exceed ... it seems likely"
+    support: EXT
+    refs: ["Chu and Estreicher 1990", "Israelachvili 1992", "6.2.2 (Eq. 6.5)"]
+    vintage: "OK"
+    polarity: "-"
+    hypotheses:
+      - 3.3.1/mm2-adopted
+      - 6.2.2/effective-volume
+      - "the transition state for insertion is above the observed minima ('presumably higher')"
+    spot_check: >
+      Effective width 0.013 nm; Boltzmann 1.5e-18; effusion n v̄/4 × width = 6e-16 per nm·s; one He
+      atom per 5e4 years through 1000 nm (tests).
+    consumed_by: ["14.3.2"]
+    aliases: ["sliding seals"]
+
+  - id: 11.4.3/pumps-and-vacuum
+    type: proposition
+    section: "11.4.3"
+    statement: >
+      Positive-displacement pumps from high vacuum to > 10 GPa; lubricant-free seals permit high
+      vacuum; turbomolecular pumps with blade speeds above hydrogen's thermal speed, >= 10 per
+      blade row (Chu and Hua 1982), "compression ratios > 1e10 in a 100 nm length", free-molecule
+      flow up to atmospheric pressure at < 10 nm spacing. Bakeout is avoided because Ch. 13-14
+      systems build in a clean vacuum.
+    support: EXT
+    refs: ["Chu and Hua 1982"]
+    vintage: "OK"
+    polarity: "-"
+    consumed_by: ["14.3.2", "14.4.1"]
+    aliases: ["vacuum pumps"]
+
+  # ---- 11.5 Cooling ---------------------------------------------------------------------------------
+
+  - id: 11.5.1/murray-fractal-plumbing
+    type: construction
+    section: "11.5.1"
+    statement: >
+      Branched cooling tubes obeying Murray's law r0^3 = Σ ri^3 (Eq. 11.6), approximately fractal
+      with lengths ∝ radii, like circulatory systems (LaBarbera 1990).
+    support: EXT
+    refs: ["LaBarbera 1990"]
+    vintage: "OK"
+    polarity: "+"
+
+  - id: 11.5.2/ice-slurry-coolant
+    type: parameter
+    section: "11.5.2"
+    statement: >
+      Encapsulated submicron ice in a light hydrocarbon: η/η0 = (1 - f)^-2.5 (Eq. 11.7, Hiemenz
+      1986), ~3.6 at f = 0.4; with pentane ~8e-4 N·s/m^2; "~1.2e8 J/m^3" absorbed on melting.
+    support: EXT
+    refs: ["Hiemenz 1986"]
+    vintage: "OK"
+    polarity: "+"
+    spot_check: "0.6^-2.5 = 3.59; 0.4 × 334 kJ/kg × 917 kg/m^3 = 1.23e8 J/m^3 (tests)."
+
+  - id: 11.5.3/cooling-capacity
+    type: parameter
+    section: "11.5.3"
+    statement: >
+      "A preliminary design exercise" (4-level tubing, turbulent largest tubes): "~1e5 W of
+      thermal power can be extracted at ~273 K ... from a cube a centimeter on a side (or ...
+      ~1e5 W/cm^3 from a slab not more than 1 cm thick)"; thinnest tubes < 1 µm within < 5 µm of
+      every point; tubing volume fraction 0.25; pressure drop 20 MPa. "The large manufacturing
+      systems described in Chapter 14 must be convectively cooled, but the required capacity is
+      orders of magnitude smaller than that just described."
+    hedge: "preliminary ... A more nearly optimal design should yield better results"
+    support: BARE
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 11.5.1/murray-fractal-plumbing
+      - 11.5.2/ice-slurry-coolant
+      - "unpublished design calculation; no geometry or flow solution given"
+    spot_check: >
+      Pumping power Δp Q with Q = 1e5 W / 1.2e8 J/m^3: 16% of the heat removed. Conduction rise
+      over 5 µm at 1e11 W/m^3 is ~0.01 K at k = 100 W/m·K (tests). Against 14.4.8's scenarios:
+      reagent-prep heat density 21 / 300 / 3000 W/cm^3 (A/B/C), margin 4800 / 330 / 33 (see the
+      ch14 import).
+    consumed_by: ["14.4.1", "14.4.8"]
+
+  # ---- 11.7 Motors and generators -------------------------------------------------------------------
+
+  - id: 11.7.2a/contact-potentials
+    type: parameter
+    section: "11.7.2"
+    statement: >
+      Work functions of clean high-melting metals span 2.7 eV (Sm) to 5.7 eV (Pt) (Lide 1990);
+      contact potentials between surfaces of differing work function charge rotor-rim electrodes
+      (1.5 V -> 2 e at ~2.1e-19 F).
+    support: EXT
+    refs: ["Lide 1990"]
+    vintage: "OK"
+    polarity: "+"
+    consumed_by: ["8.3.3b"]
+
+  - id: 11.7/electrostatic-motors
+    type: construction
+    section: "11.7"
+    statement: >
+      DC electrostatic motor (Fig. 11.11): rim electrodes charged by contact potentials through
+      tunneling junctions only at equilibrium, "enabling the charge-transfer process to be
+      nearly thermodynamically reversible"; run backwards it is a generator. 0.0018 C/m^2 at
+      0.2 V/nm, ~2 e per electrode, 5.5e-11 C/m; 1000 m/s rim -> ~110 nA, 1.1 µW at 10 V; ~2e-22
+      m^3, "> 1e15 W/m^3". Losses: leads ~2.4 pW, tunneling contacts < 3 pW, bearing ~1.3 pW (or
+      "several nanowatts" if tunneling-contact attraction needs 100x stiffer bearings); contact
+      drag unevaluated. "motor efficiencies > .99 should be achievable at an extremely high
+      power density ... None of the analyses in later chapters require high motor efficiencies."
+    hedge: "should be achievable ... If contact drag does not greatly change this picture"
+    support: INT
+    refs: ["10.4.6", "11.6.2", "7.6.5"]
+    polarity: "-"
+    priority: high
+    hypotheses:
+      - 10.4.6/total-drag-bound
+      - 11.7.4d/contact-drag-unevaluated
+      - "tunneling contacts ~1e4 Ω (11.6.2, not extracted)"
+    spot_check: >
+      1.77e-3 C/m^2; 2.1 e; 111 nA; 1.11 µW; volume 1.96e-22 m^3 (50 nm radius); 5.7e15 W/m^3;
+      leads 2.3 pW; tunneling 3.1 pW; bearing (Eq. 10.27, 500 N/m, 50 m/s) 1.34 pW (tests). At
+      several nW the loss is ~0.3-0.5% of 1.1 µW.
+    consumed_by: ["14.4.1", "14.5.5"]
+    aliases: ["DC motors and generators", "electrostatic generators"]
+
+  - id: 11.7.4d/contact-drag-unevaluated
+    type: scope-condition
+    section: "11.7.4"
+    statement: >
+      Electron transfer across a sliding contact dissipates ~5e-25 J per electron (~3e-7 of 10
+      eV), multiplied by near-equilibrium exchanges; "The attractive forces associated with
+      sliding tunneling contacts also cause losses through thermoelastic effects and phonon
+      scattering. These remain to be evaluated and may prove to be the dominant loss mechanism
+      in this design."
+    support: BARE
+    polarity: "+"
+    spot_check: "½ m_e (1000 m/s)^2 = 4.6e-25 J; / 10 eV = 2.8e-7 (tests)."
+
+  - id: 11.8/open-problems
+    type: scope-condition
+    section: "11.8"
+    statement: >
+      Open: atomically detailed device models; seal-infiltrant studies; "more nearly optimal
+      convective cooling systems"; electron transport in eutactic structures and tunneling
+      junctions; "drag mechanisms in sliding tunneling junctions. The performance estimates for
+      electromechanical devices in this chapter are crude at best, and the junction structures
+      remain to be specified."
+    support: BARE
+    polarity: "+"
+
+imports:
+
+  - from: "3.3.1/mm2-adopted"
+    used_for: MM2/CSC seal interposition energies (He, H2)
+    at: ["11.4.2a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.2.2/effective-volume"
+    used_for: Eq. 6.5 effective width of the seal gap
+    at: ["11.4.2a"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "6.7.1/single-point-failure-assumption"
+    used_for: "cyclic strains will not cause fatigue (Section 6.7.1a)"
+    at: ["11.3.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.5.1/nonisothermal-compression"
+    used_for: well-partitioning cost at ~1e-9 s per operation
+    at: ["11.2.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.2/merging-wells-free-energy-model"
+    used_for: merging losses when the input has changed
+    at: ["11.2.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "7.6.5/optimal-merging-near-zero"
+    used_for: charging cycle "directly analogous to mechanochemical cycles that avoid well merging losses (Section 7.6.5)"
+    at: ["11.7.2c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.3.6/coupled-sites-rigid-coupling"
+    used_for: segments of the torus treated in the rigid-coupling approximation (10.3.6)
+    at: ["11.3.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.4.7/interface-catalogue"
+    used_for: bearing interfaces of 10.4 "can also serve as sealing interfaces"
+    at: ["11.4.2"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/total-drag-bound"
+    used_for: motor axle bearing drag (combined drag model, 10.4.6f)
+    at: ["11.7.4c"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.4.6/drag-consistent-with-efficiency"
+    used_for: bearing drag small against the motor's delivered power (10.4.6 names 11.7)
+    at: ["11.7.4c", "11.7.4e"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "10.8/barriers-in-extended-systems"
+    used_for: nearly flat sliding potentials for indicators (10.8.1)
+    at: ["11.2.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  # pending
+
+  - from: "10.7.1/gear-teeth"
+    used_for: gear teeth for harmonic drives
+    at: ["11.3.1"]
+    cited: yes
+    hypotheses_discharged: unknown
+
+  - from: "11.6.2/tunneling-contacts"
+    used_for: tunneling contact resistance ~1e4 Ω for rim electrodes
+    at: ["11.7.4b"]
+    cited: yes
+    hypotheses_discharged: unknown

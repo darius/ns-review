@@ -567,6 +567,31 @@ Prase C.2 **rebutted**.
   note expected the reverse). Worm drive (13.4.1f): same regime, <= 5%. Mills (13.3.7a):
   ωτ ≈ 5e-4, outside it. Across all four sites the omission is real and at most +15%.
 
+## Ch. 11 partial extraction and the 14.4.1 supporting systems (2026-09-27)
+
+Sections 11.2-11.5, 11.7 (17 exports), for measurement (13.3.6, 8.3.4f), drives (13.4.1), seals
+and pumps (14.3.2), cooling and power (14.4.1). All worked numbers reproduce
+(`nsaudit/ch11.py`). Findings:
+
+- **Cooling is plant sizing, not a physical limit.** 11.5.3's unpublished preliminary design
+  (~1e5 W/cm^3, ice-slurry coolant, fractal tubing) is conservative on inspection (pumping
+  ~16% of the heat). Against the 14.4.8 scenarios, reagent-prep heat density is 21 / 300 /
+  3000 W/cm^3: margins 4800 / 330 / 33. This corrects the earlier guess that cooling might
+  bind before energy balance.
+- **The cooling numbers in Ch. 14 are per 1 kg/hr, but the architecture runs at ~3.6 kg/hr.**
+  Table 14.1 is sized for ~1 g/s (14.4.3); 14.7's "~1 hr" is manipulator latency. At design
+  throughput the book's own budget is 4.8 kW (not "~1 kW"; 14.4.8's air spec gives 1.8 kW);
+  scenarios A/B/C give 5.4 / 14 / 85 kW. Verdict on `14.4.1/supporting-systems-peripheral`:
+  verified-modified.
+- **Power conversion (11.7):** mass and volume negligible in every scenario (verified at
+  14.4.1); > 0.99 efficiency not established because contact drag is unevaluated (11.7.4d),
+  but nothing downstream needs it beyond scaling the delivered surplus.
+- **Measurement (11.2):** the 1e-5 single-gauge error (11.2.3) has no stated model (a thermal
+  Gaussian gives 2e-8); iterated measurement (11.2.4) reaches 1e-15 in 5-7 rounds. No
+  mechanism or dissipation per measurement is given; this is what fail-stop gauging and
+  conditional repetition rest on.
+- Reconciliation caught Ch. 14's swapped seal/pump section ids (now 11.4.2 seals, 11.4.3 pumps).
+
 ## Known inaccuracies from the design session, corrected
 
 - "Drexler omitted Akhiezer damping" — false as stated; see above.

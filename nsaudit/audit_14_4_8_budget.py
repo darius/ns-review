@@ -157,3 +157,28 @@ def report() -> str:
 
 if __name__ == "__main__":
     print(report())
+
+
+# ---- where the heat is produced, and whether it can be removed (11.5) ---------------------------
+
+DEMAND = 1e-3 * ch13.C_ATOMS_PER_KG                # moieties/s at ~1 g/s (Table 14.1 note a)
+PREP_MASS, STAGE1_MASS = 0.006, 0.06               # kg, Table 14.1
+MECH_DENSITY, FILL = 2500.0, 0.1                   # kg/m^3 and filled fraction, 13.3.5
+COOLING_CAPACITY = 1e5 / 1e-6                      # W/m^3, 11.5.3 (1 cm slab)
+
+
+def mechanism_volume(mass: float) -> float:
+    return mass / MECH_DENSITY / FILL
+
+
+def heat_density(scenario: str) -> dict:
+    """W/m^3 in the reagent-preparation stage (10 steps per moiety) and in stage 1 mills
+    (application at the ~30 maJ mean)."""
+    prep = PREP_STEPS * PREP_PER_STEP[scenario] * DEMAND / mechanism_volume(PREP_MASS)
+    app = APPLICATION_MEAN * DEMAND / mechanism_volume(STAGE1_MASS)
+    return {"prep": prep, "stage1": app}
+
+
+def air_flow_needed(scenario: str, dT: float = 15.0, rho_cp: float = 1.2 * 1005) -> float:
+    """m^3/s of air at ΔT for the scenario's waste heat at ~1 kg/hr (14.4.8's framing)."""
+    return budget(scenario).waste_power() / (rho_cp * dT)

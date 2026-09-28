@@ -76,7 +76,7 @@ calculation in `nsaudit/` with a test, and cite the module from `verdict_notes`.
 
 ## Current state (2026-09-27, after Ch. 13 and partial Ch. 8) — START HERE
 
-Ten chapters extracted and mutually reconciled (3, 5, 6, 7, 9, 13, 14 full; 8, 10, 12 partial);
+Eleven chapters extracted and mutually reconciled (3, 5, 6, 7, 9, 13, 14 full; 8, 10, 11, 12 partial);
 one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.md for the graph.
 
 - Equation errors found so far: Eq. 7.29 missing a π (in the book: its own quoted 1570 K
@@ -104,8 +104,9 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   stiffness margin; radical-addition dissipation left open (8.5.5), carbenes unclear, transition
   metals "presumably". 13.3.3's preparation example uses exactly the unworked classes, and
   13.3.7's radical coupling sets aside 8.5.3c's spin caveat. Rest of Ch. 8 (8.4, 8.6) not needed yet.
-- 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes, but waste
-  heat grows in proportion from the start, so cooling (Ch. 11, 14.4.1) may bind first.
+- 14.4.8 margin: the mill term can grow ~8× before the energy surplus vanishes. Cooling is
+  plant sizing, not a limit (11.5.3 margin >= 33x in every scenario); Ch. 14's cooling numbers
+  are per 1 kg/hr while the architecture runs at 3.6 kg/hr (4.8 kW by its own budget).
 - Prase (2026): partially rebutted (DECISIONS.md "Audit: Prase"). Single-rod relaxation 12x
   overstated (but the book's Eq. 12.15 is 2.1x low); Eq. 7.40 sin 2θ correct; the molecular-solid
   model misdescribes sliding rods; at 14.4.8 every speed-dependent penalty is discharged by a
@@ -120,4 +121,5 @@ one verdict. Read docs/DECISIONS.md top to bottom for findings; generated/INDEX.
   maJ on the weakest step]; (4) the single-edge audits: [done: 12.3.7 on 5.3.1 and 6.3.3; 6.3.3 at
   13.2.3b/13.3.7b, verified]; remaining: 9.4.3's `deficit-is-mm2-artifact` against `3.3.2/mm2-known-defects`;
   (5) [done: 7.4.2 at 10.4.6, 13.3.7a, 13.4.1f — at most +15% anywhere].
-  Ch. 11 (cooling, power, gauges 11.2.3) if 14.4.1's "supporting systems peripheral" needs it.
+  [done 2026-09-27: Ch. 11 partial; 14.4.1 verified-modified]. Remaining: 9.4.3 vs 3.3.2; the
+  MM rod-end edge calculation (2c); a book-group briefing (see memory).

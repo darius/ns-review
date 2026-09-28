@@ -245,6 +245,15 @@ exports:
     notes: >
       A 1.3 kW heat load in a ~0.05 m^3 box with 97%-void machinery and no described internal
       cooling loop (DECISIONS.md). The "peripheral" classification is itself a claim.
+    verdict: verified-modified
+    verdict_notes: >
+      2026-09-27. Peripheral in the physical sense in every 14.4.8 scenario: cooling capacity
+      (11.5.3) has 33-4800x local margin and power conversion (11.7) needs < 1e-10 m^3. The
+      numbers are not: at Table 14.1's ~1 g/s (3.6 kg/hr; 14.4.3) the book's own budget gives
+      4.8 kW of waste heat, not "~1 kW" (the 1-1.3 kW of 14.4.8 and 14.7 is per 1 kg/hr, and
+      14.7's "~1 hr" is the manipulator stages' latency); scenarios A / B / C give 5.4 / 14 / 85
+      kW, i.e. 0.3 / 0.8 / 4.7 m^3/s of air at ΔT 15 K against the stated 0.1. Liquid cooling of
+      the 11.5 kind removes the constraint. nsaudit/audit_14_4_8_budget.py (tests/test_ch11.py)
 
   - id: 14.4.2/micron-blocks-suffice
     type: design-license
@@ -736,15 +745,39 @@ imports:
     used_for: power conversion at negligible mass and volume; 1e15 W/m^3 at > 0.99
     at: ["14.4.1", "14.5.5e"]
     cited: yes
-    hypotheses_discharged: unknown
+    hypotheses_discharged: yes
+    verdict: verified
+    verdict_notes: >
+      2026-09-27. The motor numbers reproduce (110 nA, 1.1 µW, > 1e15 W/m^3; losses 2.4 / 3 /
+      1.3 pW). "Negligible mass and volume" holds in every 14.4.8 scenario: even scenario C's net
+      power demand (~68 kW at 1 g/s) needs ~7e-11 m^3 of motors. Efficiency > 0.99 is not
+      established (11.7.4d: contact drag "remain[s] to be evaluated and may prove to be the
+      dominant loss mechanism"), but 11.7 itself notes later chapters do not need it; at 14.4.8 it
+      scales the delivered surplus by η. nsaudit/ch11.py, nsaudit/audit_14_4_8_budget.py (tests/test_ch11.py)
 
-  - from: "11.4.2/vacuum-pumps"
+  - from: "11.5.3/cooling-capacity"
+    used_for: >
+      14.4.8's "Cooling channels can be placed in close proximity to the chief heat sources" and
+      14.4.1's "~1 kW cooling system" as peripheral; the capacity is 11.5's.
+    at: ["14.4.1", "14.4.8"]
+    cited: no
+    hypotheses_discharged: yes
+    verdict: verified
+    verdict_notes: >
+      2026-09-27. Added at Ch. 11 reconciliation. Heat is produced mostly in reagent preparation
+      (0.006 kg, ~24 cm^3 at 13.3.5's 10% fill): 21 / 300 / 3000 W/cm^3 in the 14.4.8 scenarios
+      A / B / C, against 11.5.3's ~1e5 W/cm^3, margins ~4800 / 330 / 33; stage-1 mills ~6 W/cm^3.
+      11.5.3 is an unpublished preliminary design, but its physics is conservative on inspection
+      (pumping ~16% of the heat; conduction rise ~0.01 K over 5 µm). Cooling is not a physical
+      constraint in any scenario; it is plant sizing (see 14.4.1). nsaudit/ch11.py, nsaudit/audit_14_4_8_budget.py (tests/test_ch11.py)
+
+  - from: "11.4.3/pumps-and-vacuum"
     used_for: vacuum integrity and product delivery
     at: ["14.3.2", "14.4.1"]
     cited: yes
     hypotheses_discharged: n/a
 
-  - from: "11.4.3/sliding-seals"
+  - from: "11.4.2/walls-and-seals"
     used_for: seals for product delivery
     at: ["14.3.2"]
     cited: yes

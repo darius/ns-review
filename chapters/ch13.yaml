@@ -1537,6 +1537,12 @@ imports:
     cited: yes
     hypotheses_discharged: unknown
 
+  - from: "11.2.4/iterated-measurement"
+    used_for: gauge reliability "using iterated probing if necessary" (11.2.4)
+    at: ["13.3.6b"]
+    cited: yes
+    hypotheses_discharged: unknown
+
   - from: "11.3.2/toroidal-worm-drive"
     used_for: J1-J3, J5 drives; speed ratios > 3000 and joint stiffness
     at: ["13.4.1", "13.4.1e"]
