@@ -8,7 +8,7 @@ approach here is to make that structure explicit first — one **interface file*
 listing what the chapter imports, exports, and assumes — then generate the dependency graph, then
 adjudicate claims in dependency order, weighted by how much depends on them.
 
-The work so far is all from Claude Fable, Opus 5, and opus 5.5.
+The work so far is all from Claude Fable, Opus 5, and Opus 5.5.
 
 ## Status
 
